@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
-import { Users, ScissorsLineDashed, Receipt, Ruler, Wallet, Plus } from "lucide-react";
+import { Users, ScissorsLineDashed, Receipt, Ruler, Wallet, Plus, UserCog, Package, Factory, TrendingUp } from "lucide-react";
 import { fmtMoney } from "@/lib/tailoring";
 
 export const Route = createFileRoute("/app/")({
@@ -111,6 +111,37 @@ function Dashboard() {
               <Card className="p-3 flex items-center gap-2 shadow-card">
                 <Ruler className="h-4 w-4 text-primary" />
                 <span className="text-sm">پیمائش</span>
+              </Card>
+            </Link>
+          </div>
+        </div>
+
+        {/* More modules */}
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold text-muted-foreground">مزید</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <Link to="/app/workers">
+              <Card className="p-3 flex items-center gap-2 shadow-card">
+                <UserCog className="h-4 w-4 text-primary" />
+                <span className="text-sm">کاریگر</span>
+              </Card>
+            </Link>
+            <Link to="/app/production">
+              <Card className="p-3 flex items-center gap-2 shadow-card">
+                <Factory className="h-4 w-4 text-primary" />
+                <span className="text-sm">پیداوار</span>
+              </Card>
+            </Link>
+            <Link to="/app/inventory">
+              <Card className="p-3 flex items-center gap-2 shadow-card">
+                <Package className="h-4 w-4 text-primary" />
+                <span className="text-sm">انوینٹری</span>
+              </Card>
+            </Link>
+            <Link to="/app/revenue">
+              <Card className="p-3 flex items-center gap-2 shadow-card">
+                <TrendingUp className="h-4 w-4 text-primary" />
+                <span className="text-sm">آمدنی</span>
               </Card>
             </Link>
           </div>

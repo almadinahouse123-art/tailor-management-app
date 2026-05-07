@@ -92,6 +92,89 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_production: {
+        Row: {
+          created_at: string
+          id: number
+          notes: string | null
+          order_id: number | null
+          production_date: string
+          rate_per_suit: number
+          suits_count: number
+          total_amount: number
+          worker_id: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          notes?: string | null
+          order_id?: number | null
+          production_date?: string
+          rate_per_suit?: number
+          suits_count?: number
+          total_amount?: number
+          worker_id?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          notes?: string | null
+          order_id?: number | null
+          production_date?: string
+          rate_per_suit?: number
+          suits_count?: number
+          total_amount?: number
+          worker_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_production_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: number
+          item_name: string
+          low_stock_threshold: number
+          notes: string | null
+          quantity: number
+          unit: string | null
+          unit_price: number
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: never
+          item_name: string
+          low_stock_threshold?: number
+          notes?: string | null
+          quantity?: number
+          unit?: string | null
+          unit_price?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: never
+          item_name?: string
+          low_stock_threshold?: number
+          notes?: string | null
+          quantity?: number
+          unit?: string | null
+          unit_price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           created_at: string
@@ -272,6 +355,80 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      worker_ledger: {
+        Row: {
+          created_at: string
+          description: string | null
+          earned_amount: number
+          entry_date: string
+          id: number
+          paid_amount: number
+          worker_id: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          earned_amount?: number
+          entry_date?: string
+          id?: never
+          paid_amount?: number
+          worker_id: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          earned_amount?: number
+          entry_date?: string
+          id?: never
+          paid_amount?: number
+          worker_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "worker_ledger_worker_id_fkey"
+            columns: ["worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workers: {
+        Row: {
+          active: boolean
+          address: string | null
+          created_at: string
+          id: number
+          name: string
+          notes: string | null
+          phone: string | null
+          rate_per_suit: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          address?: string | null
+          created_at?: string
+          id?: never
+          name: string
+          notes?: string | null
+          phone?: string | null
+          rate_per_suit?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          address?: string | null
+          created_at?: string
+          id?: never
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          rate_per_suit?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
