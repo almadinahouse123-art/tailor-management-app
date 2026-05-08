@@ -28,6 +28,7 @@ export const Route = createFileRoute("/app/production/new")({
 
 function NewProduction() {
   const nav = useNavigate();
+  const { order: presetOrder } = Route.useSearch();
   const { data: workers = [] } = useQuery({
     queryKey: ["workers-active"],
     queryFn: async () => {
@@ -39,12 +40,28 @@ function NewProduction() {
   const [f, setF] = useState({
     production_date: new Date().toISOString().slice(0, 10),
     worker_id: "",
-    order_id: "",
+    order_id: presetOrder ? String(presetOrder) : "",
     suits_count: "",
     rate_per_suit: "",
     notes: "",
   });
   const [saving, setSaving] = useState(false);
+
+  // Prefill worker + rate from order
+  useEffect(() => {
+    const oid = Number(f.order_id);
+    if (!oid) return;
+    (async () => {
+      const { data } = await supabase.from("orders").select("assigned_worker_id, assigned_rate").eq("id", oid).maybeSingle();
+      if (data?.assigned_worker_id) {
+        setF((p) => ({
+          ...p,
+          worker_id: p.worker_id || String(data.assigned_worker_id),
+          rate_per_suit: p.rate_per_suit || String(data.assigned_rate ?? ""),
+        }));
+      }
+    })();
+  }, [f.order_id]);
 
   useEffect(() => {
     const w = workers.find((x) => String(x.id) === f.worker_id);
