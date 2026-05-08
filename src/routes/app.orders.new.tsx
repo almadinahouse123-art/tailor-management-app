@@ -33,11 +33,24 @@ function NewOrder() {
   const [total, setTotal] = useState("0");
   const [paid, setPaid] = useState("0");
   const [notes, setNotes] = useState("");
+  const [workerId, setWorkerId] = useState<string>("");
+  const [assignedRate, setAssignedRate] = useState<string>("");
 
   const { data: customers = [] } = useQuery({
     queryKey: ["customers-options"],
     queryFn: async () => (await supabase.from("customers").select("id,name").order("id", { ascending: false })).data ?? [],
   });
+
+  const { data: workers = [] } = useQuery({
+    queryKey: ["workers-active"],
+    queryFn: async () => (await supabase.from("workers").select("id,name,rate_per_suit").eq("active", true).order("name")).data ?? [],
+  });
+
+  const onWorkerChange = (v: string) => {
+    setWorkerId(v);
+    const w = workers.find((x) => String(x.id) === v);
+    if (w && !assignedRate) setAssignedRate(String(w.rate_per_suit ?? ""));
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
