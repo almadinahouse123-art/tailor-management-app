@@ -23,9 +23,14 @@ function OrderDetail() {
   const { data: order } = useQuery({
     queryKey: ["order", oid],
     queryFn: async () => {
-      const { data } = await supabase.from("orders").select("*, customers(id,name,phone,address)").eq("id", oid).single();
+      const { data } = await supabase.from("orders").select("*, customers(id,name,phone,address), workers:assigned_worker_id(id,name,rate_per_suit)").eq("id", oid).single();
       return data;
     },
+  });
+
+  const { data: workers = [] } = useQuery({
+    queryKey: ["workers-active"],
+    queryFn: async () => (await supabase.from("workers").select("id,name,rate_per_suit").eq("active", true).order("name")).data ?? [],
   });
 
   const [pay, setPay] = useState("");
