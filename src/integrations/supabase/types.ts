@@ -299,6 +299,8 @@ export type Database = {
       }
       orders: {
         Row: {
+          assigned_rate: number
+          assigned_worker_id: number | null
           color: string | null
           created_at: string
           customer_id: number
@@ -315,6 +317,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          assigned_rate?: number
+          assigned_worker_id?: number | null
           color?: string | null
           created_at?: string
           customer_id: number
@@ -331,6 +335,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          assigned_rate?: number
+          assigned_worker_id?: number | null
           color?: string | null
           created_at?: string
           customer_id?: number
@@ -347,6 +353,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "orders_assigned_worker_id_fkey"
+            columns: ["assigned_worker_id"]
+            isOneToOne: false
+            referencedRelation: "workers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "orders_customer_id_fkey"
             columns: ["customer_id"]
