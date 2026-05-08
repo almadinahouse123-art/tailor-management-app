@@ -23,9 +23,14 @@ function OrderDetail() {
   const { data: order } = useQuery({
     queryKey: ["order", oid],
     queryFn: async () => {
-      const { data } = await supabase.from("orders").select("*, customers(id,name,phone,address)").eq("id", oid).single();
+      const { data } = await supabase.from("orders").select("*, customers(id,name,phone,address), workers:assigned_worker_id(id,name,rate_per_suit)").eq("id", oid).single();
       return data;
     },
+  });
+
+  const { data: workers = [] } = useQuery({
+    queryKey: ["workers-active"],
+    queryFn: async () => (await supabase.from("workers").select("id,name,rate_per_suit").eq("active", true).order("name")).data ?? [],
   });
 
   const [pay, setPay] = useState("");
@@ -64,6 +69,16 @@ function OrderDetail() {
     qc.invalidateQueries({ queryKey: ["order", oid] });
   };
 
+  const assignWorker = async (v: string) => {
+    const wid = v ? Number(v) : null;
+    const w = workers.find((x) => String(x.id) === v);
+    const rate = w ? Number(w.rate_per_suit ?? 0) : Number(order.assigned_rate ?? 0);
+    const { error } = await supabase.from("orders").update({ assigned_worker_id: wid, assigned_rate: rate }).eq("id", oid);
+    if (error) return toast.error(error.message);
+    toast.success("کاریگر تفویض ہو گیا");
+    qc.invalidateQueries({ queryKey: ["order", oid] });
+  };
+
   return (
     <>
       <AppHeader title={`آرڈر #${oid}`} back="/app/orders" />
@@ -92,6 +107,26 @@ function OrderDetail() {
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>{ORDER_STATUS.map((s) => <SelectItem key={s} value={s}>{ORDER_STATUS_LABEL[s as OrderStatus]}</SelectItem>)}</SelectContent>
           </Select>
+        </Card>
+
+        <Card className="p-3 space-y-2">
+          <Label className="text-xs">کاریگر تفویض</Label>
+          <Select value={order.assigned_worker_id ? String(order.assigned_worker_id) : ""} onValueChange={assignWorker}>
+            <SelectTrigger><SelectValue placeholder="غیر تفویض" /></SelectTrigger>
+            <SelectContent>
+              {workers.map((w) => <SelectItem key={w.id} value={String(w.id)}>{w.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          {order.assigned_worker_id && (
+            <div className="text-xs text-muted-foreground">
+              ریٹ: <b>{fmtMoney(order.assigned_rate)}</b> فی سوٹ
+            </div>
+          )}
+          {order.assigned_worker_id && (
+            <Link to="/app/production/new" search={{ order: oid }}>
+              <Button variant="outline" size="sm" className="w-full mt-1">پیداوار درج کریں</Button>
+            </Link>
+          )}
         </Card>
 
         <Card className="p-3">

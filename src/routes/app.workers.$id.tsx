@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,9 +7,9 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { fmtMoney } from "@/lib/tailoring";
+import { fmtMoney, ORDER_STATUS_LABEL, type OrderStatus } from "@/lib/tailoring";
 import { toast } from "sonner";
-import { Phone, MapPin, Wallet, Plus } from "lucide-react";
+import { Phone, MapPin, Wallet, Plus, ClipboardList } from "lucide-react";
 
 export const Route = createFileRoute("/app/workers/$id")({
   component: WorkerDetail,
@@ -37,6 +37,20 @@ function WorkerDetail() {
         .select("*")
         .eq("worker_id", wid)
         .order("entry_date", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const { data: assignedOrders = [] } = useQuery({
+    queryKey: ["worker-orders", wid],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("id, status, order_date, delivery_date, total_amount, customers(name)")
+        .eq("assigned_worker_id", wid)
+        .order("order_date", { ascending: false })
+        .limit(50);
       if (error) throw error;
       return data ?? [];
     },
@@ -154,6 +168,34 @@ function WorkerDetail() {
             <Plus className="h-4 w-4" /> اندراج شامل کریں
           </Button>
         </Card>
+
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold text-muted-foreground flex items-center gap-1">
+            <ClipboardList className="h-3 w-3" /> تفویض شدہ آرڈرز
+          </h2>
+          {assignedOrders.length === 0 ? (
+            <Card className="p-4 text-center text-sm text-muted-foreground">کوئی آرڈر تفویض نہیں</Card>
+          ) : (
+            assignedOrders.map((o: any) => (
+              <Link key={o.id} to="/app/orders/$id" params={{ id: String(o.id) }}>
+                <Card className="p-3 text-sm">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="font-semibold">آرڈر #{o.id}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {o.customers?.name} · {o.order_date}
+                        {o.delivery_date && <> · ڈیلیوری {o.delivery_date}</>}
+                      </div>
+                    </div>
+                    <span className="text-xs px-2 py-1 rounded bg-muted">
+                      {ORDER_STATUS_LABEL[o.status as OrderStatus] ?? o.status}
+                    </span>
+                  </div>
+                </Card>
+              </Link>
+            ))
+          )}
+        </div>
 
         <div className="space-y-2">
           <h2 className="text-sm font-semibold text-muted-foreground">کھاتہ تاریخ</h2>

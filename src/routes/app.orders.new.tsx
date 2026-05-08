@@ -33,11 +33,24 @@ function NewOrder() {
   const [total, setTotal] = useState("0");
   const [paid, setPaid] = useState("0");
   const [notes, setNotes] = useState("");
+  const [workerId, setWorkerId] = useState<string>("");
+  const [assignedRate, setAssignedRate] = useState<string>("");
 
   const { data: customers = [] } = useQuery({
     queryKey: ["customers-options"],
     queryFn: async () => (await supabase.from("customers").select("id,name").order("id", { ascending: false })).data ?? [],
   });
+
+  const { data: workers = [] } = useQuery({
+    queryKey: ["workers-active"],
+    queryFn: async () => (await supabase.from("workers").select("id,name,rate_per_suit").eq("active", true).order("name")).data ?? [],
+  });
+
+  const onWorkerChange = (v: string) => {
+    setWorkerId(v);
+    const w = workers.find((x) => String(x.id) === v);
+    if (w && !assignedRate) setAssignedRate(String(w.rate_per_suit ?? ""));
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,6 +68,8 @@ function NewOrder() {
       total_amount: totalNum,
       paid_amount: paidNum,
       notes: notes || null,
+      assigned_worker_id: workerId ? Number(workerId) : null,
+      assigned_rate: Number(assignedRate) || 0,
     }).select("id").single();
     if (error) return toast.error(error.message);
     if (paidNum > 0) {
@@ -115,6 +130,23 @@ function NewOrder() {
           </div>
           <div><Label className="text-xs">رنگ</Label><Input className="mt-1" value={color} onChange={(e) => setColor(e.target.value)} /></div>
           <div><Label className="text-xs">ہدایات</Label><Textarea rows={2} className="mt-1" value={instructions} onChange={(e) => setInstructions(e.target.value)} /></div>
+        </Card>
+
+        <Card className="p-3 space-y-3">
+          <div className="text-sm font-semibold">کاریگر کا تفویض</div>
+          <div>
+            <Label className="text-xs">کاریگر منتخب کریں</Label>
+            <Select value={workerId} onValueChange={onWorkerChange}>
+              <SelectTrigger className="mt-1"><SelectValue placeholder="غیر تفویض" /></SelectTrigger>
+              <SelectContent>
+                {workers.map((w) => <SelectItem key={w.id} value={String(w.id)}>{w.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-xs">فی سوٹ ریٹ (کاریگر)</Label>
+            <Input dir="ltr" className="mt-1 text-left" inputMode="decimal" value={assignedRate} onChange={(e) => setAssignedRate(e.target.value)} />
+          </div>
         </Card>
 
         <Card className="p-3 grid grid-cols-2 gap-3">
