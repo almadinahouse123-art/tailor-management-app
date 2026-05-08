@@ -42,6 +42,20 @@ function WorkerDetail() {
     },
   });
 
+  const { data: assignedOrders = [] } = useQuery({
+    queryKey: ["worker-orders", wid],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("id, status, order_date, delivery_date, total_amount, customers(name)")
+        .eq("assigned_worker_id", wid)
+        .order("order_date", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
   const totals = ledger.reduce(
     (a, e) => ({
       earned: a.earned + Number(e.earned_amount ?? 0),
