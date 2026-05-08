@@ -66,6 +66,21 @@ function OrderDetail() {
     const { error } = await supabase.from("orders").update({ status: s }).eq("id", oid);
     if (error) return toast.error(error.message);
     toast.success("سٹیٹس اپڈیٹ");
+  const updateStatus = async (s: string) => {
+    setStatus(s);
+    const { error } = await supabase.from("orders").update({ status: s }).eq("id", oid);
+    if (error) return toast.error(error.message);
+    toast.success("سٹیٹس اپڈیٹ");
+    qc.invalidateQueries({ queryKey: ["order", oid] });
+  };
+
+  const assignWorker = async (v: string) => {
+    const wid = v ? Number(v) : null;
+    const w = workers.find((x) => String(x.id) === v);
+    const rate = w ? Number(w.rate_per_suit ?? 0) : Number(order.assigned_rate ?? 0);
+    const { error } = await supabase.from("orders").update({ assigned_worker_id: wid, assigned_rate: rate }).eq("id", oid);
+    if (error) return toast.error(error.message);
+    toast.success("کاریگر تفویض ہو گیا");
     qc.invalidateQueries({ queryKey: ["order", oid] });
   };
 
