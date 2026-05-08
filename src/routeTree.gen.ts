@@ -13,6 +13,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppSearchRouteImport } from './routes/app.search'
 import { Route as AppWorkersIndexRouteImport } from './routes/app.workers.index'
 import { Route as AppRevenueIndexRouteImport } from './routes/app.revenue.index'
 import { Route as AppProductionIndexRouteImport } from './routes/app.production.index'
@@ -51,6 +52,11 @@ const IndexRoute = IndexRouteImport.update({
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSearchRoute = AppSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => AppRoute,
 } as any)
 const AppWorkersIndexRoute = AppWorkersIndexRouteImport.update({
@@ -153,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/app/search': typeof AppSearchRoute
   '/app/': typeof AppIndexRoute
   '/app/billing/$id': typeof AppBillingIdRoute
   '/app/billing/new': typeof AppBillingNewRoute
@@ -177,6 +184,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/app/search': typeof AppSearchRoute
   '/app': typeof AppIndexRoute
   '/app/billing/$id': typeof AppBillingIdRoute
   '/app/billing/new': typeof AppBillingNewRoute
@@ -203,6 +211,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/app/search': typeof AppSearchRoute
   '/app/': typeof AppIndexRoute
   '/app/billing/$id': typeof AppBillingIdRoute
   '/app/billing/new': typeof AppBillingNewRoute
@@ -230,6 +239,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/app/search'
     | '/app/'
     | '/app/billing/$id'
     | '/app/billing/new'
@@ -254,6 +264,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/app/search'
     | '/app'
     | '/app/billing/$id'
     | '/app/billing/new'
@@ -279,6 +290,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/app/search'
     | '/app/'
     | '/app/billing/$id'
     | '/app/billing/new'
@@ -335,6 +347,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/search': {
+      id: '/app/search'
+      path: '/search'
+      fullPath: '/app/search'
+      preLoaderRoute: typeof AppSearchRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/workers/': {
@@ -474,6 +493,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteChildren {
+  AppSearchRoute: typeof AppSearchRoute
   AppIndexRoute: typeof AppIndexRoute
   AppBillingIdRoute: typeof AppBillingIdRoute
   AppBillingNewRoute: typeof AppBillingNewRoute
@@ -497,6 +517,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppSearchRoute: AppSearchRoute,
   AppIndexRoute: AppIndexRoute,
   AppBillingIdRoute: AppBillingIdRoute,
   AppBillingNewRoute: AppBillingNewRoute,
