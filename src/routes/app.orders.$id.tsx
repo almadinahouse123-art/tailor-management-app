@@ -109,8 +109,25 @@ function OrderDetail() {
           </Select>
         </Card>
 
-        <Card className="p-3">
-          <h3 className="text-sm font-semibold mb-2">تفصیلات</h3>
+        <Card className="p-3 space-y-2">
+          <Label className="text-xs">کاریگر تفویض</Label>
+          <Select value={order.assigned_worker_id ? String(order.assigned_worker_id) : ""} onValueChange={assignWorker}>
+            <SelectTrigger><SelectValue placeholder="غیر تفویض" /></SelectTrigger>
+            <SelectContent>
+              {workers.map((w) => <SelectItem key={w.id} value={String(w.id)}>{w.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          {order.assigned_worker_id && (
+            <div className="text-xs text-muted-foreground">
+              ریٹ: <b>{fmtMoney(order.assigned_rate)}</b> فی سوٹ
+            </div>
+          )}
+          {order.assigned_worker_id && (
+            <Link to="/app/production/new" search={{ order: oid }}>
+              <Button variant="outline" size="sm" className="w-full mt-1">پیداوار درج کریں</Button>
+            </Link>
+          )}
+        </Card>
           <ul className="text-xs space-y-1">
             <li><span className="text-muted-foreground">تاریخ:</span> {order.order_date}</li>
             <li><span className="text-muted-foreground">ڈیلیوری:</span> {order.delivery_date ?? "—"}</li>
