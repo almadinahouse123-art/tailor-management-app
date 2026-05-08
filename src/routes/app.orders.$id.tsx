@@ -66,11 +66,6 @@ function OrderDetail() {
     const { error } = await supabase.from("orders").update({ status: s }).eq("id", oid);
     if (error) return toast.error(error.message);
     toast.success("سٹیٹس اپڈیٹ");
-  const updateStatus = async (s: string) => {
-    setStatus(s);
-    const { error } = await supabase.from("orders").update({ status: s }).eq("id", oid);
-    if (error) return toast.error(error.message);
-    toast.success("سٹیٹس اپڈیٹ");
     qc.invalidateQueries({ queryKey: ["order", oid] });
   };
 
