@@ -170,6 +170,34 @@ function WorkerDetail() {
         </Card>
 
         <div className="space-y-2">
+          <h2 className="text-sm font-semibold text-muted-foreground flex items-center gap-1">
+            <ClipboardList className="h-3 w-3" /> تفویض شدہ آرڈرز
+          </h2>
+          {assignedOrders.length === 0 ? (
+            <Card className="p-4 text-center text-sm text-muted-foreground">کوئی آرڈر تفویض نہیں</Card>
+          ) : (
+            assignedOrders.map((o: any) => (
+              <Link key={o.id} to="/app/orders/$id" params={{ id: String(o.id) }}>
+                <Card className="p-3 text-sm">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="font-semibold">آرڈر #{o.id}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {o.customers?.name} · {o.order_date}
+                        {o.delivery_date && <> · ڈیلیوری {o.delivery_date}</>}
+                      </div>
+                    </div>
+                    <span className="text-xs px-2 py-1 rounded bg-muted">
+                      {ORDER_STATUS_LABEL[o.status as OrderStatus] ?? o.status}
+                    </span>
+                  </div>
+                </Card>
+              </Link>
+            ))
+          )}
+        </div>
+
+        <div className="space-y-2">
           <h2 className="text-sm font-semibold text-muted-foreground">کھاتہ تاریخ</h2>
           {ledger.length === 0 ? (
             <Card className="p-4 text-center text-sm text-muted-foreground">کوئی اندراج نہیں</Card>
