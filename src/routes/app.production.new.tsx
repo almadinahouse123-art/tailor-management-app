@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
@@ -18,7 +19,10 @@ import {
 import { toast } from "sonner";
 import { fmtMoney } from "@/lib/tailoring";
 
+const searchSchema = z.object({ order: z.coerce.number().optional() });
+
 export const Route = createFileRoute("/app/production/new")({
+  validateSearch: (s) => searchSchema.parse(s),
   component: NewProduction,
 });
 
