@@ -22,15 +22,24 @@ export function AppHeader({ title, back }: { title?: string; back?: string }) {
             واپس
           </Link>
         ) : (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="text-primary-foreground hover:bg-white/15 h-8 w-8"
-            onClick={() => signOut()}
-            title="لاگ آؤٹ"
-          >
-            <LogOut className="h-4 w-4" />
-          </Button>
+          <>
+            <Link
+              to="/app/search"
+              className="h-8 w-8 inline-flex items-center justify-center rounded-md hover:bg-white/15"
+              title="تلاش"
+            >
+              <Search className="h-4 w-4" />
+            </Link>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="text-primary-foreground hover:bg-white/15 h-8 w-8"
+              onClick={() => signOut()}
+              title="لاگ آؤٹ"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </>
         )}
       </div>
     </header>
