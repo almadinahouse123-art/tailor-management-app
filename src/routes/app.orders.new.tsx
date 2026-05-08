@@ -68,6 +68,8 @@ function NewOrder() {
       total_amount: totalNum,
       paid_amount: paidNum,
       notes: notes || null,
+      assigned_worker_id: workerId ? Number(workerId) : null,
+      assigned_rate: Number(assignedRate) || 0,
     }).select("id").single();
     if (error) return toast.error(error.message);
     if (paidNum > 0) {
