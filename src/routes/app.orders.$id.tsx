@@ -128,6 +128,9 @@ function OrderDetail() {
             </Link>
           )}
         </Card>
+
+        <Card className="p-3">
+          <h3 className="text-sm font-semibold mb-2">تفصیلات</h3>
           <ul className="text-xs space-y-1">
             <li><span className="text-muted-foreground">تاریخ:</span> {order.order_date}</li>
             <li><span className="text-muted-foreground">ڈیلیوری:</span> {order.delivery_date ?? "—"}</li>
