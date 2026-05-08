@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,9 +7,9 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { fmtMoney } from "@/lib/tailoring";
+import { fmtMoney, ORDER_STATUS_LABEL, type OrderStatus } from "@/lib/tailoring";
 import { toast } from "sonner";
-import { Phone, MapPin, Wallet, Plus } from "lucide-react";
+import { Phone, MapPin, Wallet, Plus, ClipboardList } from "lucide-react";
 
 export const Route = createFileRoute("/app/workers/$id")({
   component: WorkerDetail,
