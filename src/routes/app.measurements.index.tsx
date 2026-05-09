@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Ruler } from "lucide-react";
+import { Plus, Ruler, Printer } from "lucide-react";
 import { URDU_LABELS } from "@/lib/tailoring";
 
 export const Route = createFileRoute("/app/measurements/")({
