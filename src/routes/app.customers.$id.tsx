@@ -104,9 +104,11 @@ function CustomerDetail() {
               </div>
               {latest.notes && <p className="text-xs text-muted-foreground mt-2">{latest.notes}</p>}
               <div className="flex gap-2 mt-3">
-                <Button size="sm" variant="outline" className="text-xs" onClick={() => window.print()}>
-                  <Printer className="h-3.5 w-3.5 ml-1" /> پرنٹ کٹنگ شیٹ
-                </Button>
+                <Link to="/print/measurement/$id" params={{ id: String(latest.id) }} target="_blank">
+                  <Button size="sm" variant="outline" className="text-xs">
+                    <Printer className="h-3.5 w-3.5 ml-1" /> پرنٹ کٹنگ شیٹ
+                  </Button>
+                </Link>
                 {data.measurements.length > 1 && (
                   <span className="text-xs text-muted-foreground self-center">+{data.measurements.length - 1} مزید</span>
                 )}
