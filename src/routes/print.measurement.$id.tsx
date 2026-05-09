@@ -92,29 +92,18 @@ function PrintMeasurement() {
         {/* Measurements grid */}
         <table className="w-full border-collapse text-base mb-4">
           <tbody>
-            {FIELDS.reduce<Array<typeof FIELDS[number][]>>((rows, f, i) => {
-              if (i % 2 === 0) rows.push([f]); else rows[rows.length - 1].push(f);
-              return rows;
-            }, []).map((row, ri) => (
-              <tr key={ri}>
-                {row.map((f) => (
-                  <>
-                    <td key={f + "l"} className="border border-black p-2 font-bold w-1/4 bg-gray-100">
-                      {URDU_LABELS[f]}
-                    </td>
-                    <td key={f + "v"} className="border border-black p-2 w-1/4 text-center text-lg">
-                      {m[f] || "—"}
-                    </td>
-                  </>
-                ))}
-                {row.length === 1 && (
-                  <>
-                    <td className="border border-black p-2 bg-gray-100"></td>
-                    <td className="border border-black p-2"></td>
-                  </>
-                )}
-              </tr>
-            ))}
+            {Array.from({ length: Math.ceil(FIELDS.length / 2) }, (_, ri) => {
+              const a = FIELDS[ri * 2];
+              const b = FIELDS[ri * 2 + 1];
+              return (
+                <tr key={ri}>
+                  <td className="border border-black p-2 font-bold w-1/4 bg-gray-100">{URDU_LABELS[a]}</td>
+                  <td className="border border-black p-2 w-1/4 text-center text-lg">{m[a] || "—"}</td>
+                  <td className="border border-black p-2 font-bold w-1/4 bg-gray-100">{b ? URDU_LABELS[b] : ""}</td>
+                  <td className="border border-black p-2 w-1/4 text-center text-lg">{b ? (m[b] || "—") : ""}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 
