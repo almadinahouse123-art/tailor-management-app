@@ -39,6 +39,7 @@ function WorkerDetail() {
         .from("worker_ledger")
         .select("*")
         .eq("worker_id", wid)
+        .is("deleted_at", null)
         .order("entry_date", { ascending: false });
       if (error) throw error;
       return data ?? [];

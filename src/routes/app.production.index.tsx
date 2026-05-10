@@ -18,6 +18,7 @@ function ProductionList() {
       const { data, error } = await supabase
         .from("daily_production")
         .select("*, workers(name)")
+        .is("deleted_at", null)
         .order("production_date", { ascending: false })
         .limit(200);
       if (error) throw error;
