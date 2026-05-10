@@ -18,7 +18,7 @@ function InventoryList() {
   const { data: items = [] } = useQuery({
     queryKey: ["inventory", q],
     queryFn: async () => {
-      let qy = supabase.from("inventory").select("*").order("id", { ascending: false });
+      let qy = supabase.from("inventory").select("*").is("deleted_at", null).order("id", { ascending: false });
       if (q.trim()) qy = qy.or(`item_name.ilike.%${q.trim()}%,category.ilike.%${q.trim()}%`);
       const { data, error } = await qy;
       if (error) throw error;

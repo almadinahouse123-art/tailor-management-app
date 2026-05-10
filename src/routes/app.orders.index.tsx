@@ -18,9 +18,9 @@ function OrdersList() {
   const { data = [] } = useQuery({
     queryKey: ["orders", q],
     queryFn: async () => {
-      let qy = supabase.from("orders").select("*, customers(id,name,phone)").order("id", { ascending: false });
+      let qy = supabase.from("orders").select("*, customers(id,name,phone)").is("deleted_at", null).order("id", { ascending: false });
       if (q.trim() && /^\d+$/.test(q.trim())) {
-        qy = supabase.from("orders").select("*, customers(id,name,phone)").eq("id", Number(q.trim()));
+        qy = supabase.from("orders").select("*, customers(id,name,phone)").is("deleted_at", null).eq("id", Number(q.trim()));
       }
       const { data } = await qy;
       let rows = data ?? [];

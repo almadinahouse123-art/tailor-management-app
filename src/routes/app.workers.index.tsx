@@ -18,10 +18,10 @@ function WorkersList() {
   const { data: workers = [] } = useQuery({
     queryKey: ["workers", q],
     queryFn: async () => {
-      let qy = supabase.from("workers").select("*").order("id", { ascending: false });
+      let qy = supabase.from("workers").select("*").is("deleted_at", null).order("id", { ascending: false });
       if (q.trim()) {
         const t = q.trim();
-        if (/^\d+$/.test(t)) qy = supabase.from("workers").select("*").eq("id", Number(t));
+        if (/^\d+$/.test(t)) qy = supabase.from("workers").select("*").is("deleted_at", null).eq("id", Number(t));
         else qy = qy.or(`name.ilike.%${t}%,phone.ilike.%${t}%`);
       }
       const { data, error } = await qy;
