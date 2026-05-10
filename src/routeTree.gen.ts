@@ -13,6 +13,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppTrashRouteImport } from './routes/app.trash'
 import { Route as AppSearchRouteImport } from './routes/app.search'
 import { Route as AppWorkersIndexRouteImport } from './routes/app.workers.index'
 import { Route as AppRevenueIndexRouteImport } from './routes/app.revenue.index'
@@ -34,6 +35,13 @@ import { Route as AppCustomersNewRouteImport } from './routes/app.customers.new'
 import { Route as AppCustomersIdRouteImport } from './routes/app.customers.$id'
 import { Route as AppBillingNewRouteImport } from './routes/app.billing.new'
 import { Route as AppBillingIdRouteImport } from './routes/app.billing.$id'
+import { Route as AppWorkersIdEditRouteImport } from './routes/app.workers.$id.edit'
+import { Route as AppProductionIdEditRouteImport } from './routes/app.production.$id.edit'
+import { Route as AppOrdersIdEditRouteImport } from './routes/app.orders.$id.edit'
+import { Route as AppMeasurementsIdEditRouteImport } from './routes/app.measurements.$id.edit'
+import { Route as AppInventoryIdEditRouteImport } from './routes/app.inventory.$id.edit'
+import { Route as AppCustomersIdEditRouteImport } from './routes/app.customers.$id.edit'
+import { Route as AppBillingIdEditRouteImport } from './routes/app.billing.$id.edit'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -53,6 +61,11 @@ const IndexRoute = IndexRouteImport.update({
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppTrashRoute = AppTrashRouteImport.update({
+  id: '/trash',
+  path: '/trash',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSearchRoute = AppSearchRouteImport.update({
@@ -160,23 +173,59 @@ const AppBillingIdRoute = AppBillingIdRouteImport.update({
   path: '/billing/$id',
   getParentRoute: () => AppRoute,
 } as any)
+const AppWorkersIdEditRoute = AppWorkersIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => AppWorkersIdRoute,
+} as any)
+const AppProductionIdEditRoute = AppProductionIdEditRouteImport.update({
+  id: '/production/$id/edit',
+  path: '/production/$id/edit',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOrdersIdEditRoute = AppOrdersIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => AppOrdersIdRoute,
+} as any)
+const AppMeasurementsIdEditRoute = AppMeasurementsIdEditRouteImport.update({
+  id: '/measurements/$id/edit',
+  path: '/measurements/$id/edit',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppInventoryIdEditRoute = AppInventoryIdEditRouteImport.update({
+  id: '/inventory/$id/edit',
+  path: '/inventory/$id/edit',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCustomersIdEditRoute = AppCustomersIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => AppCustomersIdRoute,
+} as any)
+const AppBillingIdEditRoute = AppBillingIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => AppBillingIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/app/search': typeof AppSearchRoute
+  '/app/trash': typeof AppTrashRoute
   '/app/': typeof AppIndexRoute
-  '/app/billing/$id': typeof AppBillingIdRoute
+  '/app/billing/$id': typeof AppBillingIdRouteWithChildren
   '/app/billing/new': typeof AppBillingNewRoute
-  '/app/customers/$id': typeof AppCustomersIdRoute
+  '/app/customers/$id': typeof AppCustomersIdRouteWithChildren
   '/app/customers/new': typeof AppCustomersNewRoute
   '/app/inventory/new': typeof AppInventoryNewRoute
   '/app/measurements/new': typeof AppMeasurementsNewRoute
-  '/app/orders/$id': typeof AppOrdersIdRoute
+  '/app/orders/$id': typeof AppOrdersIdRouteWithChildren
   '/app/orders/new': typeof AppOrdersNewRoute
   '/app/production/new': typeof AppProductionNewRoute
-  '/app/workers/$id': typeof AppWorkersIdRoute
+  '/app/workers/$id': typeof AppWorkersIdRouteWithChildren
   '/app/workers/new': typeof AppWorkersNewRoute
   '/print/measurement/$id': typeof PrintMeasurementIdRoute
   '/app/billing/': typeof AppBillingIndexRoute
@@ -187,22 +236,30 @@ export interface FileRoutesByFullPath {
   '/app/production/': typeof AppProductionIndexRoute
   '/app/revenue/': typeof AppRevenueIndexRoute
   '/app/workers/': typeof AppWorkersIndexRoute
+  '/app/billing/$id/edit': typeof AppBillingIdEditRoute
+  '/app/customers/$id/edit': typeof AppCustomersIdEditRoute
+  '/app/inventory/$id/edit': typeof AppInventoryIdEditRoute
+  '/app/measurements/$id/edit': typeof AppMeasurementsIdEditRoute
+  '/app/orders/$id/edit': typeof AppOrdersIdEditRoute
+  '/app/production/$id/edit': typeof AppProductionIdEditRoute
+  '/app/workers/$id/edit': typeof AppWorkersIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/app/search': typeof AppSearchRoute
+  '/app/trash': typeof AppTrashRoute
   '/app': typeof AppIndexRoute
-  '/app/billing/$id': typeof AppBillingIdRoute
+  '/app/billing/$id': typeof AppBillingIdRouteWithChildren
   '/app/billing/new': typeof AppBillingNewRoute
-  '/app/customers/$id': typeof AppCustomersIdRoute
+  '/app/customers/$id': typeof AppCustomersIdRouteWithChildren
   '/app/customers/new': typeof AppCustomersNewRoute
   '/app/inventory/new': typeof AppInventoryNewRoute
   '/app/measurements/new': typeof AppMeasurementsNewRoute
-  '/app/orders/$id': typeof AppOrdersIdRoute
+  '/app/orders/$id': typeof AppOrdersIdRouteWithChildren
   '/app/orders/new': typeof AppOrdersNewRoute
   '/app/production/new': typeof AppProductionNewRoute
-  '/app/workers/$id': typeof AppWorkersIdRoute
+  '/app/workers/$id': typeof AppWorkersIdRouteWithChildren
   '/app/workers/new': typeof AppWorkersNewRoute
   '/print/measurement/$id': typeof PrintMeasurementIdRoute
   '/app/billing': typeof AppBillingIndexRoute
@@ -213,6 +270,13 @@ export interface FileRoutesByTo {
   '/app/production': typeof AppProductionIndexRoute
   '/app/revenue': typeof AppRevenueIndexRoute
   '/app/workers': typeof AppWorkersIndexRoute
+  '/app/billing/$id/edit': typeof AppBillingIdEditRoute
+  '/app/customers/$id/edit': typeof AppCustomersIdEditRoute
+  '/app/inventory/$id/edit': typeof AppInventoryIdEditRoute
+  '/app/measurements/$id/edit': typeof AppMeasurementsIdEditRoute
+  '/app/orders/$id/edit': typeof AppOrdersIdEditRoute
+  '/app/production/$id/edit': typeof AppProductionIdEditRoute
+  '/app/workers/$id/edit': typeof AppWorkersIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -220,17 +284,18 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/app/search': typeof AppSearchRoute
+  '/app/trash': typeof AppTrashRoute
   '/app/': typeof AppIndexRoute
-  '/app/billing/$id': typeof AppBillingIdRoute
+  '/app/billing/$id': typeof AppBillingIdRouteWithChildren
   '/app/billing/new': typeof AppBillingNewRoute
-  '/app/customers/$id': typeof AppCustomersIdRoute
+  '/app/customers/$id': typeof AppCustomersIdRouteWithChildren
   '/app/customers/new': typeof AppCustomersNewRoute
   '/app/inventory/new': typeof AppInventoryNewRoute
   '/app/measurements/new': typeof AppMeasurementsNewRoute
-  '/app/orders/$id': typeof AppOrdersIdRoute
+  '/app/orders/$id': typeof AppOrdersIdRouteWithChildren
   '/app/orders/new': typeof AppOrdersNewRoute
   '/app/production/new': typeof AppProductionNewRoute
-  '/app/workers/$id': typeof AppWorkersIdRoute
+  '/app/workers/$id': typeof AppWorkersIdRouteWithChildren
   '/app/workers/new': typeof AppWorkersNewRoute
   '/print/measurement/$id': typeof PrintMeasurementIdRoute
   '/app/billing/': typeof AppBillingIndexRoute
@@ -241,6 +306,13 @@ export interface FileRoutesById {
   '/app/production/': typeof AppProductionIndexRoute
   '/app/revenue/': typeof AppRevenueIndexRoute
   '/app/workers/': typeof AppWorkersIndexRoute
+  '/app/billing/$id/edit': typeof AppBillingIdEditRoute
+  '/app/customers/$id/edit': typeof AppCustomersIdEditRoute
+  '/app/inventory/$id/edit': typeof AppInventoryIdEditRoute
+  '/app/measurements/$id/edit': typeof AppMeasurementsIdEditRoute
+  '/app/orders/$id/edit': typeof AppOrdersIdEditRoute
+  '/app/production/$id/edit': typeof AppProductionIdEditRoute
+  '/app/workers/$id/edit': typeof AppWorkersIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -249,6 +321,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/app/search'
+    | '/app/trash'
     | '/app/'
     | '/app/billing/$id'
     | '/app/billing/new'
@@ -270,11 +343,19 @@ export interface FileRouteTypes {
     | '/app/production/'
     | '/app/revenue/'
     | '/app/workers/'
+    | '/app/billing/$id/edit'
+    | '/app/customers/$id/edit'
+    | '/app/inventory/$id/edit'
+    | '/app/measurements/$id/edit'
+    | '/app/orders/$id/edit'
+    | '/app/production/$id/edit'
+    | '/app/workers/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/app/search'
+    | '/app/trash'
     | '/app'
     | '/app/billing/$id'
     | '/app/billing/new'
@@ -296,12 +377,20 @@ export interface FileRouteTypes {
     | '/app/production'
     | '/app/revenue'
     | '/app/workers'
+    | '/app/billing/$id/edit'
+    | '/app/customers/$id/edit'
+    | '/app/inventory/$id/edit'
+    | '/app/measurements/$id/edit'
+    | '/app/orders/$id/edit'
+    | '/app/production/$id/edit'
+    | '/app/workers/$id/edit'
   id:
     | '__root__'
     | '/'
     | '/app'
     | '/login'
     | '/app/search'
+    | '/app/trash'
     | '/app/'
     | '/app/billing/$id'
     | '/app/billing/new'
@@ -323,6 +412,13 @@ export interface FileRouteTypes {
     | '/app/production/'
     | '/app/revenue/'
     | '/app/workers/'
+    | '/app/billing/$id/edit'
+    | '/app/customers/$id/edit'
+    | '/app/inventory/$id/edit'
+    | '/app/measurements/$id/edit'
+    | '/app/orders/$id/edit'
+    | '/app/production/$id/edit'
+    | '/app/workers/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -360,6 +456,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/trash': {
+      id: '/app/trash'
+      path: '/trash'
+      fullPath: '/app/trash'
+      preLoaderRoute: typeof AppTrashRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/search': {
@@ -509,22 +612,120 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBillingIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/workers/$id/edit': {
+      id: '/app/workers/$id/edit'
+      path: '/edit'
+      fullPath: '/app/workers/$id/edit'
+      preLoaderRoute: typeof AppWorkersIdEditRouteImport
+      parentRoute: typeof AppWorkersIdRoute
+    }
+    '/app/production/$id/edit': {
+      id: '/app/production/$id/edit'
+      path: '/production/$id/edit'
+      fullPath: '/app/production/$id/edit'
+      preLoaderRoute: typeof AppProductionIdEditRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/orders/$id/edit': {
+      id: '/app/orders/$id/edit'
+      path: '/edit'
+      fullPath: '/app/orders/$id/edit'
+      preLoaderRoute: typeof AppOrdersIdEditRouteImport
+      parentRoute: typeof AppOrdersIdRoute
+    }
+    '/app/measurements/$id/edit': {
+      id: '/app/measurements/$id/edit'
+      path: '/measurements/$id/edit'
+      fullPath: '/app/measurements/$id/edit'
+      preLoaderRoute: typeof AppMeasurementsIdEditRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/inventory/$id/edit': {
+      id: '/app/inventory/$id/edit'
+      path: '/inventory/$id/edit'
+      fullPath: '/app/inventory/$id/edit'
+      preLoaderRoute: typeof AppInventoryIdEditRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/customers/$id/edit': {
+      id: '/app/customers/$id/edit'
+      path: '/edit'
+      fullPath: '/app/customers/$id/edit'
+      preLoaderRoute: typeof AppCustomersIdEditRouteImport
+      parentRoute: typeof AppCustomersIdRoute
+    }
+    '/app/billing/$id/edit': {
+      id: '/app/billing/$id/edit'
+      path: '/edit'
+      fullPath: '/app/billing/$id/edit'
+      preLoaderRoute: typeof AppBillingIdEditRouteImport
+      parentRoute: typeof AppBillingIdRoute
+    }
   }
 }
 
+interface AppBillingIdRouteChildren {
+  AppBillingIdEditRoute: typeof AppBillingIdEditRoute
+}
+
+const AppBillingIdRouteChildren: AppBillingIdRouteChildren = {
+  AppBillingIdEditRoute: AppBillingIdEditRoute,
+}
+
+const AppBillingIdRouteWithChildren = AppBillingIdRoute._addFileChildren(
+  AppBillingIdRouteChildren,
+)
+
+interface AppCustomersIdRouteChildren {
+  AppCustomersIdEditRoute: typeof AppCustomersIdEditRoute
+}
+
+const AppCustomersIdRouteChildren: AppCustomersIdRouteChildren = {
+  AppCustomersIdEditRoute: AppCustomersIdEditRoute,
+}
+
+const AppCustomersIdRouteWithChildren = AppCustomersIdRoute._addFileChildren(
+  AppCustomersIdRouteChildren,
+)
+
+interface AppOrdersIdRouteChildren {
+  AppOrdersIdEditRoute: typeof AppOrdersIdEditRoute
+}
+
+const AppOrdersIdRouteChildren: AppOrdersIdRouteChildren = {
+  AppOrdersIdEditRoute: AppOrdersIdEditRoute,
+}
+
+const AppOrdersIdRouteWithChildren = AppOrdersIdRoute._addFileChildren(
+  AppOrdersIdRouteChildren,
+)
+
+interface AppWorkersIdRouteChildren {
+  AppWorkersIdEditRoute: typeof AppWorkersIdEditRoute
+}
+
+const AppWorkersIdRouteChildren: AppWorkersIdRouteChildren = {
+  AppWorkersIdEditRoute: AppWorkersIdEditRoute,
+}
+
+const AppWorkersIdRouteWithChildren = AppWorkersIdRoute._addFileChildren(
+  AppWorkersIdRouteChildren,
+)
+
 interface AppRouteChildren {
   AppSearchRoute: typeof AppSearchRoute
+  AppTrashRoute: typeof AppTrashRoute
   AppIndexRoute: typeof AppIndexRoute
-  AppBillingIdRoute: typeof AppBillingIdRoute
+  AppBillingIdRoute: typeof AppBillingIdRouteWithChildren
   AppBillingNewRoute: typeof AppBillingNewRoute
-  AppCustomersIdRoute: typeof AppCustomersIdRoute
+  AppCustomersIdRoute: typeof AppCustomersIdRouteWithChildren
   AppCustomersNewRoute: typeof AppCustomersNewRoute
   AppInventoryNewRoute: typeof AppInventoryNewRoute
   AppMeasurementsNewRoute: typeof AppMeasurementsNewRoute
-  AppOrdersIdRoute: typeof AppOrdersIdRoute
+  AppOrdersIdRoute: typeof AppOrdersIdRouteWithChildren
   AppOrdersNewRoute: typeof AppOrdersNewRoute
   AppProductionNewRoute: typeof AppProductionNewRoute
-  AppWorkersIdRoute: typeof AppWorkersIdRoute
+  AppWorkersIdRoute: typeof AppWorkersIdRouteWithChildren
   AppWorkersNewRoute: typeof AppWorkersNewRoute
   AppBillingIndexRoute: typeof AppBillingIndexRoute
   AppCustomersIndexRoute: typeof AppCustomersIndexRoute
@@ -534,21 +735,25 @@ interface AppRouteChildren {
   AppProductionIndexRoute: typeof AppProductionIndexRoute
   AppRevenueIndexRoute: typeof AppRevenueIndexRoute
   AppWorkersIndexRoute: typeof AppWorkersIndexRoute
+  AppInventoryIdEditRoute: typeof AppInventoryIdEditRoute
+  AppMeasurementsIdEditRoute: typeof AppMeasurementsIdEditRoute
+  AppProductionIdEditRoute: typeof AppProductionIdEditRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppSearchRoute: AppSearchRoute,
+  AppTrashRoute: AppTrashRoute,
   AppIndexRoute: AppIndexRoute,
-  AppBillingIdRoute: AppBillingIdRoute,
+  AppBillingIdRoute: AppBillingIdRouteWithChildren,
   AppBillingNewRoute: AppBillingNewRoute,
-  AppCustomersIdRoute: AppCustomersIdRoute,
+  AppCustomersIdRoute: AppCustomersIdRouteWithChildren,
   AppCustomersNewRoute: AppCustomersNewRoute,
   AppInventoryNewRoute: AppInventoryNewRoute,
   AppMeasurementsNewRoute: AppMeasurementsNewRoute,
-  AppOrdersIdRoute: AppOrdersIdRoute,
+  AppOrdersIdRoute: AppOrdersIdRouteWithChildren,
   AppOrdersNewRoute: AppOrdersNewRoute,
   AppProductionNewRoute: AppProductionNewRoute,
-  AppWorkersIdRoute: AppWorkersIdRoute,
+  AppWorkersIdRoute: AppWorkersIdRouteWithChildren,
   AppWorkersNewRoute: AppWorkersNewRoute,
   AppBillingIndexRoute: AppBillingIndexRoute,
   AppCustomersIndexRoute: AppCustomersIndexRoute,
@@ -558,6 +763,9 @@ const AppRouteChildren: AppRouteChildren = {
   AppProductionIndexRoute: AppProductionIndexRoute,
   AppRevenueIndexRoute: AppRevenueIndexRoute,
   AppWorkersIndexRoute: AppWorkersIndexRoute,
+  AppInventoryIdEditRoute: AppInventoryIdEditRoute,
+  AppMeasurementsIdEditRoute: AppMeasurementsIdEditRoute,
+  AppProductionIdEditRoute: AppProductionIdEditRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
