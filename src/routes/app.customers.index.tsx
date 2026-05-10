@@ -17,11 +17,11 @@ function CustomersList() {
   const { data: customers = [] } = useQuery({
     queryKey: ["customers", q],
     queryFn: async () => {
-      let qy = supabase.from("customers").select("*").order("id", { ascending: false });
+      let qy = supabase.from("customers").select("*").is("deleted_at", null).order("id", { ascending: false });
       if (q.trim()) {
         const term = q.trim();
         if (/^\d+$/.test(term)) {
-          qy = supabase.from("customers").select("*").eq("id", Number(term));
+          qy = supabase.from("customers").select("*").is("deleted_at", null).eq("id", Number(term));
         } else {
           qy = qy.or(`name.ilike.%${term}%,phone.ilike.%${term}%`);
         }

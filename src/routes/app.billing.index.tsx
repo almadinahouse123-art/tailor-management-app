@@ -14,7 +14,7 @@ export const Route = createFileRoute("/app/billing/")({
 function BillingList() {
   const { data = [] } = useQuery({
     queryKey: ["invoices"],
-    queryFn: async () => (await supabase.from("invoices").select("*, customers(id,name)").order("id", { ascending: false })).data ?? [],
+    queryFn: async () => (await supabase.from("invoices").select("*, customers(id,name)").is("deleted_at", null).order("id", { ascending: false })).data ?? [],
   });
   return (
     <>

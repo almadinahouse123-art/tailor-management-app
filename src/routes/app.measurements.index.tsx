@@ -4,25 +4,30 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Ruler, Printer } from "lucide-react";
+import { Plus, Ruler, Printer, Pencil } from "lucide-react";
 import { URDU_LABELS } from "@/lib/tailoring";
+import { DeleteButton } from "@/components/DeleteButton";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/app/measurements/")({
   component: MeasurementsList,
 });
 
 function MeasurementsList() {
+  const qc = useQueryClient();
   const { data = [] } = useQuery({
     queryKey: ["measurements-recent"],
     queryFn: async () => {
       const { data } = await supabase
         .from("measurements")
         .select("*, customers(id,name,phone)")
+        .is("deleted_at", null)
         .order("created_at", { ascending: false })
         .limit(50);
       return data ?? [];
     },
   });
+  const refresh = () => qc.invalidateQueries({ queryKey: ["measurements-recent"] });
 
   return (
     <>
@@ -47,12 +52,16 @@ function MeasurementsList() {
                 {m.daman && <span>{URDU_LABELS.daman}: {m.daman}</span>}
                 {m.chorai && <span>{URDU_LABELS.chorai}: {m.chorai}</span>}
               </div>
-              <div className="mt-2 flex justify-end">
+              <div className="mt-2 flex justify-end gap-1">
+                <Link to="/app/measurements/$id/edit" params={{ id: String(m.id) }}>
+                  <Button size="sm" variant="outline" className="text-xs h-7"><Pencil className="h-3 w-3 ml-1" /> ترمیم</Button>
+                </Link>
                 <Link to="/print/measurement/$id" params={{ id: String(m.id) }} target="_blank">
                   <Button size="sm" variant="outline" className="text-xs h-7">
-                    <Printer className="h-3 w-3 ml-1" /> کٹنگ شیٹ پرنٹ
+                    <Printer className="h-3 w-3 ml-1" /> پرنٹ
                   </Button>
                 </Link>
+                <DeleteButton table="measurements" id={m.id} onDeleted={refresh} />
               </div>
             </Card>
           ))

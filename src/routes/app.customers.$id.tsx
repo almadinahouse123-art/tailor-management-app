@@ -4,8 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Phone, Plus, Ruler, ScissorsLineDashed, Receipt, Printer } from "lucide-react";
+import { Phone, Plus, Ruler, ScissorsLineDashed, Receipt, Printer, Pencil } from "lucide-react";
 import { URDU_LABELS, fmtMoney, paymentStatus, statusBadgeClass, statusLabel, ORDER_STATUS_LABEL, type OrderStatus } from "@/lib/tailoring";
+import { DeleteButton } from "@/components/DeleteButton";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/app/customers/$id")({
   component: CustomerDetail,
@@ -14,15 +16,16 @@ export const Route = createFileRoute("/app/customers/$id")({
 function CustomerDetail() {
   const { id } = Route.useParams();
   const cid = Number(id);
+  const nav = useNavigate();
 
   const { data } = useQuery({
     queryKey: ["customer", cid],
     queryFn: async () => {
       const [c, m, o, l] = await Promise.all([
         supabase.from("customers").select("*").eq("id", cid).single(),
-        supabase.from("measurements").select("*").eq("customer_id", cid).order("created_at", { ascending: false }),
-        supabase.from("orders").select("*").eq("customer_id", cid).order("id", { ascending: false }),
-        supabase.from("customer_ledger").select("*").eq("customer_id", cid).order("entry_date", { ascending: false }),
+        supabase.from("measurements").select("*").eq("customer_id", cid).is("deleted_at", null).order("created_at", { ascending: false }),
+        supabase.from("orders").select("*").eq("customer_id", cid).is("deleted_at", null).order("id", { ascending: false }),
+        supabase.from("customer_ledger").select("*").eq("customer_id", cid).is("deleted_at", null).order("entry_date", { ascending: false }),
       ]);
       return {
         customer: c.data,
@@ -69,6 +72,13 @@ function CustomerDetail() {
             </div>
           )}
         </Card>
+
+        <div className="flex gap-2">
+          <Link to="/app/customers/$id/edit" params={{ id }} className="flex-1">
+            <Button variant="outline" className="w-full text-xs"><Pencil className="h-3.5 w-3.5 ml-1" /> ترمیم</Button>
+          </Link>
+          <DeleteButton table="customers" id={cid} className="flex-1" onDeleted={() => nav({ to: "/app/customers" })} />
+        </div>
 
         <div className="grid grid-cols-3 gap-2">
           <Link to="/app/measurements/new" search={{ customer: cid }}>

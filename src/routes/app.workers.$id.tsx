@@ -1,5 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Pencil } from "lucide-react";
+import { DeleteButton } from "@/components/DeleteButton";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
@@ -19,6 +21,7 @@ function WorkerDetail() {
   const { id } = Route.useParams();
   const wid = Number(id);
   const qc = useQueryClient();
+  const nav = useNavigate();
 
   const { data: worker } = useQuery({
     queryKey: ["worker", wid],
@@ -36,6 +39,7 @@ function WorkerDetail() {
         .from("worker_ledger")
         .select("*")
         .eq("worker_id", wid)
+        .is("deleted_at", null)
         .order("entry_date", { ascending: false });
       if (error) throw error;
       return data ?? [];
@@ -112,9 +116,15 @@ function WorkerDetail() {
             </div>
           )}
           <div className="text-sm">فی سوٹ ریٹ: <b>{fmtMoney(worker.rate_per_suit)}</b></div>
-          <Button variant="outline" size="sm" onClick={toggleActive}>
-            {worker.active ? "غیر فعال کریں" : "فعال کریں"}
-          </Button>
+          <div className="flex gap-2 flex-wrap">
+            <Button variant="outline" size="sm" onClick={toggleActive}>
+              {worker.active ? "غیر فعال کریں" : "فعال کریں"}
+            </Button>
+            <Link to="/app/workers/$id/edit" params={{ id }}>
+              <Button variant="outline" size="sm"><Pencil className="h-3.5 w-3.5 ml-1" /> ترمیم</Button>
+            </Link>
+            <DeleteButton table="workers" id={wid} onDeleted={() => nav({ to: "/app/workers" })} />
+          </div>
         </Card>
 
         <Card className="p-4 bg-gradient-primary text-primary-foreground">

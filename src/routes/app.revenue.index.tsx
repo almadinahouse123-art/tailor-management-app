@@ -15,10 +15,10 @@ function Revenue() {
     queryKey: ["revenue-stats"],
     queryFn: async () => {
       const [inv, ord, wl, dp] = await Promise.all([
-        supabase.from("invoices").select("total_amount, paid_amount, invoice_date"),
-        supabase.from("orders").select("total_amount, paid_amount, status"),
-        supabase.from("worker_ledger").select("earned_amount, paid_amount, entry_date"),
-        supabase.from("daily_production").select("total_amount, production_date"),
+        supabase.from("invoices").select("total_amount, paid_amount, invoice_date").is("deleted_at", null),
+        supabase.from("orders").select("total_amount, paid_amount, status").is("deleted_at", null),
+        supabase.from("worker_ledger").select("earned_amount, paid_amount, entry_date").is("deleted_at", null),
+        supabase.from("daily_production").select("total_amount, production_date").is("deleted_at", null),
       ]);
       const invoices = inv.data ?? [];
       const orders = ord.data ?? [];

@@ -1,5 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Pencil } from "lucide-react";
+import { DeleteButton } from "@/components/DeleteButton";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
@@ -19,6 +21,7 @@ function OrderDetail() {
   const { id } = Route.useParams();
   const oid = Number(id);
   const qc = useQueryClient();
+  const nav = useNavigate();
 
   const { data: order } = useQuery({
     queryKey: ["order", oid],
@@ -154,6 +157,13 @@ function OrderDetail() {
         <Link to="/app/billing/new" search={{ customer: order.customer_id, order: oid }}>
           <Button variant="outline" className="w-full">انوائس بنائیں</Button>
         </Link>
+
+        <div className="flex gap-2">
+          <Link to="/app/orders/$id/edit" params={{ id }} className="flex-1">
+            <Button variant="outline" className="w-full"><Pencil className="h-3.5 w-3.5 ml-1" /> ترمیم</Button>
+          </Link>
+          <DeleteButton table="orders" id={oid} className="flex-1" onDeleted={() => nav({ to: "/app/orders" })} />
+        </div>
       </div>
     </>
   );

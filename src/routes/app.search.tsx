@@ -22,7 +22,7 @@ function SmartSearch() {
     enabled: term.length > 0,
     queryFn: async () => {
       // Customers: by id, name (partial), or phone (partial)
-      let custQ = supabase.from("customers").select("*").limit(20);
+      let custQ = supabase.from("customers").select("*").is("deleted_at", null).limit(20);
       if (isNum) {
         custQ = custQ.or(`id.eq.${term},phone.ilike.%${term}%`);
       } else {
@@ -30,14 +30,14 @@ function SmartSearch() {
       }
       const { data: customers } = await custQ;
 
-      // Orders: by order id, or by joined customer
       const ordersBase = supabase
         .from("orders")
         .select("*, customers(id,name,phone)")
+        .is("deleted_at", null)
         .order("id", { ascending: false })
         .limit(30);
       const { data: ordersAll } = isNum
-        ? await supabase.from("orders").select("*, customers(id,name,phone)").or(`id.eq.${term},customer_id.eq.${term}`).limit(30)
+        ? await supabase.from("orders").select("*, customers(id,name,phone)").is("deleted_at", null).or(`id.eq.${term},customer_id.eq.${term}`).limit(30)
         : await ordersBase;
 
       let orders = ordersAll ?? [];

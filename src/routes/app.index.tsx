@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
-import { Users, ScissorsLineDashed, Receipt, Ruler, Wallet, Plus, UserCog, Package, Factory, TrendingUp } from "lucide-react";
+import { Users, ScissorsLineDashed, Receipt, Ruler, Wallet, Plus, UserCog, Package, Factory, TrendingUp, Trash2 } from "lucide-react";
 import { fmtMoney } from "@/lib/tailoring";
 
 export const Route = createFileRoute("/app/")({
@@ -15,9 +15,9 @@ function Dashboard() {
     queryKey: ["dashboard-stats"],
     queryFn: async () => {
       const [c, o, inv] = await Promise.all([
-        supabase.from("customers").select("id", { count: "exact", head: true }),
-        supabase.from("orders").select("id, status, total_amount, paid_amount"),
-        supabase.from("invoices").select("total_amount, paid_amount, invoice_date"),
+        supabase.from("customers").select("id", { count: "exact", head: true }).is("deleted_at", null),
+        supabase.from("orders").select("id, status, total_amount, paid_amount").is("deleted_at", null),
+        supabase.from("invoices").select("total_amount, paid_amount, invoice_date").is("deleted_at", null),
       ]);
       const orders = o.data ?? [];
       const invoices = inv.data ?? [];
@@ -142,6 +142,12 @@ function Dashboard() {
               <Card className="p-3 flex items-center gap-2 shadow-card">
                 <TrendingUp className="h-4 w-4 text-primary" />
                 <span className="text-sm">آمدنی</span>
+              </Card>
+            </Link>
+            <Link to="/app/trash">
+              <Card className="p-3 flex items-center gap-2 shadow-card">
+                <Trash2 className="h-4 w-4 text-destructive" />
+                <span className="text-sm">ٹریش / بحالی</span>
               </Card>
             </Link>
           </div>
