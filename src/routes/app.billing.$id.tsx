@@ -1,11 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Printer, Scissors } from "lucide-react";
+import { Printer, Scissors, Pencil } from "lucide-react";
 import { fmtMoney, paymentStatus, statusLabel } from "@/lib/tailoring";
+import { DeleteButton } from "@/components/DeleteButton";
 
 export const Route = createFileRoute("/app/billing/$id")({
   component: InvoiceDetail,
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/app/billing/$id")({
 
 function InvoiceDetail() {
   const { id } = Route.useParams();
+  const nav = useNavigate();
   const { data: inv } = useQuery({
     queryKey: ["invoice", id],
     queryFn: async () => {
@@ -64,6 +66,12 @@ function InvoiceDetail() {
         <Button onClick={() => window.print()} className="w-full bg-gradient-primary print:hidden">
           <Printer className="h-4 w-4 ml-2" /> پرنٹ کریں
         </Button>
+        <div className="flex gap-2 print:hidden">
+          <Link to="/app/billing/$id/edit" params={{ id }} className="flex-1">
+            <Button variant="outline" className="w-full"><Pencil className="h-3.5 w-3.5 ml-1" /> ترمیم</Button>
+          </Link>
+          <DeleteButton table="invoices" id={Number(id)} className="flex-1" onDeleted={() => nav({ to: "/app/billing" })} />
+        </div>
       </div>
     </>
   );

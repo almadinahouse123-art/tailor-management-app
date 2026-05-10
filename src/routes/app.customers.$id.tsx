@@ -73,6 +73,13 @@ function CustomerDetail() {
           )}
         </Card>
 
+        <div className="flex gap-2">
+          <Link to="/app/customers/$id/edit" params={{ id }} className="flex-1">
+            <Button variant="outline" className="w-full text-xs"><Pencil className="h-3.5 w-3.5 ml-1" /> ترمیم</Button>
+          </Link>
+          <DeleteButton table="customers" id={cid} className="flex-1" onDeleted={() => nav({ to: "/app/customers" })} />
+        </div>
+
         <div className="grid grid-cols-3 gap-2">
           <Link to="/app/measurements/new" search={{ customer: cid }}>
             <Button variant="outline" className="w-full text-xs"><Ruler className="h-3.5 w-3.5 ml-1" /> پیمائش</Button>
