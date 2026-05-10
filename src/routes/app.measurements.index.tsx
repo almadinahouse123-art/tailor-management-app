@@ -4,25 +4,30 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Ruler, Printer } from "lucide-react";
+import { Plus, Ruler, Printer, Pencil } from "lucide-react";
 import { URDU_LABELS } from "@/lib/tailoring";
+import { DeleteButton } from "@/components/DeleteButton";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/app/measurements/")({
   component: MeasurementsList,
 });
 
 function MeasurementsList() {
+  const qc = useQueryClient();
   const { data = [] } = useQuery({
     queryKey: ["measurements-recent"],
     queryFn: async () => {
       const { data } = await supabase
         .from("measurements")
         .select("*, customers(id,name,phone)")
+        .is("deleted_at", null)
         .order("created_at", { ascending: false })
         .limit(50);
       return data ?? [];
     },
   });
+  const refresh = () => qc.invalidateQueries({ queryKey: ["measurements-recent"] });
 
   return (
     <>
