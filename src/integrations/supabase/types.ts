@@ -18,32 +18,38 @@ export type Database = {
         Row: {
           created_at: string
           customer_id: number
+          deleted_at: string | null
           description: string | null
           entry_date: string
           id: number
           order_id: number | null
           paid_amount: number
           total_amount: number
+          updated_at: string
         }
         Insert: {
           created_at?: string
           customer_id: number
+          deleted_at?: string | null
           description?: string | null
           entry_date?: string
           id?: never
           order_id?: number | null
           paid_amount?: number
           total_amount?: number
+          updated_at?: string
         }
         Update: {
           created_at?: string
           customer_id?: number
+          deleted_at?: string | null
           description?: string | null
           entry_date?: string
           id?: never
           order_id?: number | null
           paid_amount?: number
           total_amount?: number
+          updated_at?: string
         }
         Relationships: [
           {
@@ -66,6 +72,7 @@ export type Database = {
         Row: {
           address: string | null
           created_at: string
+          deleted_at: string | null
           id: number
           name: string
           phone: string | null
@@ -75,6 +82,7 @@ export type Database = {
         Insert: {
           address?: string | null
           created_at?: string
+          deleted_at?: string | null
           id?: never
           name: string
           phone?: string | null
@@ -84,6 +92,7 @@ export type Database = {
         Update: {
           address?: string | null
           created_at?: string
+          deleted_at?: string | null
           id?: never
           name?: string
           phone?: string | null
@@ -95,6 +104,7 @@ export type Database = {
       daily_production: {
         Row: {
           created_at: string
+          deleted_at: string | null
           id: number
           notes: string | null
           order_id: number | null
@@ -102,10 +112,12 @@ export type Database = {
           rate_per_suit: number
           suits_count: number
           total_amount: number
+          updated_at: string
           worker_id: number | null
         }
         Insert: {
           created_at?: string
+          deleted_at?: string | null
           id?: never
           notes?: string | null
           order_id?: number | null
@@ -113,10 +125,12 @@ export type Database = {
           rate_per_suit?: number
           suits_count?: number
           total_amount?: number
+          updated_at?: string
           worker_id?: number | null
         }
         Update: {
           created_at?: string
+          deleted_at?: string | null
           id?: never
           notes?: string | null
           order_id?: number | null
@@ -124,6 +138,7 @@ export type Database = {
           rate_per_suit?: number
           suits_count?: number
           total_amount?: number
+          updated_at?: string
           worker_id?: number | null
         }
         Relationships: [
@@ -140,6 +155,7 @@ export type Database = {
         Row: {
           category: string | null
           created_at: string
+          deleted_at: string | null
           id: number
           item_name: string
           low_stock_threshold: number
@@ -152,6 +168,7 @@ export type Database = {
         Insert: {
           category?: string | null
           created_at?: string
+          deleted_at?: string | null
           id?: never
           item_name: string
           low_stock_threshold?: number
@@ -164,6 +181,7 @@ export type Database = {
         Update: {
           category?: string | null
           created_at?: string
+          deleted_at?: string | null
           id?: never
           item_name?: string
           low_stock_threshold?: number
@@ -179,6 +197,7 @@ export type Database = {
         Row: {
           created_at: string
           customer_id: number
+          deleted_at: string | null
           id: number
           invoice_date: string
           notes: string | null
@@ -187,10 +206,12 @@ export type Database = {
           price_per_suit: number
           total_amount: number
           total_suits: number
+          updated_at: string
         }
         Insert: {
           created_at?: string
           customer_id: number
+          deleted_at?: string | null
           id?: never
           invoice_date?: string
           notes?: string | null
@@ -199,10 +220,12 @@ export type Database = {
           price_per_suit?: number
           total_amount?: number
           total_suits?: number
+          updated_at?: string
         }
         Update: {
           created_at?: string
           customer_id?: number
+          deleted_at?: string | null
           id?: never
           invoice_date?: string
           notes?: string | null
@@ -211,6 +234,7 @@ export type Database = {
           price_per_suit?: number
           total_amount?: number
           total_suits?: number
+          updated_at?: string
         }
         Relationships: [
           {
@@ -240,6 +264,7 @@ export type Database = {
           cuff_paimaish: string | null
           customer_id: number
           daman: string | null
+          deleted_at: string | null
           fabric_image_url: string | null
           id: number
           jeb: string | null
@@ -248,6 +273,7 @@ export type Database = {
           panja: string | null
           shalwar_size: string | null
           tera: string | null
+          updated_at: string
         }
         Insert: {
           asteen?: string | null
@@ -259,6 +285,7 @@ export type Database = {
           cuff_paimaish?: string | null
           customer_id: number
           daman?: string | null
+          deleted_at?: string | null
           fabric_image_url?: string | null
           id?: never
           jeb?: string | null
@@ -267,6 +294,7 @@ export type Database = {
           panja?: string | null
           shalwar_size?: string | null
           tera?: string | null
+          updated_at?: string
         }
         Update: {
           asteen?: string | null
@@ -278,6 +306,7 @@ export type Database = {
           cuff_paimaish?: string | null
           customer_id?: number
           daman?: string | null
+          deleted_at?: string | null
           fabric_image_url?: string | null
           id?: never
           jeb?: string | null
@@ -286,6 +315,7 @@ export type Database = {
           panja?: string | null
           shalwar_size?: string | null
           tera?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -304,6 +334,7 @@ export type Database = {
           color: string | null
           created_at: string
           customer_id: number
+          deleted_at: string | null
           delivery_date: string | null
           design_type: string | null
           fabric_image_url: string | null
@@ -322,6 +353,7 @@ export type Database = {
           color?: string | null
           created_at?: string
           customer_id: number
+          deleted_at?: string | null
           delivery_date?: string | null
           design_type?: string | null
           fabric_image_url?: string | null
@@ -340,6 +372,7 @@ export type Database = {
           color?: string | null
           created_at?: string
           customer_id?: number
+          deleted_at?: string | null
           delivery_date?: string | null
           design_type?: string | null
           fabric_image_url?: string | null
@@ -372,29 +405,35 @@ export type Database = {
       worker_ledger: {
         Row: {
           created_at: string
+          deleted_at: string | null
           description: string | null
           earned_amount: number
           entry_date: string
           id: number
           paid_amount: number
+          updated_at: string
           worker_id: number
         }
         Insert: {
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           earned_amount?: number
           entry_date?: string
           id?: never
           paid_amount?: number
+          updated_at?: string
           worker_id: number
         }
         Update: {
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           earned_amount?: number
           entry_date?: string
           id?: never
           paid_amount?: number
+          updated_at?: string
           worker_id?: number
         }
         Relationships: [
@@ -412,6 +451,7 @@ export type Database = {
           active: boolean
           address: string | null
           created_at: string
+          deleted_at: string | null
           id: number
           name: string
           notes: string | null
@@ -423,6 +463,7 @@ export type Database = {
           active?: boolean
           address?: string | null
           created_at?: string
+          deleted_at?: string | null
           id?: never
           name: string
           notes?: string | null
@@ -434,6 +475,7 @@ export type Database = {
           active?: boolean
           address?: string | null
           created_at?: string
+          deleted_at?: string | null
           id?: never
           name?: string
           notes?: string | null
