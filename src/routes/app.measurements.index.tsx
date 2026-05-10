@@ -52,12 +52,16 @@ function MeasurementsList() {
                 {m.daman && <span>{URDU_LABELS.daman}: {m.daman}</span>}
                 {m.chorai && <span>{URDU_LABELS.chorai}: {m.chorai}</span>}
               </div>
-              <div className="mt-2 flex justify-end">
+              <div className="mt-2 flex justify-end gap-1">
+                <Link to="/app/measurements/$id/edit" params={{ id: String(m.id) }}>
+                  <Button size="sm" variant="outline" className="text-xs h-7"><Pencil className="h-3 w-3 ml-1" /> ترمیم</Button>
+                </Link>
                 <Link to="/print/measurement/$id" params={{ id: String(m.id) }} target="_blank">
                   <Button size="sm" variant="outline" className="text-xs h-7">
-                    <Printer className="h-3 w-3 ml-1" /> کٹنگ شیٹ پرنٹ
+                    <Printer className="h-3 w-3 ml-1" /> پرنٹ
                   </Button>
                 </Link>
+                <DeleteButton table="measurements" id={m.id} onDeleted={refresh} />
               </div>
             </Card>
           ))
