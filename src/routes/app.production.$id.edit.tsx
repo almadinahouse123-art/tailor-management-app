@@ -20,7 +20,16 @@ function EditProduction() {
   const { id } = Route.useParams();
   const pid = Number(id);
   const nav = useNavigate();
-  const [f, setF] = useState({ production_date: "", worker_id: "", order_id: "", suits_count: "", rate_per_suit: "", notes: "" });
+  const [f, setF] = useState({
+    production_date: "",
+    worker_id: "",
+    order_id: "",
+    simple_suits: "",
+    simple_rate: "",
+    chakpate_suits: "",
+    chakpate_rate: "",
+    notes: "",
+  });
 
   const { data } = useQuery({
     queryKey: ["prod-edit", pid],
@@ -37,13 +46,19 @@ function EditProduction() {
       production_date: data.production_date ?? "",
       worker_id: data.worker_id ? String(data.worker_id) : "",
       order_id: data.order_id ? String(data.order_id) : "",
-      suits_count: String(data.suits_count ?? ""),
-      rate_per_suit: String(data.rate_per_suit ?? ""),
+      simple_suits: String(data.simple_suits ?? ""),
+      simple_rate: String(data.simple_rate ?? ""),
+      chakpate_suits: String(data.chakpate_suits ?? ""),
+      chakpate_rate: String(data.chakpate_rate ?? ""),
       notes: data.notes ?? "",
     });
   }, [data]);
 
-  const total = Number(f.suits_count || 0) * Number(f.rate_per_suit || 0);
+  const sCount = Number(f.simple_suits || 0);
+  const cCount = Number(f.chakpate_suits || 0);
+  const sRate = Number(f.simple_rate || 0);
+  const cRate = Number(f.chakpate_rate || 0);
+  const total = sCount * sRate + cCount * cRate;
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,8 +66,12 @@ function EditProduction() {
       production_date: f.production_date,
       worker_id: f.worker_id ? Number(f.worker_id) : null,
       order_id: f.order_id ? Number(f.order_id) : null,
-      suits_count: Number(f.suits_count) || 0,
-      rate_per_suit: Number(f.rate_per_suit) || 0,
+      simple_suits: sCount,
+      simple_rate: sRate,
+      chakpate_suits: cCount,
+      chakpate_rate: cRate,
+      suits_count: sCount + cCount,
+      rate_per_suit: 0,
       total_amount: total,
       notes: f.notes.trim() || null,
     }).eq("id", pid);
@@ -76,8 +95,12 @@ function EditProduction() {
           </div>
           <div><Label>آرڈر ID</Label><Input dir="ltr" type="number" value={f.order_id} onChange={(e) => setF({ ...f, order_id: e.target.value })} /></div>
           <div className="grid grid-cols-2 gap-2">
-            <div><Label>سوٹ</Label><Input dir="ltr" type="number" value={f.suits_count} onChange={(e) => setF({ ...f, suits_count: e.target.value })} /></div>
-            <div><Label>ریٹ</Label><Input dir="ltr" type="number" value={f.rate_per_suit} onChange={(e) => setF({ ...f, rate_per_suit: e.target.value })} /></div>
+            <div><Label>سادہ سوٹ ریٹ</Label><Input dir="ltr" type="number" value={f.simple_rate} onChange={(e) => setF({ ...f, simple_rate: e.target.value })} /></div>
+            <div><Label>چک پٹے سوٹ ریٹ</Label><Input dir="ltr" type="number" value={f.chakpate_rate} onChange={(e) => setF({ ...f, chakpate_rate: e.target.value })} /></div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div><Label>سادہ سوٹ</Label><Input dir="ltr" type="number" value={f.simple_suits} onChange={(e) => setF({ ...f, simple_suits: e.target.value })} /></div>
+            <div><Label>چک پٹے سوٹ</Label><Input dir="ltr" type="number" value={f.chakpate_suits} onChange={(e) => setF({ ...f, chakpate_suits: e.target.value })} /></div>
           </div>
           <div className="bg-muted/40 rounded p-2 text-sm">کل: <b>{fmtMoney(total)}</b></div>
           <div><Label>نوٹ</Label><Textarea value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} /></div>

@@ -29,10 +29,16 @@ export const Route = createFileRoute("/app/production/new")({
 function NewProduction() {
   const nav = useNavigate();
   const { order: presetOrder } = Route.useSearch();
+
   const { data: workers = [] } = useQuery({
     queryKey: ["workers-active"],
     queryFn: async () => {
-      const { data } = await supabase.from("workers").select("id, name, rate_per_suit").eq("active", true).order("name");
+      const { data } = await supabase
+        .from("workers")
+        .select("id, name")
+        .eq("active", true)
+        .is("deleted_at", null)
+        .order("name");
       return data ?? [];
     },
   });
@@ -41,66 +47,87 @@ function NewProduction() {
     production_date: new Date().toISOString().slice(0, 10),
     worker_id: "",
     order_id: presetOrder ? String(presetOrder) : "",
-    suits_count: "",
-    rate_per_suit: "",
+    simple_rate: "",
+    chakpate_rate: "",
+    simple_suits: "",
+    chakpate_suits: "",
     notes: "",
   });
   const [saving, setSaving] = useState(false);
 
-  // Prefill worker + rate from order
+  // Prefill rates from worker's most recent production entry
   useEffect(() => {
-    const oid = Number(f.order_id);
-    if (!oid) return;
+    const wid = Number(f.worker_id);
+    if (!wid) return;
     (async () => {
-      const { data } = await supabase.from("orders").select("assigned_worker_id, assigned_rate").eq("id", oid).maybeSingle();
-      if (data?.assigned_worker_id) {
+      const { data } = await supabase
+        .from("daily_production")
+        .select("simple_rate, chakpate_rate")
+        .eq("worker_id", wid)
+        .is("deleted_at", null)
+        .order("production_date", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (data) {
         setF((p) => ({
           ...p,
-          worker_id: p.worker_id || String(data.assigned_worker_id),
-          rate_per_suit: p.rate_per_suit || String(data.assigned_rate ?? ""),
+          simple_rate: p.simple_rate || (data.simple_rate ? String(data.simple_rate) : ""),
+          chakpate_rate: p.chakpate_rate || (data.chakpate_rate ? String(data.chakpate_rate) : ""),
         }));
       }
     })();
-  }, [f.order_id]);
+  }, [f.worker_id]);
 
-  useEffect(() => {
-    const w = workers.find((x) => String(x.id) === f.worker_id);
-    if (w && !f.rate_per_suit) setF((p) => ({ ...p, rate_per_suit: String(w.rate_per_suit ?? "") }));
-  }, [f.worker_id, workers]);
-
-  const total = Number(f.suits_count || 0) * Number(f.rate_per_suit || 0);
+  const sCount = Number(f.simple_suits || 0);
+  const cCount = Number(f.chakpate_suits || 0);
+  const sRate = Number(f.simple_rate || 0);
+  const cRate = Number(f.chakpate_rate || 0);
+  const sTotal = sCount * sRate;
+  const cTotal = cCount * cRate;
+  const total = sTotal + cTotal;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!f.worker_id) return toast.error("کاریگر منتخب کریں");
-    if (!f.suits_count) return toast.error("سوٹ کی تعداد درج کریں");
+    if (!sCount && !cCount) return toast.error("سوٹ کی تعداد درج کریں");
+    if (sCount > 0 && !sRate) return toast.error("سادہ سوٹ کا ریٹ درج کریں");
+    if (cCount > 0 && !cRate) return toast.error("چک پٹے سوٹ کا ریٹ درج کریں");
+
     setSaving(true);
     const wid = Number(f.worker_id);
-    const suits = Number(f.suits_count);
-    const rate = Number(f.rate_per_suit || 0);
-    const amount = suits * rate;
 
     const { error } = await supabase.from("daily_production").insert({
       production_date: f.production_date,
       worker_id: wid,
       order_id: f.order_id ? Number(f.order_id) : null,
-      suits_count: suits,
-      rate_per_suit: rate,
-      total_amount: amount,
+      simple_suits: sCount,
+      simple_rate: sRate,
+      chakpate_suits: cCount,
+      chakpate_rate: cRate,
+      // legacy fields kept in sync
+      suits_count: sCount + cCount,
+      rate_per_suit: 0,
+      total_amount: total,
       notes: f.notes.trim() || null,
     });
     if (error) {
       setSaving(false);
       return toast.error(error.message);
     }
+
     // Auto-credit worker ledger
     await supabase.from("worker_ledger").insert({
       worker_id: wid,
       entry_date: f.production_date,
-      earned_amount: amount,
+      earned_amount: total,
       paid_amount: 0,
-      description: `پیداوار: ${suits} سوٹ${f.order_id ? ` (آرڈر #${f.order_id})` : ""}`,
+      description:
+        `پیداوار: ${sCount > 0 ? `سادہ ${sCount}×${sRate}` : ""}` +
+        `${sCount > 0 && cCount > 0 ? " · " : ""}` +
+        `${cCount > 0 ? `چک پٹے ${cCount}×${cRate}` : ""}` +
+        `${f.order_id ? ` (آرڈر #${f.order_id})` : ""}`,
     });
+
     setSaving(false);
     toast.success("پیداوار درج ہو گئی");
     nav({ to: "/app/production" });
@@ -110,14 +137,12 @@ function NewProduction() {
     <>
       <AppHeader title="نیا پیداوار اندراج" back="/app/production" />
       <form onSubmit={submit} className="px-4 py-4 space-y-3">
+        {/* Step 1: Worker + Date */}
         <Card className="p-4 space-y-3">
-          <div>
-            <Label>تاریخ</Label>
-            <Input dir="ltr" type="date" value={f.production_date} onChange={(e) => setF({ ...f, production_date: e.target.value })} />
-          </div>
+          <div className="text-sm font-semibold text-muted-foreground">۱) کاریگر اور تاریخ</div>
           <div>
             <Label>کاریگر *</Label>
-            <Select value={f.worker_id} onValueChange={(v) => setF({ ...f, worker_id: v, rate_per_suit: "" })}>
+            <Select value={f.worker_id} onValueChange={(v) => setF({ ...f, worker_id: v })}>
               <SelectTrigger><SelectValue placeholder="کاریگر منتخب کریں" /></SelectTrigger>
               <SelectContent>
                 {workers.map((w) => (
@@ -127,27 +152,64 @@ function NewProduction() {
             </Select>
           </div>
           <div>
-            <Label>آرڈر ID (اختیاری)</Label>
-            <Input dir="ltr" type="number" value={f.order_id} onChange={(e) => setF({ ...f, order_id: e.target.value })} />
+            <Label>تاریخ</Label>
+            <Input dir="ltr" type="date" value={f.production_date} onChange={(e) => setF({ ...f, production_date: e.target.value })} />
           </div>
+        </Card>
+
+        {/* Step 2: Rates */}
+        <Card className="p-4 space-y-3">
+          <div className="text-sm font-semibold text-muted-foreground">۲) آج کے ریٹ مقرر کریں</div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <Label>سوٹ تعداد *</Label>
-              <Input dir="ltr" type="number" value={f.suits_count} onChange={(e) => setF({ ...f, suits_count: e.target.value })} />
+              <Label>سادہ سوٹ ریٹ</Label>
+              <Input dir="ltr" type="number" placeholder="مثلاً 300" value={f.simple_rate}
+                onChange={(e) => setF({ ...f, simple_rate: e.target.value })} />
             </div>
             <div>
-              <Label>فی سوٹ ریٹ</Label>
-              <Input dir="ltr" type="number" value={f.rate_per_suit} onChange={(e) => setF({ ...f, rate_per_suit: e.target.value })} />
+              <Label>چک پٹے سوٹ ریٹ</Label>
+              <Input dir="ltr" type="number" placeholder="مثلاً 450" value={f.chakpate_rate}
+                onChange={(e) => setF({ ...f, chakpate_rate: e.target.value })} />
             </div>
           </div>
-          <div className="bg-muted/40 rounded p-2 text-sm">
-            کل رقم: <b>{fmtMoney(total)}</b>
+          <p className="text-[11px] text-muted-foreground">یہ ریٹ صرف اسی اندراج کے لیے محفوظ ہوں گے۔ پرانے ریکارڈ نہیں بدلیں گے۔</p>
+        </Card>
+
+        {/* Step 3: Counts */}
+        <Card className="p-4 space-y-3">
+          <div className="text-sm font-semibold text-muted-foreground">۳) آج کی پیداوار</div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label>سادہ سوٹ</Label>
+              <Input dir="ltr" type="number" value={f.simple_suits}
+                onChange={(e) => setF({ ...f, simple_suits: e.target.value })} />
+            </div>
+            <div>
+              <Label>چک پٹے سوٹ</Label>
+              <Input dir="ltr" type="number" value={f.chakpate_suits}
+                onChange={(e) => setF({ ...f, chakpate_suits: e.target.value })} />
+            </div>
+          </div>
+          <div>
+            <Label>آرڈر ID (اختیاری)</Label>
+            <Input dir="ltr" type="number" value={f.order_id} onChange={(e) => setF({ ...f, order_id: e.target.value })} />
           </div>
           <div>
             <Label>نوٹ</Label>
             <Textarea value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} />
           </div>
         </Card>
+
+        {/* Step 4: Auto total */}
+        <Card className="p-4 bg-gradient-primary text-primary-foreground space-y-1">
+          <div className="text-xs opacity-90">۴) خودکار حساب</div>
+          <div className="text-xs flex justify-between"><span>سادہ {sCount} × {sRate}</span><b>{fmtMoney(sTotal)}</b></div>
+          <div className="text-xs flex justify-between"><span>چک پٹے {cCount} × {cRate}</span><b>{fmtMoney(cTotal)}</b></div>
+          <div className="border-t border-white/20 mt-1 pt-1 flex justify-between text-base font-bold">
+            <span>کل کمائی</span><span>{fmtMoney(total)}</span>
+          </div>
+        </Card>
+
         <Button type="submit" className="w-full bg-gradient-primary" disabled={saving}>
           {saving ? "محفوظ ہو رہا ہے..." : "محفوظ کریں"}
         </Button>
