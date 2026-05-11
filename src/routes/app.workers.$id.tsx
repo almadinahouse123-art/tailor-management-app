@@ -46,6 +46,20 @@ function WorkerDetail() {
     },
   });
 
+  const { data: production = [] } = useQuery({
+    queryKey: ["worker-production", wid],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("daily_production")
+        .select("*")
+        .eq("worker_id", wid)
+        .is("deleted_at", null)
+        .order("production_date", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
   const { data: assignedOrders = [] } = useQuery({
     queryKey: ["worker-orders", wid],
     queryFn: async () => {
@@ -69,24 +83,32 @@ function WorkerDetail() {
   );
   const balance = totals.earned - totals.paid;
 
-  const [entry, setEntry] = useState({ earned_amount: "", paid_amount: "", description: "" });
+  const today = new Date().toISOString().slice(0, 10);
+  const todayProd = production.filter((p) => p.production_date === today);
+  const todaySimple = todayProd.reduce((s, p) => s + Number(p.simple_suits ?? 0), 0);
+  const todayChakpate = todayProd.reduce((s, p) => s + Number(p.chakpate_suits ?? 0), 0);
+  const todayEarned = todayProd.reduce((s, p) => s + Number(p.total_amount ?? 0), 0);
+  const totalSimple = production.reduce((s, p) => s + Number(p.simple_suits ?? 0), 0);
+  const totalChakpate = production.reduce((s, p) => s + Number(p.chakpate_suits ?? 0), 0);
+  const latest = production[0];
+
+  const [entry, setEntry] = useState({ paid_amount: "", description: "" });
   const [saving, setSaving] = useState(false);
 
   const addEntry = async () => {
-    const earned = Number(entry.earned_amount || 0);
     const paid = Number(entry.paid_amount || 0);
-    if (!earned && !paid) return toast.error("کمائی یا ادائیگی درج کریں");
+    if (!paid) return toast.error("ادائیگی کی رقم درج کریں");
     setSaving(true);
     const { error } = await supabase.from("worker_ledger").insert({
       worker_id: wid,
-      earned_amount: earned,
+      earned_amount: 0,
       paid_amount: paid,
       description: entry.description.trim() || null,
     });
     setSaving(false);
     if (error) return toast.error(error.message);
-    toast.success("اندراج محفوظ ہو گیا");
-    setEntry({ earned_amount: "", paid_amount: "", description: "" });
+    toast.success("ادائیگی محفوظ ہو گئی");
+    setEntry({ paid_amount: "", description: "" });
     qc.invalidateQueries({ queryKey: ["worker-ledger", wid] });
   };
 
@@ -147,35 +169,52 @@ function WorkerDetail() {
           </div>
         </Card>
 
+        {/* Production summary */}
         <Card className="p-4 space-y-2">
-          <div className="text-sm font-semibold">نیا اندراج</div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <Label className="text-xs">کمائی</Label>
-              <Input
-                dir="ltr"
-                type="number"
-                value={entry.earned_amount}
-                onChange={(e) => setEntry({ ...entry, earned_amount: e.target.value })}
-              />
+          <div className="text-sm font-semibold">پیداوار کا خلاصہ</div>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="bg-muted/40 rounded p-2">
+              <div className="text-muted-foreground">آج سادہ</div>
+              <div className="font-bold text-sm">{todaySimple}</div>
             </div>
-            <div>
-              <Label className="text-xs">ادائیگی</Label>
-              <Input
-                dir="ltr"
-                type="number"
-                value={entry.paid_amount}
-                onChange={(e) => setEntry({ ...entry, paid_amount: e.target.value })}
-              />
+            <div className="bg-muted/40 rounded p-2">
+              <div className="text-muted-foreground">آج چک پٹے</div>
+              <div className="font-bold text-sm">{todayChakpate}</div>
+            </div>
+            <div className="bg-muted/40 rounded p-2">
+              <div className="text-muted-foreground">کل سادہ</div>
+              <div className="font-bold text-sm">{totalSimple}</div>
+            </div>
+            <div className="bg-muted/40 rounded p-2">
+              <div className="text-muted-foreground">کل چک پٹے</div>
+              <div className="font-bold text-sm">{totalChakpate}</div>
             </div>
           </div>
+          <div className="text-xs text-muted-foreground">
+            آج کی کمائی: <b className="text-success">{fmtMoney(todayEarned)}</b>
+            {latest && <> · موجودہ ریٹ: سادہ {fmtMoney(latest.simple_rate)} · چک پٹے {fmtMoney(latest.chakpate_rate)}</>}
+          </div>
+        </Card>
+
+        <Card className="p-4 space-y-2">
+          <div className="text-sm font-semibold">ادائیگی درج کریں</div>
+          <p className="text-[11px] text-muted-foreground">کمائی پیداوار سے خودکار محفوظ ہوتی ہے۔ صرف ادائیگی یہاں درج کریں۔</p>
+          <div>
+            <Label className="text-xs">ادا شدہ رقم</Label>
+            <Input
+              dir="ltr"
+              type="number"
+              value={entry.paid_amount}
+              onChange={(e) => setEntry({ ...entry, paid_amount: e.target.value })}
+            />
+          </div>
           <Input
-            placeholder="تفصیل"
+            placeholder="نوٹ"
             value={entry.description}
             onChange={(e) => setEntry({ ...entry, description: e.target.value })}
           />
           <Button onClick={addEntry} disabled={saving} className="w-full bg-gradient-primary">
-            <Plus className="h-4 w-4" /> اندراج شامل کریں
+            <Plus className="h-4 w-4" /> ادائیگی محفوظ کریں
           </Button>
         </Card>
 

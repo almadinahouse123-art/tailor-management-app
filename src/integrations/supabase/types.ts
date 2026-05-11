@@ -103,6 +103,8 @@ export type Database = {
       }
       daily_production: {
         Row: {
+          chakpate_rate: number
+          chakpate_suits: number
           created_at: string
           deleted_at: string | null
           id: number
@@ -110,12 +112,16 @@ export type Database = {
           order_id: number | null
           production_date: string
           rate_per_suit: number
+          simple_rate: number
+          simple_suits: number
           suits_count: number
           total_amount: number
           updated_at: string
           worker_id: number | null
         }
         Insert: {
+          chakpate_rate?: number
+          chakpate_suits?: number
           created_at?: string
           deleted_at?: string | null
           id?: never
@@ -123,12 +129,16 @@ export type Database = {
           order_id?: number | null
           production_date?: string
           rate_per_suit?: number
+          simple_rate?: number
+          simple_suits?: number
           suits_count?: number
           total_amount?: number
           updated_at?: string
           worker_id?: number | null
         }
         Update: {
+          chakpate_rate?: number
+          chakpate_suits?: number
           created_at?: string
           deleted_at?: string | null
           id?: never
@@ -136,6 +146,8 @@ export type Database = {
           order_id?: number | null
           production_date?: string
           rate_per_suit?: number
+          simple_rate?: number
+          simple_suits?: number
           suits_count?: number
           total_amount?: number
           updated_at?: string
