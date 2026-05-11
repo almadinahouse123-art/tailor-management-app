@@ -19,7 +19,10 @@ import {
 import { toast } from "sonner";
 import { fmtMoney } from "@/lib/tailoring";
 
-const searchSchema = z.object({ order: z.coerce.number().optional() });
+const searchSchema = z.object({
+  order: z.coerce.number().optional(),
+  worker: z.coerce.number().optional(),
+});
 
 export const Route = createFileRoute("/app/production/new")({
   validateSearch: (s) => searchSchema.parse(s),
@@ -28,7 +31,7 @@ export const Route = createFileRoute("/app/production/new")({
 
 function NewProduction() {
   const nav = useNavigate();
-  const { order: presetOrder } = Route.useSearch();
+  const { order: presetOrder, worker: presetWorker } = Route.useSearch();
 
   const { data: workers = [] } = useQuery({
     queryKey: ["workers-active"],
@@ -45,7 +48,7 @@ function NewProduction() {
 
   const [f, setF] = useState({
     production_date: new Date().toISOString().slice(0, 10),
-    worker_id: "",
+    worker_id: presetWorker ? String(presetWorker) : "",
     order_id: presetOrder ? String(presetOrder) : "",
     simple_rate: "",
     chakpate_rate: "",
@@ -130,7 +133,8 @@ function NewProduction() {
 
     setSaving(false);
     toast.success("پیداوار درج ہو گئی");
-    nav({ to: "/app/production" });
+    if (presetWorker) nav({ to: "/app/workers/$id", params: { id: String(presetWorker) } });
+    else nav({ to: "/app/production" });
   };
 
   return (

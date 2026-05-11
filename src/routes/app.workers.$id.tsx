@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { fmtMoney, ORDER_STATUS_LABEL, type OrderStatus } from "@/lib/tailoring";
 import { toast } from "sonner";
-import { Phone, MapPin, Wallet, Plus, ClipboardList } from "lucide-react";
+import { Phone, MapPin, Wallet, Plus, ClipboardList, Factory } from "lucide-react";
 
 export const Route = createFileRoute("/app/workers/$id")({
   component: WorkerDetail,
@@ -194,7 +194,39 @@ function WorkerDetail() {
             آج کی کمائی: <b className="text-success">{fmtMoney(todayEarned)}</b>
             {latest && <> · موجودہ ریٹ: سادہ {fmtMoney(latest.simple_rate)} · چک پٹے {fmtMoney(latest.chakpate_rate)}</>}
           </div>
+          <Link to="/app/production/new" search={{ worker: wid }}>
+            <Button className="w-full bg-gradient-primary"><Plus className="h-4 w-4" /> آج کی پیداوار درج کریں</Button>
+          </Link>
         </Card>
+
+        {/* Production history */}
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold text-muted-foreground flex items-center gap-1">
+            <Factory className="h-3 w-3" /> پیداوار کی تاریخ
+          </h2>
+          {production.length === 0 ? (
+            <Card className="p-4 text-center text-sm text-muted-foreground">کوئی پیداوار درج نہیں</Card>
+          ) : (
+            production.map((p: any) => (
+              <Link key={p.id} to="/app/production/$id/edit" params={{ id: String(p.id) }}>
+                <Card className="p-3 text-sm">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="font-semibold">{p.production_date}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {Number(p.simple_suits) > 0 && <>سادہ {p.simple_suits}×{fmtMoney(p.simple_rate)}</>}
+                        {Number(p.simple_suits) > 0 && Number(p.chakpate_suits) > 0 && " · "}
+                        {Number(p.chakpate_suits) > 0 && <>چک پٹے {p.chakpate_suits}×{fmtMoney(p.chakpate_rate)}</>}
+                      </div>
+                      {p.notes && <div className="text-xs mt-1">{p.notes}</div>}
+                    </div>
+                    <div className="text-success font-bold">{fmtMoney(p.total_amount)}</div>
+                  </div>
+                </Card>
+              </Link>
+            ))
+          )}
+        </div>
 
         <Card className="p-4 space-y-2">
           <div className="text-sm font-semibold">ادائیگی درج کریں</div>
