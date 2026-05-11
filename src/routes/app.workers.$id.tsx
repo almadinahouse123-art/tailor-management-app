@@ -46,6 +46,20 @@ function WorkerDetail() {
     },
   });
 
+  const { data: production = [] } = useQuery({
+    queryKey: ["worker-production", wid],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("daily_production")
+        .select("*")
+        .eq("worker_id", wid)
+        .is("deleted_at", null)
+        .order("production_date", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
   const { data: assignedOrders = [] } = useQuery({
     queryKey: ["worker-orders", wid],
     queryFn: async () => {
