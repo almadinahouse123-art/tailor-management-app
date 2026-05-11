@@ -83,24 +83,32 @@ function WorkerDetail() {
   );
   const balance = totals.earned - totals.paid;
 
-  const [entry, setEntry] = useState({ earned_amount: "", paid_amount: "", description: "" });
+  const today = new Date().toISOString().slice(0, 10);
+  const todayProd = production.filter((p) => p.production_date === today);
+  const todaySimple = todayProd.reduce((s, p) => s + Number(p.simple_suits ?? 0), 0);
+  const todayChakpate = todayProd.reduce((s, p) => s + Number(p.chakpate_suits ?? 0), 0);
+  const todayEarned = todayProd.reduce((s, p) => s + Number(p.total_amount ?? 0), 0);
+  const totalSimple = production.reduce((s, p) => s + Number(p.simple_suits ?? 0), 0);
+  const totalChakpate = production.reduce((s, p) => s + Number(p.chakpate_suits ?? 0), 0);
+  const latest = production[0];
+
+  const [entry, setEntry] = useState({ paid_amount: "", description: "" });
   const [saving, setSaving] = useState(false);
 
   const addEntry = async () => {
-    const earned = Number(entry.earned_amount || 0);
     const paid = Number(entry.paid_amount || 0);
-    if (!earned && !paid) return toast.error("کمائی یا ادائیگی درج کریں");
+    if (!paid) return toast.error("ادائیگی کی رقم درج کریں");
     setSaving(true);
     const { error } = await supabase.from("worker_ledger").insert({
       worker_id: wid,
-      earned_amount: earned,
+      earned_amount: 0,
       paid_amount: paid,
       description: entry.description.trim() || null,
     });
     setSaving(false);
     if (error) return toast.error(error.message);
-    toast.success("اندراج محفوظ ہو گیا");
-    setEntry({ earned_amount: "", paid_amount: "", description: "" });
+    toast.success("ادائیگی محفوظ ہو گئی");
+    setEntry({ paid_amount: "", description: "" });
     qc.invalidateQueries({ queryKey: ["worker-ledger", wid] });
   };
 
