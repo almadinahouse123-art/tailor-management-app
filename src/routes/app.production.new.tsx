@@ -48,7 +48,7 @@ function NewProduction() {
 
   const [f, setF] = useState({
     production_date: new Date().toISOString().slice(0, 10),
-    worker_id: "",
+    worker_id: presetWorker ? String(presetWorker) : "",
     order_id: presetOrder ? String(presetOrder) : "",
     simple_rate: "",
     chakpate_rate: "",
