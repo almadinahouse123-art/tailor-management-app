@@ -19,7 +19,10 @@ import {
 import { toast } from "sonner";
 import { fmtMoney } from "@/lib/tailoring";
 
-const searchSchema = z.object({ order: z.coerce.number().optional() });
+const searchSchema = z.object({
+  order: z.coerce.number().optional(),
+  worker: z.coerce.number().optional(),
+});
 
 export const Route = createFileRoute("/app/production/new")({
   validateSearch: (s) => searchSchema.parse(s),
@@ -28,7 +31,7 @@ export const Route = createFileRoute("/app/production/new")({
 
 function NewProduction() {
   const nav = useNavigate();
-  const { order: presetOrder } = Route.useSearch();
+  const { order: presetOrder, worker: presetWorker } = Route.useSearch();
 
   const { data: workers = [] } = useQuery({
     queryKey: ["workers-active"],
