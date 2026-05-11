@@ -133,7 +133,8 @@ function NewProduction() {
 
     setSaving(false);
     toast.success("پیداوار درج ہو گئی");
-    nav({ to: "/app/production" });
+    if (presetWorker) nav({ to: "/app/workers/$id", params: { id: String(presetWorker) } });
+    else nav({ to: "/app/production" });
   };
 
   return (
