@@ -28,7 +28,9 @@ function ProductionList() {
 
   const today = new Date().toISOString().slice(0, 10);
   const todayRows = rows.filter((r) => r.production_date === today);
-  const todaySuits = todayRows.reduce((s, r) => s + Number(r.suits_count ?? 0), 0);
+  const todaySimple = todayRows.reduce((s, r) => s + Number(r.simple_suits ?? 0), 0);
+  const todayChakpate = todayRows.reduce((s, r) => s + Number(r.chakpate_suits ?? 0), 0);
+  const todaySuits = todaySimple + todayChakpate;
   const todayAmount = todayRows.reduce((s, r) => s + Number(r.total_amount ?? 0), 0);
 
   return (
@@ -40,7 +42,8 @@ function ProductionList() {
             <Factory className="h-3 w-3" /> آج کی پیداوار
           </div>
           <div className="text-2xl font-bold">{todaySuits} سوٹ</div>
-          <div className="text-xs opacity-90">{fmtMoney(todayAmount)}</div>
+          <div className="text-[11px] opacity-90">سادہ {todaySimple} · چک پٹے {todayChakpate}</div>
+          <div className="text-xs opacity-90 mt-1">{fmtMoney(todayAmount)}</div>
         </Card>
 
         <div className="flex justify-end">
@@ -59,7 +62,9 @@ function ProductionList() {
                   <div>
                     <div className="font-semibold">{r.workers?.name ?? "—"}</div>
                     <div className="text-xs text-muted-foreground">
-                      {r.production_date} · {r.suits_count} سوٹ × {fmtMoney(r.rate_per_suit)}
+                      {r.production_date}
+                      {Number(r.simple_suits) > 0 && <> · سادہ {r.simple_suits}×{fmtMoney(r.simple_rate)}</>}
+                      {Number(r.chakpate_suits) > 0 && <> · چک پٹے {r.chakpate_suits}×{fmtMoney(r.chakpate_rate)}</>}
                       {r.order_id && <> · آرڈر #{r.order_id}</>}
                     </div>
                     {r.notes && <div className="text-xs mt-1">{r.notes}</div>}
