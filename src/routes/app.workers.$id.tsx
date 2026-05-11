@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { fmtMoney, ORDER_STATUS_LABEL, type OrderStatus } from "@/lib/tailoring";
 import { toast } from "sonner";
-import { Phone, MapPin, Wallet, Plus, ClipboardList } from "lucide-react";
+import { Phone, MapPin, Wallet, Plus, ClipboardList, Factory } from "lucide-react";
 
 export const Route = createFileRoute("/app/workers/$id")({
   component: WorkerDetail,
