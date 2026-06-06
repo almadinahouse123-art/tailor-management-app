@@ -1,13 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Phone, Plus, Ruler, ScissorsLineDashed, Receipt, Printer, Pencil } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Phone, Plus, Ruler, ScissorsLineDashed, Receipt, Printer, Pencil, AlertTriangle, MapPin } from "lucide-react";
 import { URDU_LABELS, fmtMoney, paymentStatus, statusBadgeClass, statusLabel, ORDER_STATUS_LABEL, type OrderStatus } from "@/lib/tailoring";
 import { DeleteButton } from "@/components/DeleteButton";
-import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/app/customers/$id")({
   component: CustomerDetail,
@@ -46,97 +46,144 @@ function CustomerDetail() {
   }
 
   const c = data.customer;
-  const latest = data.measurements[0];
   const totalDue = data.orders.reduce(
     (s, o) => s + Math.max(0, Number(o.total_amount) - Number(o.paid_amount)),
     0,
   );
+  const latest = data.measurements[0];
 
   return (
     <>
       <AppHeader title={`گاہک #${c.id}`} back="/app/customers" />
       <div className="px-4 py-4 space-y-4">
+        {/* Header card */}
         <Card className="p-4 bg-gradient-primary text-primary-foreground border-0">
-          <div className="text-xs opacity-80">گاہک نمبر</div>
-          <div className="text-3xl font-bold mb-1">#{c.id}</div>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs opacity-80">گاہک نمبر</div>
+              <div className="text-3xl font-bold mb-1">#{c.id}</div>
+            </div>
+            <div className="flex gap-1.5">
+              <Link to="/app/customers/$id/edit" params={{ id }}>
+                <Button size="icon" variant="ghost" className="h-8 w-8 text-primary-foreground hover:bg-white/15"><Pencil className="h-4 w-4" /></Button>
+              </Link>
+              <DeleteButton table="customers" id={cid} onDeleted={() => nav({ to: "/app/customers" })} />
+            </div>
+          </div>
           <div className="text-base font-semibold">{c.name}</div>
           {c.phone && (
-            <div className="text-xs opacity-90 flex items-center gap-1 mt-1" dir="ltr">
+            <a href={`tel:${c.phone}`} className="text-xs opacity-90 flex items-center gap-1 mt-1" dir="ltr">
               <Phone className="h-3 w-3" /> {c.phone}
-            </div>
+            </a>
           )}
-          {c.address && <div className="text-xs opacity-90 mt-1">{c.address}</div>}
-          {totalDue > 0 && (
-            <div className="mt-3 bg-white/15 rounded-lg p-2 text-xs">
-              باقی واجب: <span className="font-bold">{fmtMoney(totalDue)}</span>
+          {c.address && (
+            <div className="text-xs opacity-90 mt-1 flex items-center gap-1">
+              <MapPin className="h-3 w-3" /> {c.address}
             </div>
           )}
         </Card>
 
-        <div className="flex gap-2">
-          <Link to="/app/customers/$id/edit" params={{ id }} className="flex-1">
-            <Button variant="outline" className="w-full text-xs"><Pencil className="h-3.5 w-3.5 ml-1" /> ترمیم</Button>
-          </Link>
-          <DeleteButton table="customers" id={cid} className="flex-1" onDeleted={() => nav({ to: "/app/customers" })} />
-        </div>
+        {/* Previous balance warning */}
+        {totalDue > 0 && (
+          <Card className="p-3 border-destructive/40 bg-destructive/10 flex items-center gap-3">
+            <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
+            <div className="flex-1">
+              <div className="text-xs text-muted-foreground">پچھلا بقایا</div>
+              <div className="text-lg font-bold text-destructive">{fmtMoney(totalDue)}</div>
+            </div>
+          </Card>
+        )}
 
+        {/* Quick actions */}
         <div className="grid grid-cols-3 gap-2">
           <Link to="/app/measurements/new" search={{ customer: cid }}>
-            <Button variant="outline" className="w-full text-xs"><Ruler className="h-3.5 w-3.5 ml-1" /> پیمائش</Button>
+            <Button variant="outline" className="w-full h-11 text-xs"><Ruler className="h-3.5 w-3.5 ml-1" /> پیمائش</Button>
           </Link>
           <Link to="/app/orders/new" search={{ customer: cid }}>
-            <Button variant="outline" className="w-full text-xs"><ScissorsLineDashed className="h-3.5 w-3.5 ml-1" /> آرڈر</Button>
+            <Button variant="outline" className="w-full h-11 text-xs"><ScissorsLineDashed className="h-3.5 w-3.5 ml-1" /> آرڈر</Button>
           </Link>
           <Link to="/app/billing/new" search={{ customer: cid }}>
-            <Button variant="outline" className="w-full text-xs"><Receipt className="h-3.5 w-3.5 ml-1" /> انوائس</Button>
+            <Button variant="outline" className="w-full h-11 text-xs"><Receipt className="h-3.5 w-3.5 ml-1" /> انوائس</Button>
           </Link>
         </div>
 
-        {/* Latest measurement */}
-        <section>
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-sm font-semibold">تازہ پیمائش</h2>
-            <Link to="/app/measurements/new" search={{ customer: cid }} className="text-xs text-primary flex items-center gap-1">
-              <Plus className="h-3 w-3" /> نئی
-            </Link>
-          </div>
-          {latest ? (
-            <Card className="p-3 shadow-card">
-              <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
-                {(["lambai","daman","chorai","tera","asteen","cuff_paimaish","collar_type","jeb","asteen_type","shalwar_size","panja"] as const).map((k) => (
-                  latest[k] ? (
-                    <div key={k} className="flex justify-between border-b border-dashed border-border pb-0.5">
-                      <span className="text-muted-foreground text-xs">{URDU_LABELS[k]}</span>
-                      <span className="font-medium">{latest[k]}</span>
-                    </div>
-                  ) : null
-                ))}
-              </div>
-              {latest.notes && <p className="text-xs text-muted-foreground mt-2">{latest.notes}</p>}
-              <div className="flex gap-2 mt-3">
-                <Link to="/print/measurement/$id" params={{ id: String(latest.id) }} target="_blank">
-                  <Button size="sm" variant="outline" className="text-xs">
-                    <Printer className="h-3.5 w-3.5 ml-1" /> پرنٹ کٹنگ شیٹ
-                  </Button>
-                </Link>
-                {data.measurements.length > 1 && (
-                  <span className="text-xs text-muted-foreground self-center">+{data.measurements.length - 1} مزید</span>
-                )}
-              </div>
-            </Card>
-          ) : (
-            <Card className="p-4 text-center text-sm text-muted-foreground">کوئی پیمائش نہیں</Card>
-          )}
-        </section>
+        {/* Tabs */}
+        <Tabs defaultValue="measurements">
+          <TabsList className="w-full grid grid-cols-3">
+            <TabsTrigger value="measurements">پیمائش ({data.measurements.length})</TabsTrigger>
+            <TabsTrigger value="orders">آرڈرز ({data.orders.length})</TabsTrigger>
+            <TabsTrigger value="payments">ادائیگی</TabsTrigger>
+          </TabsList>
 
-        {/* Orders */}
-        <section>
-          <h2 className="text-sm font-semibold mb-2">آرڈرز ({data.orders.length})</h2>
-          {data.orders.length === 0 ? (
-            <Card className="p-4 text-center text-sm text-muted-foreground">کوئی آرڈر نہیں</Card>
-          ) : (
-            <div className="space-y-2">
-              {data.orders.map((o) => {
+          {/* MEASUREMENTS TAB */}
+          <TabsContent value="measurements" className="space-y-3 mt-3">
+            {latest && (
+              <Card className="p-3 shadow-card">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs font-semibold text-primary">تازہ پیمائش</div>
+                  <div className="text-[10px] text-muted-foreground">{new Date(latest.created_at).toLocaleDateString()}</div>
+                </div>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
+                  {(["lambai","daman","chorai","tera","asteen","cuff_paimaish","collar_type","jeb","asteen_type","shalwar_size","panja"] as const).map((k) => (
+                    latest[k] ? (
+                      <div key={k} className="flex justify-between border-b border-dashed border-border pb-0.5">
+                        <span className="text-muted-foreground text-xs">{URDU_LABELS[k]}</span>
+                        <span className="font-medium">{latest[k]}</span>
+                      </div>
+                    ) : null
+                  ))}
+                </div>
+                {latest.notes && <p className="text-xs text-muted-foreground mt-2">{latest.notes}</p>}
+                <div className="flex gap-2 mt-3">
+                  <Link to="/app/measurements/$id/edit" params={{ id: String(latest.id) }} className="flex-1">
+                    <Button size="sm" variant="outline" className="w-full text-xs"><Pencil className="h-3.5 w-3.5 ml-1" /> ترمیم</Button>
+                  </Link>
+                  <Link to="/print/measurement/$id" params={{ id: String(latest.id) }} target="_blank" className="flex-1">
+                    <Button size="sm" variant="outline" className="w-full text-xs"><Printer className="h-3.5 w-3.5 ml-1" /> پرنٹ</Button>
+                  </Link>
+                </div>
+              </Card>
+            )}
+
+            {data.measurements.length > 1 && (
+              <div>
+                <div className="text-xs font-semibold text-muted-foreground mb-2">پچھلی پیمائشیں</div>
+                <div className="space-y-2">
+                  {data.measurements.slice(1).map((m: any) => (
+                    <Link key={m.id} to="/app/measurements/$id/edit" params={{ id: String(m.id) }}>
+                      <Card className="p-2.5 shadow-card flex items-center justify-between">
+                        <div className="text-xs">
+                          <div className="font-semibold">{new Date(m.created_at).toLocaleDateString()}</div>
+                          <div className="text-muted-foreground flex gap-2">
+                            {m.lambai && <span>ل: {m.lambai}</span>}
+                            {m.daman && <span>د: {m.daman}</span>}
+                            {m.chorai && <span>چ: {m.chorai}</span>}
+                          </div>
+                        </div>
+                        <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {data.measurements.length === 0 && (
+              <Card className="p-6 text-center text-sm text-muted-foreground">
+                کوئی پیمائش نہیں
+                <Link to="/app/measurements/new" search={{ customer: cid }} className="block mt-3">
+                  <Button size="sm" className="bg-gradient-primary"><Plus className="h-3.5 w-3.5 ml-1" /> نئی پیمائش</Button>
+                </Link>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* ORDERS TAB */}
+          <TabsContent value="orders" className="space-y-2 mt-3">
+            {data.orders.length === 0 ? (
+              <Card className="p-6 text-center text-sm text-muted-foreground">کوئی آرڈر نہیں</Card>
+            ) : (
+              data.orders.map((o) => {
                 const ps = paymentStatus(Number(o.total_amount), Number(o.paid_amount));
                 return (
                   <Link key={o.id} to="/app/orders/$id" params={{ id: String(o.id) }}>
@@ -150,28 +197,40 @@ function CustomerDetail() {
                     </Card>
                   </Link>
                 );
-              })}
-            </div>
-          )}
-        </section>
+              })
+            )}
+          </TabsContent>
 
-        {/* Ledger */}
-        {data.ledger.length > 0 && (
-          <section>
-            <h2 className="text-sm font-semibold mb-2">کھاتہ</h2>
-            <Card className="p-2 shadow-card">
-              <ul className="text-xs divide-y">
-                {data.ledger.slice(0, 8).map((e) => (
-                  <li key={e.id} className="py-2 flex justify-between gap-2">
-                    <span className="text-muted-foreground">{e.entry_date}</span>
-                    <span className="flex-1 truncate">{e.description}</span>
-                    <span className="text-success">+{fmtMoney(e.paid_amount)}</span>
-                  </li>
-                ))}
-              </ul>
+          {/* PAYMENTS TAB */}
+          <TabsContent value="payments" className="space-y-3 mt-3">
+            <Card className="p-3 grid grid-cols-2 gap-3 text-center">
+              <div>
+                <div className="text-xs text-muted-foreground">کل آرڈر رقم</div>
+                <div className="text-lg font-bold">{fmtMoney(data.orders.reduce((s, o) => s + Number(o.total_amount ?? 0), 0))}</div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground">باقی واجب</div>
+                <div className={`text-lg font-bold ${totalDue > 0 ? "text-destructive" : "text-success"}`}>{fmtMoney(totalDue)}</div>
+              </div>
             </Card>
-          </section>
-        )}
+
+            {data.ledger.length === 0 ? (
+              <Card className="p-6 text-center text-sm text-muted-foreground">کوئی ادائیگی نہیں</Card>
+            ) : (
+              <Card className="p-2 shadow-card">
+                <ul className="text-xs divide-y">
+                  {data.ledger.map((e) => (
+                    <li key={e.id} className="py-2 flex justify-between gap-2">
+                      <span className="text-muted-foreground shrink-0">{e.entry_date}</span>
+                      <span className="flex-1 truncate">{e.description}</span>
+                      <span className="text-success font-semibold">+{fmtMoney(e.paid_amount)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </>
   );
