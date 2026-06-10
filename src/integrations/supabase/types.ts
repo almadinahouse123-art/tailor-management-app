@@ -26,6 +26,7 @@ export type Database = {
           paid_amount: number
           total_amount: number
           updated_at: string
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -38,6 +39,7 @@ export type Database = {
           paid_amount?: number
           total_amount?: number
           updated_at?: string
+          user_id?: string
         }
         Update: {
           created_at?: string
@@ -50,6 +52,7 @@ export type Database = {
           paid_amount?: number
           total_amount?: number
           updated_at?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -78,6 +81,7 @@ export type Database = {
           phone: string | null
           photo_url: string | null
           updated_at: string
+          user_id: string
         }
         Insert: {
           address?: string | null
@@ -88,6 +92,7 @@ export type Database = {
           phone?: string | null
           photo_url?: string | null
           updated_at?: string
+          user_id?: string
         }
         Update: {
           address?: string | null
@@ -98,6 +103,7 @@ export type Database = {
           phone?: string | null
           photo_url?: string | null
           updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -117,6 +123,7 @@ export type Database = {
           suits_count: number
           total_amount: number
           updated_at: string
+          user_id: string
           worker_id: number | null
         }
         Insert: {
@@ -134,6 +141,7 @@ export type Database = {
           suits_count?: number
           total_amount?: number
           updated_at?: string
+          user_id?: string
           worker_id?: number | null
         }
         Update: {
@@ -151,6 +159,7 @@ export type Database = {
           suits_count?: number
           total_amount?: number
           updated_at?: string
+          user_id?: string
           worker_id?: number | null
         }
         Relationships: [
@@ -176,6 +185,7 @@ export type Database = {
           unit: string | null
           unit_price: number
           updated_at: string
+          user_id: string
         }
         Insert: {
           category?: string | null
@@ -189,6 +199,7 @@ export type Database = {
           unit?: string | null
           unit_price?: number
           updated_at?: string
+          user_id?: string
         }
         Update: {
           category?: string | null
@@ -202,6 +213,7 @@ export type Database = {
           unit?: string | null
           unit_price?: number
           updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -219,6 +231,7 @@ export type Database = {
           total_amount: number
           total_suits: number
           updated_at: string
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -233,6 +246,7 @@ export type Database = {
           total_amount?: number
           total_suits?: number
           updated_at?: string
+          user_id?: string
         }
         Update: {
           created_at?: string
@@ -247,6 +261,7 @@ export type Database = {
           total_amount?: number
           total_suits?: number
           updated_at?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -286,6 +301,7 @@ export type Database = {
           shalwar_size: string | null
           tera: string | null
           updated_at: string
+          user_id: string
         }
         Insert: {
           asteen?: string | null
@@ -307,6 +323,7 @@ export type Database = {
           shalwar_size?: string | null
           tera?: string | null
           updated_at?: string
+          user_id?: string
         }
         Update: {
           asteen?: string | null
@@ -328,6 +345,7 @@ export type Database = {
           shalwar_size?: string | null
           tera?: string | null
           updated_at?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -358,6 +376,7 @@ export type Database = {
           status: string
           total_amount: number
           updated_at: string
+          user_id: string
         }
         Insert: {
           assigned_rate?: number
@@ -377,6 +396,7 @@ export type Database = {
           status?: string
           total_amount?: number
           updated_at?: string
+          user_id?: string
         }
         Update: {
           assigned_rate?: number
@@ -396,6 +416,7 @@ export type Database = {
           status?: string
           total_amount?: number
           updated_at?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -424,6 +445,7 @@ export type Database = {
           id: number
           paid_amount: number
           updated_at: string
+          user_id: string
           worker_id: number
         }
         Insert: {
@@ -435,6 +457,7 @@ export type Database = {
           id?: never
           paid_amount?: number
           updated_at?: string
+          user_id?: string
           worker_id: number
         }
         Update: {
@@ -446,6 +469,7 @@ export type Database = {
           id?: never
           paid_amount?: number
           updated_at?: string
+          user_id?: string
           worker_id?: number
         }
         Relationships: [
@@ -470,6 +494,7 @@ export type Database = {
           phone: string | null
           rate_per_suit: number
           updated_at: string
+          user_id: string
         }
         Insert: {
           active?: boolean
@@ -482,6 +507,7 @@ export type Database = {
           phone?: string | null
           rate_per_suit?: number
           updated_at?: string
+          user_id?: string
         }
         Update: {
           active?: boolean
@@ -494,6 +520,7 @@ export type Database = {
           phone?: string | null
           rate_per_suit?: number
           updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
