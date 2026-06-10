@@ -3,13 +3,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
+import { StatusStrip } from "@/components/StatusStrip";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Users, ScissorsLineDashed, Plus, Package, Factory, UserCog,
-  Trash2, Wallet, Search, AlertTriangle, CheckCircle2, Clock, Truck, Receipt, Phone,
+  Trash2, Wallet, Search, AlertTriangle, CheckCircle2, Clock, Truck, Receipt, Phone, ShieldCheck,
 } from "lucide-react";
 import { fmtMoney } from "@/lib/tailoring";
+import { markSync } from "@/lib/online-status";
 
 export const Route = createFileRoute("/app/")({
   component: Dashboard,
@@ -52,10 +54,13 @@ function Dashboard() {
     },
   });
 
+  useEffect(() => { if (data) markSync(); }, [data]);
+
   return (
     <>
       <AppHeader />
       <div className="px-4 py-4 space-y-4">
+        <StatusStrip />
         <QuickSearch />
 
         {/* Revenue */}
@@ -118,6 +123,7 @@ function Dashboard() {
             <Link to="/app/production"><Card className="p-3 flex items-center gap-2 shadow-card"><Factory className="h-4 w-4 text-primary" /><span className="text-sm">پیداوار</span></Card></Link>
             <Link to="/app/inventory"><Card className="p-3 flex items-center gap-2 shadow-card"><Package className="h-4 w-4 text-primary" /><span className="text-sm">انوینٹری</span></Card></Link>
             <Link to="/app/trash"><Card className="p-3 flex items-center gap-2 shadow-card"><Trash2 className="h-4 w-4 text-destructive" /><span className="text-sm">ٹریش</span></Card></Link>
+            <Link to="/app/backup"><Card className="p-3 flex items-center gap-2 shadow-card"><ShieldCheck className="h-4 w-4 text-success" /><span className="text-sm">بیک اپ</span></Card></Link>
           </div>
         </div>
       </div>
