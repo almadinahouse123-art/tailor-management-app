@@ -7,6 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Download, Upload, ShieldCheck, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { markBackup, useLastBackup, formatRelative } from "@/lib/online-status";
+import { safeErr } from "@/lib/errors";
+import { sanitiseRow, type BackupTable } from "@/lib/backup-schema";
+
+const MAX_IMPORT_BYTES = 10 * 1024 * 1024; // 10 MB
+const MAX_ROWS_PER_TABLE = 50_000;
 
 export const Route = createFileRoute("/app/backup")({
   component: BackupPage,
@@ -24,7 +29,7 @@ const TABLES = [
   "daily_production",
 ] as const;
 
-const STRIP = new Set(["id", "user_id", "created_at", "updated_at", "deleted_at"]);
+
 
 function BackupPage() {
   const [busy, setBusy] = useState<"none" | "export" | "import">("none");
@@ -55,8 +60,8 @@ function BackupPage() {
       URL.revokeObjectURL(url);
       markBackup();
       toast.success("بیک اپ ڈاؤن لوڈ ہو گیا");
-    } catch (e: any) {
-      toast.error(e.message ?? "بیک اپ ناکام");
+    } catch (e) {
+      toast.error(safeErr(e, "بیک اپ ناکام"));
     } finally {
       setBusy("none");
     }
@@ -65,29 +70,48 @@ function BackupPage() {
   const onImport = async (file: File) => {
     setBusy("import");
     try {
+      if (file.size > MAX_IMPORT_BYTES) {
+        toast.error("فائل بہت بڑی ہے (زیادہ سے زیادہ 10 MB)");
+        return;
+      }
       const text = await file.text();
-      const parsed = JSON.parse(text);
+      let parsed: any;
+      try {
+        parsed = JSON.parse(text);
+      } catch {
+        toast.error("فائل کا فارمیٹ غلط ہے");
+        return;
+      }
       const data = parsed?.data ?? {};
       let total = 0;
+      let skipped = 0;
       for (const t of TABLES) {
-        const rows: any[] = Array.isArray(data[t]) ? data[t] : [];
-        if (!rows.length) continue;
-        const cleaned = rows.map((r) => {
-          const out: any = {};
-          for (const k of Object.keys(r)) if (!STRIP.has(k)) out[k] = r[k];
-          return out;
-        });
-        // Chunked insert to avoid request size limits
+        const rowsIn: unknown[] = Array.isArray(data[t]) ? data[t] : [];
+        if (!rowsIn.length) continue;
+        if (rowsIn.length > MAX_ROWS_PER_TABLE) {
+          toast.error(`${t}: ریکارڈ کی تعداد بہت زیادہ`);
+          return;
+        }
+        const cleaned: Record<string, unknown>[] = [];
+        for (const r of rowsIn) {
+          const safe = sanitiseRow(t as BackupTable, r);
+          if (safe) cleaned.push(safe);
+          else skipped++;
+        }
         for (let i = 0; i < cleaned.length; i += 200) {
           const chunk = cleaned.slice(i, i + 200);
-          const { error } = await supabase.from(t).insert(chunk);
-          if (error) throw new Error(`${t}: ${error.message}`);
+          const { error } = await supabase.from(t).insert(chunk as any);
+          if (error) throw error;
           total += chunk.length;
         }
       }
-      toast.success(`${total} ریکارڈ بحال ہو گئے`);
-    } catch (e: any) {
-      toast.error(e.message ?? "بحالی ناکام");
+      toast.success(
+        skipped
+          ? `${total} ریکارڈ بحال ہوئے، ${skipped} ناقص نظر انداز`
+          : `${total} ریکارڈ بحال ہو گئے`,
+      );
+    } catch (e) {
+      toast.error(safeErr(e, "بحالی ناکام"));
     } finally {
       setBusy("none");
       if (fileRef.current) fileRef.current.value = "";

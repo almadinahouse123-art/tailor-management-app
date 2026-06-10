@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { safeErr } from "@/lib/errors";
 
 export const Route = createFileRoute("/app/workers/$id/edit")({
   component: EditWorker,
@@ -48,7 +49,7 @@ function EditWorker() {
       notes: f.notes.trim() || null,
       active: f.active,
     }).eq("id", wid);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(safeErr(error));
     toast.success("اپڈیٹ ہو گیا");
     nav({ to: "/app/workers/$id", params: { id } });
   };
