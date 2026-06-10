@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { COLLAR_OPTIONS, JEB_OPTIONS, ASTEEN_TYPE_OPTIONS, URDU_LABELS } from "@/lib/tailoring";
 import { toast } from "sonner";
+import { safeErr } from "@/lib/errors";
 
 const search = z.object({ customer: z.coerce.number().optional() });
 
@@ -43,7 +44,7 @@ function NewMeasurement() {
     const payload: any = { customer_id: Number(customerId) };
     for (const [k, v] of Object.entries(form)) if (v.trim()) payload[k] = v.trim();
     const { error } = await supabase.from("measurements").insert(payload);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(safeErr(error));
     toast.success("پیمائش محفوظ");
     nav({ to: "/app/customers/$id", params: { id: customerId } });
   };

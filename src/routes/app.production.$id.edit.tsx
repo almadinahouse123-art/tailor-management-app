@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { safeErr } from "@/lib/errors";
 import { fmtMoney } from "@/lib/tailoring";
 
 export const Route = createFileRoute("/app/production/$id/edit")({
@@ -75,7 +76,7 @@ function EditProduction() {
       total_amount: total,
       notes: f.notes.trim() || null,
     }).eq("id", pid);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(safeErr(error));
     toast.success("اپڈیٹ ہو گیا");
     nav({ to: "/app/production" });
   };

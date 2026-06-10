@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { safeErr } from "@/lib/errors";
 
 export type TrashTable =
   | "customers"
@@ -53,7 +54,7 @@ export async function softDeleteWithUndo(
 ) {
   const err = await softDelete(table, id);
   if (err) {
-    toast.error(err.message);
+    toast.error(safeErr(err));
     return false;
   }
   opts.onChange?.();
@@ -62,7 +63,7 @@ export async function softDeleteWithUndo(
       label: "واپس لائیں",
       onClick: async () => {
         const e = await restore(table, id);
-        if (e) toast.error(e.message);
+        if (e) toast.error(safeErr(e));
         else {
           toast.success("بحال ہو گیا");
           opts.onChange?.();

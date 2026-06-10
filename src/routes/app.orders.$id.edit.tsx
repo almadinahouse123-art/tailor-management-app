@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ORDER_STATUS, ORDER_STATUS_LABEL } from "@/lib/tailoring";
 import { toast } from "sonner";
+import { safeErr } from "@/lib/errors";
 
 export const Route = createFileRoute("/app/orders/$id/edit")({
   component: EditOrder,
@@ -67,7 +68,7 @@ function EditOrder() {
       assigned_worker_id: f.assigned_worker_id ? Number(f.assigned_worker_id) : null,
       assigned_rate: Number(f.assigned_rate) || 0,
     }).eq("id", oid);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(safeErr(error));
     toast.success("آرڈر اپڈیٹ ہو گیا");
     nav({ to: "/app/orders/$id", params: { id } });
   };

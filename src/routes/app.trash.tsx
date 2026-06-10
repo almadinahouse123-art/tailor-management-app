@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Undo2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { safeErr } from "@/lib/errors";
 import { hardDelete, restore, TRASH_LABELS, type TrashTable } from "@/lib/crud";
 import { fmtMoney } from "@/lib/tailoring";
 
@@ -71,14 +72,14 @@ function TrashList({ table }: { table: TrashTable }) {
 
   const onRestore = async (id: number) => {
     const e = await restore(table, id);
-    if (e) return toast.error(e.message);
+    if (e) return toast.error(safeErr(e));
     toast.success("بحال ہو گیا");
     refresh();
   };
 
   const onPurge = async (id: number) => {
     const e = await hardDelete(table, id);
-    if (e) return toast.error(e.message);
+    if (e) return toast.error(safeErr(e));
     toast.success("مستقل حذف ہو گیا");
     refresh();
   };

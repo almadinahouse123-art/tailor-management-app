@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { fmtMoney } from "@/lib/tailoring";
 import { toast } from "sonner";
+import { safeErr } from "@/lib/errors";
 
 const search = z.object({
   customer: z.coerce.number().optional(),
@@ -54,7 +55,7 @@ function NewInvoice() {
       paid_amount: Number(paid) || 0,
       notes: notes || null,
     }).select("id").single();
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(safeErr(error));
     toast.success(`انوائس بن گیا (#${data!.id})`);
     nav({ to: "/app/billing/$id", params: { id: String(data!.id) } });
   };
