@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppTrashRouteImport } from './routes/app.trash'
 import { Route as AppSearchRouteImport } from './routes/app.search'
+import { Route as AppBackupRouteImport } from './routes/app.backup'
 import { Route as AppWorkersIndexRouteImport } from './routes/app.workers.index'
 import { Route as AppRevenueIndexRouteImport } from './routes/app.revenue.index'
 import { Route as AppProductionIndexRouteImport } from './routes/app.production.index'
@@ -71,6 +72,11 @@ const AppTrashRoute = AppTrashRouteImport.update({
 const AppSearchRoute = AppSearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBackupRoute = AppBackupRouteImport.update({
+  id: '/backup',
+  path: '/backup',
   getParentRoute: () => AppRoute,
 } as any)
 const AppWorkersIndexRoute = AppWorkersIndexRouteImport.update({
@@ -213,6 +219,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/app/backup': typeof AppBackupRoute
   '/app/search': typeof AppSearchRoute
   '/app/trash': typeof AppTrashRoute
   '/app/': typeof AppIndexRoute
@@ -247,6 +254,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/app/backup': typeof AppBackupRoute
   '/app/search': typeof AppSearchRoute
   '/app/trash': typeof AppTrashRoute
   '/app': typeof AppIndexRoute
@@ -283,6 +291,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/app/backup': typeof AppBackupRoute
   '/app/search': typeof AppSearchRoute
   '/app/trash': typeof AppTrashRoute
   '/app/': typeof AppIndexRoute
@@ -320,6 +329,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/app/backup'
     | '/app/search'
     | '/app/trash'
     | '/app/'
@@ -354,6 +364,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/app/backup'
     | '/app/search'
     | '/app/trash'
     | '/app'
@@ -389,6 +400,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/app/backup'
     | '/app/search'
     | '/app/trash'
     | '/app/'
@@ -470,6 +482,13 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/app/search'
       preLoaderRoute: typeof AppSearchRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/backup': {
+      id: '/app/backup'
+      path: '/backup'
+      fullPath: '/app/backup'
+      preLoaderRoute: typeof AppBackupRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/workers/': {
@@ -713,6 +732,7 @@ const AppWorkersIdRouteWithChildren = AppWorkersIdRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
+  AppBackupRoute: typeof AppBackupRoute
   AppSearchRoute: typeof AppSearchRoute
   AppTrashRoute: typeof AppTrashRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -741,6 +761,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppBackupRoute: AppBackupRoute,
   AppSearchRoute: AppSearchRoute,
   AppTrashRoute: AppTrashRoute,
   AppIndexRoute: AppIndexRoute,
@@ -779,13 +800,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

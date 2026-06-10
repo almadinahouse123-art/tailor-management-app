@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
+import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
