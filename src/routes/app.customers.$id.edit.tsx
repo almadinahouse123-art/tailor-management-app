@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { safeErr } from "@/lib/errors";
 
 export const Route = createFileRoute("/app/customers/$id/edit")({
   component: EditCustomer,
@@ -44,7 +43,7 @@ function EditCustomer() {
       })
       .eq("id", cid);
     setBusy(false);
-    if (error) return toast.error(safeErr(error));
+    if (error) return toast.error(error.message);
     toast.success("گاہک اپڈیٹ ہو گیا");
     nav({ to: "/app/customers/$id", params: { id } });
   };

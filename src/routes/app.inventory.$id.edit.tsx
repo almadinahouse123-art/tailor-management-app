@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { safeErr } from "@/lib/errors";
 
 export const Route = createFileRoute("/app/inventory/$id/edit")({
   component: EditItem,
@@ -51,7 +50,7 @@ function EditItem() {
       low_stock_threshold: Number(f.low_stock_threshold) || 0,
       notes: f.notes.trim() || null,
     }).eq("id", iid);
-    if (error) return toast.error(safeErr(error));
+    if (error) return toast.error(error.message);
     toast.success("اپڈیٹ ہو گیا");
     nav({ to: "/app/inventory" });
   };

@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { fmtMoney, ORDER_STATUS_LABEL, type OrderStatus } from "@/lib/tailoring";
 import { toast } from "sonner";
-import { safeErr } from "@/lib/errors";
 import { Phone, MapPin, Wallet, Plus, ClipboardList, Factory } from "lucide-react";
 
 export const Route = createFileRoute("/app/workers/$id")({
@@ -107,7 +106,7 @@ function WorkerDetail() {
       description: entry.description.trim() || null,
     });
     setSaving(false);
-    if (error) return toast.error(safeErr(error));
+    if (error) return toast.error(error.message);
     toast.success("ادائیگی محفوظ ہو گئی");
     setEntry({ paid_amount: "", description: "" });
     qc.invalidateQueries({ queryKey: ["worker-ledger", wid] });
@@ -116,7 +115,7 @@ function WorkerDetail() {
   const toggleActive = async () => {
     if (!worker) return;
     const { error } = await supabase.from("workers").update({ active: !worker.active }).eq("id", wid);
-    if (error) return toast.error(safeErr(error));
+    if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["worker", wid] });
   };
 

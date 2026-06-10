@@ -12,7 +12,6 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ORDER_STATUS, ORDER_STATUS_LABEL } from "@/lib/tailoring";
 import { toast } from "sonner";
-import { safeErr } from "@/lib/errors";
 
 const search = z.object({ customer: z.coerce.number().optional() });
 
@@ -72,7 +71,7 @@ function NewOrder() {
       assigned_worker_id: workerId ? Number(workerId) : null,
       assigned_rate: Number(assignedRate) || 0,
     }).select("id").single();
-    if (error) return toast.error(safeErr(error));
+    if (error) return toast.error(error.message);
     if (paidNum > 0) {
       await supabase.from("customer_ledger").insert({
         customer_id: Number(customerId),

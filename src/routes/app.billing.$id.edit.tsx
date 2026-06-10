@@ -10,7 +10,6 @@ import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { fmtMoney } from "@/lib/tailoring";
 import { toast } from "sonner";
-import { safeErr } from "@/lib/errors";
 
 export const Route = createFileRoute("/app/billing/$id/edit")({
   component: EditInvoice,
@@ -52,7 +51,7 @@ function EditInvoice() {
       notes: f.notes || null,
       order_id: f.order_id ? Number(f.order_id) : null,
     }).eq("id", iid);
-    if (error) return toast.error(safeErr(error));
+    if (error) return toast.error(error.message);
     toast.success("انوائس اپڈیٹ ہو گیا");
     nav({ to: "/app/billing/$id", params: { id } });
   };

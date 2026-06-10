@@ -11,7 +11,6 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { COLLAR_OPTIONS, JEB_OPTIONS, ASTEEN_TYPE_OPTIONS, URDU_LABELS } from "@/lib/tailoring";
 import { toast } from "sonner";
-import { safeErr } from "@/lib/errors";
 
 export const Route = createFileRoute("/app/measurements/$id/edit")({
   component: EditMeasurement,
@@ -47,7 +46,7 @@ function EditMeasurement() {
     const payload: any = {};
     for (const k of FIELDS) payload[k] = form[k]?.trim() || null;
     const { error } = await supabase.from("measurements").update(payload).eq("id", mid);
-    if (error) return toast.error(safeErr(error));
+    if (error) return toast.error(error.message);
     toast.success("پیمائش اپڈیٹ ہو گئی");
     if (customerId) nav({ to: "/app/customers/$id", params: { id: String(customerId) } });
     else nav({ to: "/app/measurements" });

@@ -8,7 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
-import { safeErr } from "@/lib/errors";
 
 export const Route = createFileRoute("/app/customers/new")({
   component: NewCustomer,
@@ -31,7 +30,7 @@ function NewCustomer() {
       .select("id")
       .single();
     setBusy(false);
-    if (error) return toast.error(safeErr(error));
+    if (error) return toast.error(error.message);
     toast.success(`گاہک محفوظ ہو گیا (ID: ${data!.id})`);
     nav({ to: "/app/customers/$id", params: { id: String(data!.id) } });
   };

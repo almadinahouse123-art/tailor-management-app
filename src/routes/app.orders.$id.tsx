@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { fmtMoney, paymentStatus, statusBadgeClass, statusLabel, ORDER_STATUS, ORDER_STATUS_LABEL, type OrderStatus } from "@/lib/tailoring";
 import { toast } from "sonner";
-import { safeErr } from "@/lib/errors";
 
 export const Route = createFileRoute("/app/orders/$id")({
   component: OrderDetail,
@@ -51,7 +50,7 @@ function OrderDetail() {
     if (!amt || amt <= 0) return toast.error("صحیح رقم درج کریں");
     const newPaid = Number(order.paid_amount) + amt;
     const { error } = await supabase.from("orders").update({ paid_amount: newPaid }).eq("id", oid);
-    if (error) return toast.error(safeErr(error));
+    if (error) return toast.error(error.message);
     await supabase.from("customer_ledger").insert({
       customer_id: order.customer_id,
       order_id: oid,
@@ -68,7 +67,7 @@ function OrderDetail() {
   const updateStatus = async (s: string) => {
     setStatus(s);
     const { error } = await supabase.from("orders").update({ status: s }).eq("id", oid);
-    if (error) return toast.error(safeErr(error));
+    if (error) return toast.error(error.message);
     toast.success("سٹیٹس اپڈیٹ");
     qc.invalidateQueries({ queryKey: ["order", oid] });
   };
@@ -78,7 +77,7 @@ function OrderDetail() {
     const w = workers.find((x) => String(x.id) === v);
     const rate = w ? Number(w.rate_per_suit ?? 0) : Number(order.assigned_rate ?? 0);
     const { error } = await supabase.from("orders").update({ assigned_worker_id: wid, assigned_rate: rate }).eq("id", oid);
-    if (error) return toast.error(safeErr(error));
+    if (error) return toast.error(error.message);
     toast.success("کاریگر تفویض ہو گیا");
     qc.invalidateQueries({ queryKey: ["order", oid] });
   };

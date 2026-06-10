@@ -17,7 +17,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { safeErr } from "@/lib/errors";
 import { fmtMoney } from "@/lib/tailoring";
 
 const searchSchema = z.object({
@@ -116,7 +115,7 @@ function NewProduction() {
     });
     if (error) {
       setSaving(false);
-      return toast.error(safeErr(error));
+      return toast.error(error.message);
     }
 
     // Auto-credit worker ledger
