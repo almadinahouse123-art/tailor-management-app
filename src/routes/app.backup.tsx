@@ -100,7 +100,7 @@ function BackupPage() {
         }
         for (let i = 0; i < cleaned.length; i += 200) {
           const chunk = cleaned.slice(i, i + 200);
-          const { error } = await supabase.from(t).insert(chunk);
+          const { error } = await supabase.from(t).insert(chunk as any);
           if (error) throw error;
           total += chunk.length;
         }
