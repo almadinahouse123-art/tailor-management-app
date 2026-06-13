@@ -52,44 +52,53 @@ function CustomerDetail() {
   );
   const latest = data.measurements[0];
 
+  const initials = (c.name ?? "?").trim().slice(0, 1).toUpperCase();
+
   return (
     <>
       <AppHeader title={`گاہک #${c.id}`} back="/app/customers" />
-      <div className="px-4 py-4 space-y-4">
-        {/* Header card */}
-        <Card className="p-4 bg-gradient-primary text-primary-foreground border-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-xs opacity-80">گاہک نمبر</div>
-              <div className="text-3xl font-bold mb-1">#{c.id}</div>
+      <div className="px-4 py-5 space-y-5 animate-rise">
+        {/* Premium profile header */}
+        <Card className="relative overflow-hidden p-5 bg-gradient-noir text-primary-foreground border-0 rounded-3xl shadow-elevated">
+          <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-gold/20 blur-3xl" />
+          <div className="relative flex items-start gap-4">
+            <div className="h-14 w-14 rounded-2xl bg-gold text-gold-foreground inline-flex items-center justify-center text-xl font-bold font-display shadow-elevated shrink-0">
+              {initials}
             </div>
-            <div className="flex gap-1.5">
+            <div className="flex-1 min-w-0">
+              <div className="text-[10px] tracking-[0.2em] uppercase opacity-60 font-display">
+                Customer · #{c.id}
+              </div>
+              <div className="text-lg font-bold truncate mt-0.5">{c.name}</div>
+              {c.phone && (
+                <a href={`tel:${c.phone}`} className="text-xs opacity-80 flex items-center gap-1.5 mt-1" dir="ltr">
+                  <Phone className="h-3 w-3" /> {c.phone}
+                </a>
+              )}
+              {c.address && (
+                <div className="text-xs opacity-70 mt-0.5 flex items-center gap-1.5">
+                  <MapPin className="h-3 w-3" /> <span className="truncate">{c.address}</span>
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col gap-1.5 shrink-0">
               <Link to="/app/customers/$id/edit" params={{ id }}>
                 <Button size="icon" variant="ghost" className="h-8 w-8 text-primary-foreground hover:bg-white/15"><Pencil className="h-4 w-4" /></Button>
               </Link>
               <DeleteButton table="customers" id={cid} onDeleted={() => nav({ to: "/app/customers" })} />
             </div>
           </div>
-          <div className="text-base font-semibold">{c.name}</div>
-          {c.phone && (
-            <a href={`tel:${c.phone}`} className="text-xs opacity-90 flex items-center gap-1 mt-1" dir="ltr">
-              <Phone className="h-3 w-3" /> {c.phone}
-            </a>
-          )}
-          {c.address && (
-            <div className="text-xs opacity-90 mt-1 flex items-center gap-1">
-              <MapPin className="h-3 w-3" /> {c.address}
-            </div>
-          )}
         </Card>
 
         {/* Previous balance warning */}
         {totalDue > 0 && (
-          <Card className="p-3 border-destructive/40 bg-destructive/10 flex items-center gap-3">
-            <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
+          <Card className="p-4 rounded-2xl border-destructive/30 bg-destructive/5 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-destructive/15 text-destructive inline-flex items-center justify-center shrink-0">
+              <AlertTriangle className="h-5 w-5" />
+            </div>
             <div className="flex-1">
-              <div className="text-xs text-muted-foreground">پچھلا بقایا</div>
-              <div className="text-lg font-bold text-destructive">{fmtMoney(totalDue)}</div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-display">پچھلا بقایا</div>
+              <div className="text-xl font-bold text-destructive font-display" dir="ltr">{fmtMoney(totalDue)}</div>
             </div>
           </Card>
         )}
@@ -97,15 +106,16 @@ function CustomerDetail() {
         {/* Quick actions */}
         <div className="grid grid-cols-3 gap-2">
           <Link to="/app/measurements/new" search={{ customer: cid }}>
-            <Button variant="outline" className="w-full h-11 text-xs"><Ruler className="h-3.5 w-3.5 ml-1" /> پیمائش</Button>
+            <Button variant="outline" className="w-full h-12 text-xs rounded-2xl border-border/60 bg-card hover:bg-muted"><Ruler className="h-4 w-4 ml-1" /> پیمائش</Button>
           </Link>
           <Link to="/app/orders/new" search={{ customer: cid }}>
-            <Button variant="outline" className="w-full h-11 text-xs"><ScissorsLineDashed className="h-3.5 w-3.5 ml-1" /> آرڈر</Button>
+            <Button variant="outline" className="w-full h-12 text-xs rounded-2xl border-border/60 bg-card hover:bg-muted"><ScissorsLineDashed className="h-4 w-4 ml-1" /> آرڈر</Button>
           </Link>
           <Link to="/app/billing/new" search={{ customer: cid }}>
-            <Button variant="outline" className="w-full h-11 text-xs"><Receipt className="h-3.5 w-3.5 ml-1" /> انوائس</Button>
+            <Button variant="outline" className="w-full h-12 text-xs rounded-2xl border-border/60 bg-card hover:bg-muted"><Receipt className="h-4 w-4 ml-1" /> انوائس</Button>
           </Link>
         </div>
+
 
         {/* Tabs */}
         <Tabs defaultValue="measurements">
