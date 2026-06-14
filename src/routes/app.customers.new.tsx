@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
+import { UserPlus } from "lucide-react";
 
 export const Route = createFileRoute("/app/customers/new")({
   component: NewCustomer,
@@ -38,25 +39,50 @@ function NewCustomer() {
   return (
     <>
       <AppHeader title="نیا گاہک" back="/app/customers" />
-      <form onSubmit={submit} className="px-4 py-4 space-y-3">
-        <Card className="p-4 space-y-3">
-          <div>
-            <Label>نام *</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} required className="mt-1" />
+      <form onSubmit={submit} className="px-4 py-4 pb-28 space-y-4 animate-rise">
+        <Card className="p-5 rounded-2xl border-0 shadow-card">
+          <div className="flex items-center gap-3 pb-4 mb-4 border-b border-border/60">
+            <div className="h-10 w-10 rounded-2xl bg-gold/15 text-gold inline-flex items-center justify-center">
+              <UserPlus className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="font-semibold">گاہک کی معلومات</div>
+              <div className="text-[11px] text-muted-foreground font-display tracking-wide">Customer details</div>
+            </div>
           </div>
-          <div>
-            <Label>فون نمبر</Label>
-            <Input dir="ltr" className="mt-1 text-left" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="03xx-xxxxxxx" />
-          </div>
-          <div>
-            <Label>پتہ</Label>
-            <Textarea value={address} onChange={(e) => setAddress(e.target.value)} className="mt-1" rows={2} />
+
+          <div className="space-y-4">
+            <Field label="نام" required>
+              <Input value={name} onChange={(e) => setName(e.target.value)} required placeholder="گاہک کا پورا نام" />
+            </Field>
+            <Field label="فون نمبر">
+              <Input dir="ltr" className="text-left" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="03xx-xxxxxxx" />
+            </Field>
+            <Field label="پتہ">
+              <Textarea value={address} onChange={(e) => setAddress(e.target.value)} rows={3} placeholder="گھر کا پتہ" />
+            </Field>
           </div>
         </Card>
-        <Button type="submit" disabled={busy} className="w-full bg-gradient-primary">
-          {busy ? "..." : "محفوظ کریں"}
-        </Button>
       </form>
+
+      <div className="fixed bottom-20 inset-x-0 z-30 px-4 pointer-events-none">
+        <div className="max-w-md mx-auto pointer-events-auto">
+          <Button onClick={submit as any} type="submit" disabled={busy} size="lg" className="w-full h-12 rounded-2xl shadow-elevated">
+            {busy ? "محفوظ ہو رہا ہے..." : "محفوظ کریں"}
+          </Button>
+        </div>
+      </div>
     </>
+  );
+}
+
+function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-xs font-medium text-muted-foreground">
+        {label} {required && <span className="text-destructive">*</span>}
+      </Label>
+      {children}
+    </div>
   );
 }
