@@ -8,8 +8,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Users, ScissorsLineDashed, Plus, Package, Factory, UserCog,
-  Trash2, Wallet, Search, AlertTriangle, CheckCircle2, Clock, Truck, Receipt,
-  Phone, ShieldCheck, ArrowUpLeft, Sparkles,
+  Wallet, Search, AlertTriangle, CheckCircle2, Clock, Truck, Receipt,
+  Phone, ShieldCheck, ArrowUpRight, TrendingUp, DollarSign, ArrowRight,
 } from "lucide-react";
 import { fmtMoney } from "@/lib/tailoring";
 import { markSync } from "@/lib/online-status";
@@ -37,10 +37,12 @@ function Dashboard() {
       const o = orders.data ?? [];
       const inv = invoices.data ?? [];
       return {
+        totalOrders: o.length,
         todayOrders: o.filter((x) => x.order_date === today).length,
         pending: o.filter((x) => x.status === "Pending").length,
         stitching: o.filter((x) => x.status === "Stitching").length,
         ready: o.filter((x) => x.status === "Ready").length,
+        completed: o.filter((x) => x.status === "Delivered").length,
         todayDelivery: o.filter((x) => x.delivery_date === today && x.status !== "Delivered").length,
         lateDelivery: o.filter((x) => x.delivery_date && x.delivery_date < today && x.status !== "Delivered").length,
         pendingPay: o.reduce(
@@ -60,113 +62,119 @@ function Dashboard() {
   return (
     <>
       <AppHeader />
-      <div className="px-4 py-5 space-y-5 animate-rise">
+      <div className="px-4 lg:px-8 py-6 space-y-6 animate-rise">
         <StatusStrip />
-        <QuickSearch />
 
-        {/* Hero revenue card */}
-        <Card className="relative overflow-hidden p-5 bg-gradient-noir text-primary-foreground border-0 shadow-elevated rounded-3xl">
-          <div className="absolute -top-12 -left-12 h-40 w-40 rounded-full bg-gold/20 blur-3xl" />
-          <div className="relative">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] tracking-[0.2em] uppercase opacity-60 font-display">
-                Today's Earnings
-              </span>
-              <Sparkles className="h-4 w-4 text-gold" />
-            </div>
-            <div className="mt-3 flex items-baseline gap-2" dir="ltr">
-              <span className="text-4xl font-bold font-display tracking-tight">
-                {fmtMoney(data?.todayIncome).replace("Rs ", "")}
-              </span>
-              <span className="text-xs opacity-60">PKR</span>
-            </div>
-            <div className="mt-1 text-xs opacity-70">آج کی کل آمدنی</div>
-
-            <div className="mt-5 grid grid-cols-2 gap-3 text-xs">
-              <MiniStat label="کل آمدنی" value={fmtMoney(data?.revenue)} />
-              <MiniStat label="باقی واجب" value={fmtMoney(data?.pendingPay)} accent />
-            </div>
+        {/* Page intro */}
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight">Overview</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Welcome back — here's what's happening today.
+            </p>
           </div>
-        </Card>
+          <QuickSearch />
+        </div>
 
-        {/* Alert */}
+        {/* KPI cards */}
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+          <Kpi
+            label="Total Orders" value={data?.totalOrders ?? 0}
+            icon={ScissorsLineDashed} tone="primary"
+            to="/app/orders"
+          />
+          <Kpi
+            label="Pending Orders" value={data?.pending ?? 0}
+            icon={Clock} tone="warning"
+            to="/app/orders" search={{ filter: "Pending" }}
+          />
+          <Kpi
+            label="Completed" value={data?.completed ?? 0}
+            icon={CheckCircle2} tone="success"
+            to="/app/orders" search={{ filter: "Delivered" }}
+          />
+          <Kpi
+            label="Revenue" value={fmtMoney(data?.revenue)}
+            icon={DollarSign} tone="primary" big
+            to="/app/billing"
+          />
+        </section>
+
+        {/* Late alert */}
         {(data?.lateDelivery ?? 0) > 0 && (
           <Link to="/app/orders" search={{ filter: "late" } as any}>
-            <Card className="p-4 rounded-2xl border-destructive/30 bg-destructive/5 flex items-center gap-3 hover:bg-destructive/10 transition">
+            <div className="flex items-center gap-3 p-4 rounded-xl border border-destructive/30 bg-destructive/5 hover:bg-destructive/10 transition">
               <div className="h-10 w-10 rounded-full bg-destructive/15 text-destructive inline-flex items-center justify-center">
                 <AlertTriangle className="h-5 w-5" />
               </div>
               <div className="flex-1">
-                <div className="text-sm font-bold text-destructive">دیر سے ڈیلیوری</div>
-                <div className="text-xs text-muted-foreground">{data?.lateDelivery} آرڈر دیر سے ہیں</div>
+                <div className="text-sm font-semibold text-destructive">Late deliveries</div>
+                <div className="text-xs text-muted-foreground">
+                  {data?.lateDelivery} order(s) past delivery date
+                </div>
               </div>
-              <ArrowUpLeft className="h-4 w-4 text-destructive" />
-            </Card>
+              <ArrowRight className="h-4 w-4 text-destructive" />
+            </div>
           </Link>
         )}
 
-        {/* Bento operational grid */}
-        <section className="space-y-3">
-          <SectionTitle>آج کا کام</SectionTitle>
-          <div className="grid grid-cols-6 gap-3">
-            <BentoTile
-              to="/app/orders" search={{ filter: "today" }}
-              className="col-span-3 row-span-2 bg-foreground text-background"
-              icon={ScissorsLineDashed} label="آج کے آرڈر"
-              value={data?.todayOrders} large
-            />
-            <BentoTile
-              to="/app/orders" search={{ filter: "today-delivery" }}
-              className="col-span-3"
-              icon={Truck} label="آج ڈیلیوری" value={data?.todayDelivery}
-              tone="info"
-            />
-            <BentoTile
-              to="/app/orders" search={{ filter: "Ready" }}
-              className="col-span-3"
-              icon={CheckCircle2} label="تیار" value={data?.ready}
-              tone="success"
-            />
-            <BentoTile
-              to="/app/orders" search={{ filter: "Pending" }}
-              className="col-span-2"
-              icon={Clock} label="زیر التواء" value={data?.pending}
-              tone="warning"
-            />
-            <BentoTile
-              to="/app/orders" search={{ filter: "Stitching" }}
-              className="col-span-2"
-              icon={Factory} label="سلائی" value={data?.stitching}
-              tone="gold"
-            />
-            <BentoTile
-              to="/app/billing"
-              className="col-span-2"
-              icon={Receipt} label="انوائسز" value="→"
-            />
-          </div>
-        </section>
+        <div className="grid lg:grid-cols-3 gap-4">
+          {/* Today snapshot */}
+          <Card className="lg:col-span-2 p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <div className="text-sm font-semibold">Today's Activity</div>
+                <div className="text-xs text-muted-foreground mt-0.5">{new Date().toDateString()}</div>
+              </div>
+              <Link to="/app/orders" className="text-xs font-medium text-primary hover:underline inline-flex items-center gap-1">
+                View all <ArrowUpRight className="h-3 w-3" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <MiniStat label="New Orders" value={data?.todayOrders ?? 0} icon={ScissorsLineDashed} />
+              <MiniStat label="Deliveries" value={data?.todayDelivery ?? 0} icon={Truck} />
+              <MiniStat label="In Stitching" value={data?.stitching ?? 0} icon={Factory} />
+              <MiniStat label="Ready" value={data?.ready ?? 0} icon={CheckCircle2} />
+            </div>
 
-        {/* Quick actions */}
-        <section className="space-y-3">
-          <SectionTitle>فوری اقدام</SectionTitle>
-          <div className="grid grid-cols-2 gap-3">
-            <ActionCard to="/app/customers/new" icon={Plus} label="نیا گاہک" />
-            <ActionCard to="/app/orders/new" icon={Plus} label="نیا آرڈر" />
-            <ActionCard to="/app/billing/new" icon={Plus} label="نیا انوائس" />
-            <ActionCard to="/app/customers" icon={Users} label="تمام گاہک" />
-          </div>
-        </section>
+            <div className="mt-5 pt-5 border-t border-border grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-xs text-muted-foreground">Today's Income</div>
+                <div className="text-xl font-bold mt-1 text-foreground">
+                  {fmtMoney(data?.todayIncome)}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground">Outstanding</div>
+                <div className="text-xl font-bold mt-1 text-warning" style={{ color: "var(--warning)" }}>
+                  {fmtMoney(data?.pendingPay)}
+                </div>
+              </div>
+            </div>
+          </Card>
 
-        {/* More */}
-        <section className="space-y-3 pb-4">
-          <SectionTitle>مزید</SectionTitle>
-          <div className="grid grid-cols-2 gap-3">
-            <ActionCard to="/app/workers" icon={UserCog} label="کاریگر" />
-            <ActionCard to="/app/production" icon={Factory} label="پیداوار" />
-            <ActionCard to="/app/inventory" icon={Package} label="انوینٹری" />
-            <ActionCard to="/app/backup" icon={ShieldCheck} label="بیک اپ" accent="success" />
-            <ActionCard to="/app/trash" icon={Trash2} label="ٹریش" accent="danger" />
+          {/* Quick Actions */}
+          <Card className="p-5">
+            <div className="text-sm font-semibold mb-4">Quick Actions</div>
+            <div className="space-y-2">
+              <ActionRow to="/app/orders/new" icon={Plus} label="New Order" primary />
+              <ActionRow to="/app/customers/new" icon={Users} label="Add Customer" />
+              <ActionRow to="/app/billing/new" icon={Receipt} label="Create Invoice" />
+              <ActionRow to="/app/measurements/new" icon={Plus} label="New Measurement" />
+            </div>
+          </Card>
+        </div>
+
+        {/* Modules */}
+        <section>
+          <div className="text-sm font-semibold mb-3">Modules</div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <ModuleTile to="/app/customers" icon={Users} label="Customers" />
+            <ModuleTile to="/app/orders" icon={ScissorsLineDashed} label="Orders" />
+            <ModuleTile to="/app/production" icon={Factory} label="Production" />
+            <ModuleTile to="/app/inventory" icon={Package} label="Stock" />
+            <ModuleTile to="/app/workers" icon={UserCog} label="Staff" />
+            <ModuleTile to="/app/backup" icon={ShieldCheck} label="Backup" />
           </div>
         </section>
       </div>
@@ -174,77 +182,31 @@ function Dashboard() {
   );
 }
 
-function MiniStat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
-  return (
-    <div className="rounded-2xl bg-white/6 backdrop-blur px-3 py-2.5 border border-white/8">
-      <div className="text-[10px] uppercase tracking-wider opacity-60 font-display">{label}</div>
-      <div className={`text-sm font-semibold mt-0.5 ${accent ? "text-gold" : ""}`} dir="ltr">
-        {value}
-      </div>
-    </div>
-  );
-}
-
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-center gap-2">
-      <h2 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase font-display">
-        {children}
-      </h2>
-      <div className="flex-1 h-px bg-border" />
-    </div>
-  );
-}
-
-type Tone = "default" | "info" | "success" | "warning" | "gold";
-const toneClass: Record<Tone, string> = {
-  default: "bg-card",
-  info: "bg-card",
-  success: "bg-card",
-  warning: "bg-card",
-  gold: "bg-card",
-};
-const iconToneClass: Record<Tone, string> = {
-  default: "bg-muted text-foreground",
-  info: "bg-blue-500/10 text-blue-600",
-  success: "bg-success/12 text-success",
-  warning: "bg-warning/15 text-foreground",
-  gold: "bg-gold/15 text-gold",
+const toneBg: Record<string, string> = {
+  primary: "bg-primary/10 text-primary",
+  success: "bg-emerald-50 text-emerald-600",
+  warning: "bg-amber-50 text-amber-600",
+  danger: "bg-red-50 text-red-600",
 };
 
-function BentoTile({
-  to, search, icon: Icon, label, value, className = "", tone = "default", large = false,
-}: any) {
-  const isDark = className.includes("text-background");
+function Kpi({
+  label, value, icon: Icon, tone = "primary", big, to, search,
+}: {
+  label: string; value: any; icon: any; tone?: string; big?: boolean; to: string; search?: any;
+}) {
   return (
-    <Link to={to} search={search as any} className={`block ${className}`}>
-      <Card
-        className={`h-full p-4 rounded-2xl shadow-card border-0 ${
-          isDark ? "" : toneClass[tone as Tone]
-        } ${isDark ? "" : "hover:shadow-elevated"} transition-all active:scale-[0.98]`}
-        style={isDark ? { background: "var(--color-foreground)" } : undefined}
-      >
-        <div className="flex items-start justify-between h-full">
-          <div className="flex flex-col justify-between h-full">
-            <div
-              className={`inline-flex p-2 rounded-xl ${
-                isDark ? "bg-white/10 text-gold" : iconToneClass[tone as Tone]
-              }`}
-            >
-              <Icon className="h-4 w-4" strokeWidth={2} />
-            </div>
-            <div className="mt-3">
-              <div className={`text-[11px] ${isDark ? "opacity-70" : "text-muted-foreground"}`}>
-                {label}
-              </div>
-              <div
-                className={`font-display font-bold tracking-tight ${
-                  large ? "text-4xl" : "text-2xl"
-                } ${isDark ? "text-background" : ""}`}
-              >
-                {value ?? 0}
-              </div>
-            </div>
+    <Link to={to} search={search as any} className="block group">
+      <Card className="p-4 lg:p-5 hover:shadow-elevated transition-all duration-150 group-hover:-translate-y-0.5">
+        <div className="flex items-start justify-between">
+          <div className={`h-10 w-10 rounded-xl inline-flex items-center justify-center ${toneBg[tone] ?? toneBg.primary}`}>
+            <Icon className="h-5 w-5" />
+          </div>
+          <ArrowUpRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary transition" />
+        </div>
+        <div className="mt-3">
+          <div className="text-xs text-muted-foreground font-medium">{label}</div>
+          <div className={`mt-1 font-bold tracking-tight ${big ? "text-xl lg:text-2xl" : "text-2xl lg:text-3xl"}`}>
+            {value}
           </div>
         </div>
       </Card>
@@ -252,18 +214,43 @@ function BentoTile({
   );
 }
 
-function ActionCard({
-  to, icon: Icon, label, accent,
-}: { to: string; icon: any; label: string; accent?: "success" | "danger" }) {
-  const color =
-    accent === "danger" ? "text-destructive" : accent === "success" ? "text-success" : "text-foreground";
+function MiniStat({ label, value, icon: Icon }: { label: string; value: any; icon: any }) {
+  return (
+    <div className="rounded-xl bg-muted/40 p-3">
+      <div className="flex items-center gap-2 text-muted-foreground">
+        <Icon className="h-3.5 w-3.5" />
+        <span className="text-[11px] font-medium">{label}</span>
+      </div>
+      <div className="text-xl font-bold mt-1.5">{value}</div>
+    </div>
+  );
+}
+
+function ActionRow({ to, icon: Icon, label, primary }: { to: string; icon: any; label: string; primary?: boolean }) {
+  return (
+    <Link
+      to={to}
+      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 ${
+        primary
+          ? "bg-primary text-primary-foreground hover:opacity-90 shadow-card"
+          : "hover:bg-muted text-foreground"
+      }`}
+    >
+      <Icon className="h-4 w-4" />
+      <span className="text-sm font-medium flex-1">{label}</span>
+      <ArrowRight className={`h-3.5 w-3.5 ${primary ? "opacity-80" : "text-muted-foreground"}`} />
+    </Link>
+  );
+}
+
+function ModuleTile({ to, icon: Icon, label }: { to: string; icon: any; label: string }) {
   return (
     <Link to={to}>
-      <Card className="p-3.5 rounded-2xl shadow-card border-0 hover:shadow-elevated transition-all active:scale-[0.98] flex items-center gap-3">
-        <div className="h-9 w-9 rounded-xl bg-muted inline-flex items-center justify-center">
-          <Icon className={`h-4 w-4 ${color}`} />
+      <Card className="p-4 hover:shadow-elevated hover:border-primary/30 transition-all duration-150 flex flex-col items-start gap-3">
+        <div className="h-9 w-9 rounded-lg bg-primary/10 text-primary inline-flex items-center justify-center">
+          <Icon className="h-4 w-4" />
         </div>
-        <span className="text-sm font-medium">{label}</span>
+        <span className="text-sm font-semibold">{label}</span>
       </Card>
     </Link>
   );
@@ -290,32 +277,32 @@ function QuickSearch() {
   };
 
   return (
-    <div className="relative">
-      <Search className="h-4 w-4 absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+    <div className="relative w-full sm:w-80">
+      <Search className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
       <Input
-        placeholder="گاہک تلاش کریں — نام، فون یا ID"
+        placeholder="Search customers, phone, ID…"
         value={q}
         onChange={(e) => setQ(e.target.value)}
         onKeyDown={onKey}
-        className="pr-11 h-12 rounded-2xl bg-card border-0 shadow-card text-sm placeholder:text-muted-foreground/70 focus-visible:ring-2 focus-visible:ring-gold/40"
+        className="pl-10 h-10 rounded-lg text-sm"
       />
       {term && (data?.length ?? 0) > 0 && (
-        <Card className="absolute z-20 top-14 left-0 right-0 max-h-72 overflow-auto rounded-2xl shadow-elevated border-0 p-1">
+        <Card className="absolute z-20 top-12 left-0 right-0 max-h-72 overflow-auto p-1.5">
           {data!.map((c: any) => (
             <Link
               key={c.id}
               to="/app/customers/$id"
               params={{ id: String(c.id) }}
               onClick={() => setQ("")}
-              className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-muted transition"
+              className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition"
             >
-              <div className="bg-foreground text-background rounded-full h-9 w-9 flex items-center justify-center font-bold text-xs font-display">
+              <div className="bg-primary/10 text-primary rounded-full h-8 w-8 flex items-center justify-center font-semibold text-xs">
                 {c.id}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold truncate">{c.name}</div>
                 {c.phone && (
-                  <div className="text-[11px] text-muted-foreground flex items-center gap-1" dir="ltr">
+                  <div className="text-[11px] text-muted-foreground flex items-center gap-1">
                     <Phone className="h-3 w-3" /> {c.phone}
                   </div>
                 )}
