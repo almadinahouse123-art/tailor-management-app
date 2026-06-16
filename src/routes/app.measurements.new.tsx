@@ -27,7 +27,7 @@ function NewMeasurement() {
   const [customerId, setCustomerId] = useState<string>(preset ? String(preset) : "");
   const [form, setForm] = useState<Record<string, string>>({
     lambai: "", daman: "", chorai: "", tera: "", asteen: "",
-    cuff_paimaish: "", shalwar_size: "", panja: "",
+    cuff_paimaish: "", shalwar_size: "", panja: "", collar_size: "",
     collar_type: "", jeb: "", asteen_type: "", asteen_description: "", notes: "",
   });
 
@@ -43,13 +43,16 @@ function NewMeasurement() {
     if (!customerId) return toast.error("گاہک منتخب کریں");
     const payload: any = { customer_id: Number(customerId) };
     for (const [k, v] of Object.entries(form)) if (v.trim()) payload[k] = v.trim();
+    if (payload.collar_size && isNaN(Number(payload.collar_size))) {
+      return toast.error("کالر (گلا) درست نمبر درج کریں");
+    }
     const { error } = await supabase.from("measurements").insert(payload);
     if (error) return toast.error(friendlyError(error));
     toast.success("پیمائش محفوظ");
     nav({ to: "/app/customers/$id", params: { id: customerId } });
   };
 
-  const numeric = ["lambai","daman","chorai","tera","asteen","cuff_paimaish","shalwar_size","panja"] as const;
+  const numeric = ["lambai","daman","chorai","tera","asteen","cuff_paimaish","collar_size","shalwar_size","panja"] as const;
 
   return (
     <>
@@ -71,7 +74,15 @@ function NewMeasurement() {
           {numeric.map((k) => (
             <div key={k}>
               <Label className="text-xs">{URDU_LABELS[k]}</Label>
-              <Input dir="ltr" className="mt-1 text-left" value={form[k]} onChange={(e) => set(k, e.target.value)} />
+              <Input
+                dir="ltr"
+                className="mt-1 text-left"
+                type="number"
+                inputMode="decimal"
+                step="0.5"
+                value={form[k]}
+                onChange={(e) => set(k, e.target.value)}
+              />
             </div>
           ))}
         </Card>
