@@ -1,4 +1,5 @@
 import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useState } from "react";
 import { Scissors, Mail, Lock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";

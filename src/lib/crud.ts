@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { friendlyError } from "@/lib/friendly-error";
 import { toast } from "sonner";
 
 export type TrashTable =

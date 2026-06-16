@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";

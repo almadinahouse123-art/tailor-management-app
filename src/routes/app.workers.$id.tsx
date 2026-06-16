@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
 import { DeleteButton } from "@/components/DeleteButton";

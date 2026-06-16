@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { z } from "zod";
