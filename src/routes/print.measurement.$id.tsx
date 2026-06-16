@@ -14,7 +14,7 @@ export const Route = createFileRoute("/print/measurement/$id")({
 
 const FIELDS = [
   "lambai", "daman", "chorai", "tera", "asteen",
-  "cuff_paimaish", "collar_type", "jeb",
+  "cuff_paimaish", "collar_size", "collar_type", "jeb",
   "asteen_type", "shalwar_size", "panja",
 ] as const;
 

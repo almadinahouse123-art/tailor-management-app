@@ -134,7 +134,7 @@ function CustomerDetail() {
                   <div className="text-[10px] text-muted-foreground">{new Date(latest.created_at).toLocaleDateString()}</div>
                 </div>
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
-                  {(["lambai","daman","chorai","tera","asteen","cuff_paimaish","collar_type","jeb","asteen_type","shalwar_size","panja"] as const).map((k) => (
+                  {(["lambai","daman","chorai","tera","asteen","cuff_paimaish","collar_size","collar_type","jeb","asteen_type","shalwar_size","panja"] as const).map((k) => (
                     latest[k] ? (
                       <div key={k} className="flex justify-between border-b border-dashed border-border pb-0.5">
                         <span className="text-muted-foreground text-xs">{URDU_LABELS[k]}</span>

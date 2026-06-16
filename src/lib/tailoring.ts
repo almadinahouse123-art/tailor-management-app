@@ -5,6 +5,7 @@ export const URDU_LABELS = {
   tera: "تیرا",
   asteen: "آستین",
   collar_type: "کالر",
+  collar_size: "کالر (گلا)",
   cuff_paimaish: "کف پیمائش",
   jeb: "جب",
   asteen_type: "آستین ٹائپ",

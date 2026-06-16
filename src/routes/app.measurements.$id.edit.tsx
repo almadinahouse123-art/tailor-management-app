@@ -17,7 +17,7 @@ export const Route = createFileRoute("/app/measurements/$id/edit")({
   component: EditMeasurement,
 });
 
-const numeric = ["lambai","daman","chorai","tera","asteen","cuff_paimaish","shalwar_size","panja"] as const;
+const numeric = ["lambai","daman","chorai","tera","asteen","cuff_paimaish","collar_size","shalwar_size","panja"] as const;
 const FIELDS = [...numeric, "collar_type", "jeb", "asteen_type", "asteen_description", "notes"] as const;
 
 function EditMeasurement() {
@@ -46,6 +46,9 @@ function EditMeasurement() {
     e.preventDefault();
     const payload: any = {};
     for (const k of FIELDS) payload[k] = form[k]?.trim() || null;
+    if (payload.collar_size && isNaN(Number(payload.collar_size))) {
+      return toast.error("کالر (گلا) درست نمبر درج کریں");
+    }
     const { error } = await supabase.from("measurements").update(payload).eq("id", mid);
     if (error) return toast.error(friendlyError(error));
     toast.success("پیمائش اپڈیٹ ہو گئی");
@@ -61,7 +64,15 @@ function EditMeasurement() {
           {numeric.map((k) => (
             <div key={k}>
               <Label className="text-xs">{URDU_LABELS[k]}</Label>
-              <Input dir="ltr" className="mt-1 text-left" value={form[k] ?? ""} onChange={(e) => set(k, e.target.value)} />
+              <Input
+                dir="ltr"
+                className="mt-1 text-left"
+                type="number"
+                inputMode="decimal"
+                step="0.5"
+                value={form[k] ?? ""}
+                onChange={(e) => set(k, e.target.value)}
+              />
             </div>
           ))}
         </Card>
