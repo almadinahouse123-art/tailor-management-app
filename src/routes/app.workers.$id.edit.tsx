@@ -49,7 +49,7 @@ function EditWorker() {
       notes: f.notes.trim() || null,
       active: f.active,
     }).eq("id", wid);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("اپڈیٹ ہو گیا");
     nav({ to: "/app/workers/$id", params: { id } });
   };

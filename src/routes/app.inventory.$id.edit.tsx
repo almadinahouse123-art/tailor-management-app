@@ -51,7 +51,7 @@ function EditItem() {
       low_stock_threshold: Number(f.low_stock_threshold) || 0,
       notes: f.notes.trim() || null,
     }).eq("id", iid);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("اپڈیٹ ہو گیا");
     nav({ to: "/app/inventory" });
   };

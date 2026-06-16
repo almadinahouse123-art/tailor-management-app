@@ -32,7 +32,7 @@ function NewCustomer() {
       .select("id")
       .single();
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success(`گاہک محفوظ ہو گیا (ID: ${data!.id})`);
     nav({ to: "/app/customers/$id", params: { id: String(data!.id) } });
   };

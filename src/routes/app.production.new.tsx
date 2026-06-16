@@ -116,7 +116,7 @@ function NewProduction() {
     });
     if (error) {
       setSaving(false);
-      return toast.error(error.message);
+      return toast.error(friendlyError(error));
     }
 
     // Auto-credit worker ledger

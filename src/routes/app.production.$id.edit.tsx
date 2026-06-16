@@ -76,7 +76,7 @@ function EditProduction() {
       total_amount: total,
       notes: f.notes.trim() || null,
     }).eq("id", pid);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("اپڈیٹ ہو گیا");
     nav({ to: "/app/production" });
   };

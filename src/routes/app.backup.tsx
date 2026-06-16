@@ -57,7 +57,7 @@ function BackupPage() {
       markBackup();
       toast.success("بیک اپ ڈاؤن لوڈ ہو گیا");
     } catch (e: any) {
-      toast.error(e.message ?? "بیک اپ ناکام");
+      toast.error(friendlyError(e));
     } finally {
       setBusy("none");
     }
@@ -88,7 +88,7 @@ function BackupPage() {
       }
       toast.success(`${total} ریکارڈ بحال ہو گئے`);
     } catch (e: any) {
-      toast.error(e.message ?? "بحالی ناکام");
+      toast.error(friendlyError(e));
     } finally {
       setBusy("none");
       if (fileRef.current) fileRef.current.value = "";

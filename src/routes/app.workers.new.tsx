@@ -41,7 +41,7 @@ function NewWorker() {
       .select()
       .single();
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("کاریگر شامل ہو گیا");
     nav({ to: "/app/workers/$id", params: { id: String(data.id) } });
   };

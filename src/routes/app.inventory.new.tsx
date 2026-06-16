@@ -41,7 +41,7 @@ function NewItem() {
       notes: f.notes.trim() || null,
     });
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("شامل ہو گیا");
     nav({ to: "/app/inventory" });
   };

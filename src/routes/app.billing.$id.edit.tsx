@@ -52,7 +52,7 @@ function EditInvoice() {
       notes: f.notes || null,
       order_id: f.order_id ? Number(f.order_id) : null,
     }).eq("id", iid);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("انوائس اپڈیٹ ہو گیا");
     nav({ to: "/app/billing/$id", params: { id } });
   };

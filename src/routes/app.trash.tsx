@@ -72,14 +72,14 @@ function TrashList({ table }: { table: TrashTable }) {
 
   const onRestore = async (id: number) => {
     const e = await restore(table, id);
-    if (e) return toast.error(e.message);
+    if (e) return toast.error(friendlyError(e));
     toast.success("بحال ہو گیا");
     refresh();
   };
 
   const onPurge = async (id: number) => {
     const e = await hardDelete(table, id);
-    if (e) return toast.error(e.message);
+    if (e) return toast.error(friendlyError(e));
     toast.success("مستقل حذف ہو گیا");
     refresh();
   };

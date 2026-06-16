@@ -51,7 +51,7 @@ function OrderDetail() {
     if (!amt || amt <= 0) return toast.error("صحیح رقم درج کریں");
     const newPaid = Number(order.paid_amount) + amt;
     const { error } = await supabase.from("orders").update({ paid_amount: newPaid }).eq("id", oid);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     await supabase.from("customer_ledger").insert({
       customer_id: order.customer_id,
       order_id: oid,
@@ -68,7 +68,7 @@ function OrderDetail() {
   const updateStatus = async (s: string) => {
     setStatus(s);
     const { error } = await supabase.from("orders").update({ status: s }).eq("id", oid);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("سٹیٹس اپڈیٹ");
     qc.invalidateQueries({ queryKey: ["order", oid] });
   };
@@ -78,7 +78,7 @@ function OrderDetail() {
     const w = workers.find((x) => String(x.id) === v);
     const rate = w ? Number(w.rate_per_suit ?? 0) : Number(order.assigned_rate ?? 0);
     const { error } = await supabase.from("orders").update({ assigned_worker_id: wid, assigned_rate: rate }).eq("id", oid);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("کاریگر تفویض ہو گیا");
     qc.invalidateQueries({ queryKey: ["order", oid] });
   };
