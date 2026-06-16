@@ -286,6 +286,7 @@ export type Database = {
           asteen_description: string | null
           asteen_type: string | null
           chorai: string | null
+          collar_size: string | null
           collar_type: string | null
           created_at: string
           cuff_paimaish: string | null
@@ -308,6 +309,7 @@ export type Database = {
           asteen_description?: string | null
           asteen_type?: string | null
           chorai?: string | null
+          collar_size?: string | null
           collar_type?: string | null
           created_at?: string
           cuff_paimaish?: string | null
@@ -330,6 +332,7 @@ export type Database = {
           asteen_description?: string | null
           asteen_type?: string | null
           chorai?: string | null
+          collar_size?: string | null
           collar_type?: string | null
           created_at?: string
           cuff_paimaish?: string | null
