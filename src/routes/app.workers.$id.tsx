@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pencil } from "lucide-react";
 import { DeleteButton } from "@/components/DeleteButton";
@@ -106,7 +107,7 @@ function WorkerDetail() {
       description: entry.description.trim() || null,
     });
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("ادائیگی محفوظ ہو گئی");
     setEntry({ paid_amount: "", description: "" });
     qc.invalidateQueries({ queryKey: ["worker-ledger", wid] });
@@ -115,7 +116,7 @@ function WorkerDetail() {
   const toggleActive = async () => {
     if (!worker) return;
     const { error } = await supabase.from("workers").update({ active: !worker.active }).eq("id", wid);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     qc.invalidateQueries({ queryKey: ["worker", wid] });
   };
 

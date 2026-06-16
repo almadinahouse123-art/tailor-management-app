@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -75,7 +76,7 @@ function EditProduction() {
       total_amount: total,
       notes: f.notes.trim() || null,
     }).eq("id", pid);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("اپڈیٹ ہو گیا");
     nav({ to: "/app/production" });
   };

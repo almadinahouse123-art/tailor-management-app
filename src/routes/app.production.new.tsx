@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -115,7 +116,7 @@ function NewProduction() {
     });
     if (error) {
       setSaving(false);
-      return toast.error(error.message);
+      return toast.error(friendlyError(error));
     }
 
     // Auto-credit worker ledger

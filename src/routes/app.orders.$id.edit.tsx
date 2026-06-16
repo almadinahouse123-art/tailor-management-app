@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -67,7 +68,7 @@ function EditOrder() {
       assigned_worker_id: f.assigned_worker_id ? Number(f.assigned_worker_id) : null,
       assigned_rate: Number(f.assigned_rate) || 0,
     }).eq("id", oid);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("آرڈر اپڈیٹ ہو گیا");
     nav({ to: "/app/orders/$id", params: { id } });
   };

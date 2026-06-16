@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { z } from "zod";
@@ -71,7 +72,7 @@ function NewOrder() {
       assigned_worker_id: workerId ? Number(workerId) : null,
       assigned_rate: Number(assignedRate) || 0,
     }).select("id").single();
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     if (paidNum > 0) {
       await supabase.from("customer_ledger").insert({
         customer_id: Number(customerId),

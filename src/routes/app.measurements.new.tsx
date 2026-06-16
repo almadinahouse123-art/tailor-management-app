@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { z } from "zod";
@@ -43,7 +44,7 @@ function NewMeasurement() {
     const payload: any = { customer_id: Number(customerId) };
     for (const [k, v] of Object.entries(form)) if (v.trim()) payload[k] = v.trim();
     const { error } = await supabase.from("measurements").insert(payload);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("پیمائش محفوظ");
     nav({ to: "/app/customers/$id", params: { id: customerId } });
   };

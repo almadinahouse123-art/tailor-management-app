@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,7 +47,7 @@ function EditMeasurement() {
     const payload: any = {};
     for (const k of FIELDS) payload[k] = form[k]?.trim() || null;
     const { error } = await supabase.from("measurements").update(payload).eq("id", mid);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("پیمائش اپڈیٹ ہو گئی");
     if (customerId) nav({ to: "/app/customers/$id", params: { id: String(customerId) } });
     else nav({ to: "/app/measurements" });

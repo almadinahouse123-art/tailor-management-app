@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -71,14 +72,14 @@ function TrashList({ table }: { table: TrashTable }) {
 
   const onRestore = async (id: number) => {
     const e = await restore(table, id);
-    if (e) return toast.error(e.message);
+    if (e) return toast.error(friendlyError(e));
     toast.success("بحال ہو گیا");
     refresh();
   };
 
   const onPurge = async (id: number) => {
     const e = await hardDelete(table, id);
-    if (e) return toast.error(e.message);
+    if (e) return toast.error(friendlyError(e));
     toast.success("مستقل حذف ہو گیا");
     refresh();
   };

@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { z } from "zod";
@@ -54,7 +55,7 @@ function NewInvoice() {
       paid_amount: Number(paid) || 0,
       notes: notes || null,
     }).select("id").single();
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success(`انوائس بن گیا (#${data!.id})`);
     nav({ to: "/app/billing/$id", params: { id: String(data!.id) } });
   };

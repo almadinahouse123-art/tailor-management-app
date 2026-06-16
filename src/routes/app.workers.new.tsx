@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
@@ -40,7 +41,7 @@ function NewWorker() {
       .select()
       .single();
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("کاریگر شامل ہو گیا");
     nav({ to: "/app/workers/$id", params: { id: String(data.id) } });
   };
