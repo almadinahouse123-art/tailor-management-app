@@ -1,0 +1,1 @@
+ALTER TABLE public.measurements ADD COLUMN IF NOT EXISTS daman_style text;

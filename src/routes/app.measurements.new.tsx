@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { COLLAR_OPTIONS, JEB_OPTIONS, ASTEEN_TYPE_OPTIONS, URDU_LABELS } from "@/lib/tailoring";
+import { COLLAR_OPTIONS, JEB_OPTIONS, ASTEEN_TYPE_OPTIONS, DAMAN_STYLE_OPTIONS, URDU_LABELS } from "@/lib/tailoring";
 import { toast } from "sonner";
 
 const search = z.object({ customer: z.coerce.number().optional() });
@@ -28,7 +28,7 @@ function NewMeasurement() {
   const [form, setForm] = useState<Record<string, string>>({
     lambai: "", daman: "", chorai: "", tera: "", asteen: "",
     cuff_paimaish: "", shalwar_size: "", panja: "", collar_size: "",
-    collar_type: "", jeb: "", asteen_type: "", asteen_description: "", notes: "",
+    collar_type: "", jeb: "", asteen_type: "", daman_style: "", asteen_description: "", notes: "",
   });
 
   const { data: customers = [] } = useQuery({
@@ -45,6 +45,12 @@ function NewMeasurement() {
     for (const [k, v] of Object.entries(form)) if (v.trim()) payload[k] = v.trim();
     if (payload.collar_size && isNaN(Number(payload.collar_size))) {
       return toast.error("کالر (گلا) درست نمبر درج کریں");
+    }
+    if (payload.daman && isNaN(Number(payload.daman))) {
+      return toast.error("دامن کا سائز درست نمبر درج کریں");
+    }
+    if (payload.daman && !payload.daman_style) {
+      return toast.error("دامن کی قسم منتخب کریں");
     }
     const { error } = await supabase.from("measurements").insert(payload);
     if (error) return toast.error(friendlyError(error));
@@ -88,6 +94,13 @@ function NewMeasurement() {
         </Card>
 
         <Card className="p-3 space-y-3">
+          <div>
+            <Label className="text-xs">{URDU_LABELS.daman_style} {form.daman ? "*" : ""}</Label>
+            <Select value={form.daman_style} onValueChange={(v) => set("daman_style", v)}>
+              <SelectTrigger className="mt-1"><SelectValue placeholder="منتخب کریں" /></SelectTrigger>
+              <SelectContent>{DAMAN_STYLE_OPTIONS.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
           <div>
             <Label className="text-xs">{URDU_LABELS.collar_type}</Label>
             <Select value={form.collar_type} onValueChange={(v) => set("collar_type", v)}>

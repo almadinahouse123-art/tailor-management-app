@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { COLLAR_OPTIONS, JEB_OPTIONS, ASTEEN_TYPE_OPTIONS, URDU_LABELS } from "@/lib/tailoring";
+import { COLLAR_OPTIONS, JEB_OPTIONS, ASTEEN_TYPE_OPTIONS, DAMAN_STYLE_OPTIONS, URDU_LABELS } from "@/lib/tailoring";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/measurements/$id/edit")({
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/app/measurements/$id/edit")({
 });
 
 const numeric = ["lambai","daman","chorai","tera","asteen","cuff_paimaish","collar_size","shalwar_size","panja"] as const;
-const FIELDS = [...numeric, "collar_type", "jeb", "asteen_type", "asteen_description", "notes"] as const;
+const FIELDS = [...numeric, "collar_type", "jeb", "asteen_type", "daman_style", "asteen_description", "notes"] as const;
 
 function EditMeasurement() {
   const { id } = Route.useParams();
@@ -49,6 +49,12 @@ function EditMeasurement() {
     if (payload.collar_size && isNaN(Number(payload.collar_size))) {
       return toast.error("کالر (گلا) درست نمبر درج کریں");
     }
+    if (payload.daman && isNaN(Number(payload.daman))) {
+      return toast.error("دامن کا سائز درست نمبر درج کریں");
+    }
+    if (payload.daman && !payload.daman_style) {
+      return toast.error("دامن کی قسم منتخب کریں");
+    }
     const { error } = await supabase.from("measurements").update(payload).eq("id", mid);
     if (error) return toast.error(friendlyError(error));
     toast.success("پیمائش اپڈیٹ ہو گئی");
@@ -77,6 +83,20 @@ function EditMeasurement() {
           ))}
         </Card>
         <Card className="p-3 space-y-3">
+          <div>
+            <Label className="text-xs">{URDU_LABELS.collar_type}</Label>
+            <Select value={form.collar_type ?? ""} onValueChange={(v) => set("collar_type", v)}>
+              <SelectTrigger className="mt-1"><SelectValue placeholder="منتخب کریں" /></SelectTrigger>
+              <SelectContent>{COLLAR_OPTIONS.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-xs">{URDU_LABELS.daman_style} {form.daman ? "*" : ""}</Label>
+            <Select value={form.daman_style ?? ""} onValueChange={(v) => set("daman_style", v)}>
+              <SelectTrigger className="mt-1"><SelectValue placeholder="منتخب کریں" /></SelectTrigger>
+              <SelectContent>{DAMAN_STYLE_OPTIONS.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
           <div>
             <Label className="text-xs">{URDU_LABELS.collar_type}</Label>
             <Select value={form.collar_type ?? ""} onValueChange={(v) => set("collar_type", v)}>
