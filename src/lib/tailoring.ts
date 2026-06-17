@@ -1,6 +1,7 @@
 export const URDU_LABELS = {
   lambai: "لمبائی",
   daman: "دامن",
+  daman_style: "دامن کی قسم",
   chorai: "چوڑائی",
   tera: "تیرا",
   asteen: "آستین",
@@ -18,6 +19,7 @@ export const URDU_LABELS = {
 export const COLLAR_OPTIONS = ["بن", "دو ٹکڑا"];
 export const JEB_OPTIONS = ["2 سائیڈ", "2+1"];
 export const ASTEEN_TYPE_OPTIONS = ["کف", "کنار", "چک پٹے"];
+export const DAMAN_STYLE_OPTIONS = ["گول", "سیدھا"];
 
 export type PaymentStatus = "paid" | "partial" | "unpaid";
 
