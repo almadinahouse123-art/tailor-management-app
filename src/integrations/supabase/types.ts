@@ -292,6 +292,7 @@ export type Database = {
           cuff_paimaish: string | null
           customer_id: number
           daman: string | null
+          daman_style: string | null
           deleted_at: string | null
           fabric_image_url: string | null
           id: number
@@ -315,6 +316,7 @@ export type Database = {
           cuff_paimaish?: string | null
           customer_id: number
           daman?: string | null
+          daman_style?: string | null
           deleted_at?: string | null
           fabric_image_url?: string | null
           id?: never
@@ -338,6 +340,7 @@ export type Database = {
           cuff_paimaish?: string | null
           customer_id?: number
           daman?: string | null
+          daman_style?: string | null
           deleted_at?: string | null
           fabric_image_url?: string | null
           id?: never
