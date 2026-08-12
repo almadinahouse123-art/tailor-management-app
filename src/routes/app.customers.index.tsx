@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { PendingDot } from "@/components/SyncBadge";
 import { supabase } from "@/lib/offline/client";
 import { AppHeader } from "@/components/AppHeader";
 import { Input } from "@/components/ui/input";
