@@ -1,7 +1,7 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/offline/client";
 import { useAuth } from "@/lib/auth";
 import { URDU_LABELS } from "@/lib/tailoring";
 import { Button } from "@/components/ui/button";
