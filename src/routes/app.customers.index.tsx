@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { PendingDot } from "@/components/SyncBadge";
+import { supabase } from "@/lib/offline/client";
 import { AppHeader } from "@/components/AppHeader";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -93,7 +94,10 @@ function CustomersList() {
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold truncate">{c.name}</div>
+                    <div className="font-semibold truncate flex items-center gap-2">
+                      {c.name}
+                      <PendingDot pending={(c as any)._pending} />
+                    </div>
                     {c.phone && (
                       <div className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5" dir="ltr">
                         <Phone className="h-3 w-3" /> {c.phone}

@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/offline/client";
 import { AppHeader } from "@/components/AppHeader";
 import { StatusStrip } from "@/components/StatusStrip";
 import { Card } from "@/components/ui/card";
