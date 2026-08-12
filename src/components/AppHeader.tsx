@@ -28,6 +28,9 @@ export function AppHeader({ title, back }: { title?: string; back?: string }) {
           </h1>
         </div>
 
+        <SyncBadge />
+
+
         {!back && (
           <>
             <Link
