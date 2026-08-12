@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/lib/offline/client";
+import { PendingDot } from "@/components/SyncBadge";
 import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -122,6 +123,7 @@ function OrdersList() {
                           <span className="text-xs bg-muted text-foreground/80 px-2 py-0.5 rounded-md">
                             {ORDER_STATUS_LABEL[o.status as OrderStatus] ?? o.status}
                           </span>
+                          <PendingDot pending={(o as any)._pending} />
                         </div>
                         <div className="mt-1 font-semibold truncate">{o.customers?.name ?? "—"}</div>
                       </div>
