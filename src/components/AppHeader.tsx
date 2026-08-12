@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, LogOut, Scissors, Search } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { SyncBadge } from "@/components/SyncBadge";
 
 export function AppHeader({ title, back }: { title?: string; back?: string }) {
   const { signOut } = useAuth();
