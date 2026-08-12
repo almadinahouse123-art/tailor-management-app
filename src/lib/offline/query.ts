@@ -361,7 +361,6 @@ class OfflineQuery<T = any> implements PromiseLike<Result<T>> {
         if (!res.error) {
           markSyncedNow();
           await this.applyLocalWrite({ synced: true, serverData: res.data });
-          notifyLocalChange();
           return res;
         }
         if (!isNetworkError(res.error)) return res;
