@@ -24,6 +24,7 @@ import { Route as AppMeasurementsIndexRouteImport } from './routes/app.measureme
 import { Route as AppInventoryIndexRouteImport } from './routes/app.inventory.index'
 import { Route as AppCustomersIndexRouteImport } from './routes/app.customers.index'
 import { Route as AppBillingIndexRouteImport } from './routes/app.billing.index'
+import { Route as PrintReceiptIdRouteImport } from './routes/print.receipt.$id'
 import { Route as PrintMeasurementIdRouteImport } from './routes/print.measurement.$id'
 import { Route as AppWorkersNewRouteImport } from './routes/app.workers.new'
 import { Route as AppWorkersIdRouteImport } from './routes/app.workers.$id'
@@ -118,6 +119,11 @@ const AppBillingIndexRoute = AppBillingIndexRouteImport.update({
   id: '/billing/',
   path: '/billing/',
   getParentRoute: () => AppRoute,
+} as any)
+const PrintReceiptIdRoute = PrintReceiptIdRouteImport.update({
+  id: '/print/receipt/$id',
+  path: '/print/receipt/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PrintMeasurementIdRoute = PrintMeasurementIdRouteImport.update({
   id: '/print/measurement/$id',
@@ -235,6 +241,7 @@ export interface FileRoutesByFullPath {
   '/app/workers/$id': typeof AppWorkersIdRouteWithChildren
   '/app/workers/new': typeof AppWorkersNewRoute
   '/print/measurement/$id': typeof PrintMeasurementIdRoute
+  '/print/receipt/$id': typeof PrintReceiptIdRoute
   '/app/billing/': typeof AppBillingIndexRoute
   '/app/customers/': typeof AppCustomersIndexRoute
   '/app/inventory/': typeof AppInventoryIndexRoute
@@ -270,6 +277,7 @@ export interface FileRoutesByTo {
   '/app/workers/$id': typeof AppWorkersIdRouteWithChildren
   '/app/workers/new': typeof AppWorkersNewRoute
   '/print/measurement/$id': typeof PrintMeasurementIdRoute
+  '/print/receipt/$id': typeof PrintReceiptIdRoute
   '/app/billing': typeof AppBillingIndexRoute
   '/app/customers': typeof AppCustomersIndexRoute
   '/app/inventory': typeof AppInventoryIndexRoute
@@ -307,6 +315,7 @@ export interface FileRoutesById {
   '/app/workers/$id': typeof AppWorkersIdRouteWithChildren
   '/app/workers/new': typeof AppWorkersNewRoute
   '/print/measurement/$id': typeof PrintMeasurementIdRoute
+  '/print/receipt/$id': typeof PrintReceiptIdRoute
   '/app/billing/': typeof AppBillingIndexRoute
   '/app/customers/': typeof AppCustomersIndexRoute
   '/app/inventory/': typeof AppInventoryIndexRoute
@@ -345,6 +354,7 @@ export interface FileRouteTypes {
     | '/app/workers/$id'
     | '/app/workers/new'
     | '/print/measurement/$id'
+    | '/print/receipt/$id'
     | '/app/billing/'
     | '/app/customers/'
     | '/app/inventory/'
@@ -380,6 +390,7 @@ export interface FileRouteTypes {
     | '/app/workers/$id'
     | '/app/workers/new'
     | '/print/measurement/$id'
+    | '/print/receipt/$id'
     | '/app/billing'
     | '/app/customers'
     | '/app/inventory'
@@ -416,6 +427,7 @@ export interface FileRouteTypes {
     | '/app/workers/$id'
     | '/app/workers/new'
     | '/print/measurement/$id'
+    | '/print/receipt/$id'
     | '/app/billing/'
     | '/app/customers/'
     | '/app/inventory/'
@@ -438,6 +450,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
   PrintMeasurementIdRoute: typeof PrintMeasurementIdRoute
+  PrintReceiptIdRoute: typeof PrintReceiptIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -546,6 +559,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/billing/'
       preLoaderRoute: typeof AppBillingIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/print/receipt/$id': {
+      id: '/print/receipt/$id'
+      path: '/print/receipt/$id'
+      fullPath: '/print/receipt/$id'
+      preLoaderRoute: typeof PrintReceiptIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/print/measurement/$id': {
       id: '/print/measurement/$id'
@@ -796,6 +816,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
   PrintMeasurementIdRoute: PrintMeasurementIdRoute,
+  PrintReceiptIdRoute: PrintReceiptIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

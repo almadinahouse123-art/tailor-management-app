@@ -64,8 +64,13 @@ function InvoiceDetail() {
           <p className="text-center text-[10px] text-muted-foreground mt-4 pt-3 border-t">شکریہ — اللہ حافظ</p>
         </Card>
         <Button onClick={() => window.print()} className="w-full bg-gradient-primary print:hidden">
-          <Printer className="h-4 w-4 ml-2" /> پرنٹ کریں
+          <Printer className="h-4 w-4 ml-2" /> پرنٹ کریں (A4/A5)
         </Button>
+        <Link to="/print/receipt/$id" params={{ id }} search={{ type: "invoice", w: 58 }} className="block print:hidden">
+          <Button variant="outline" className="w-full">
+            <Printer className="h-4 w-4 ml-2" /> تھرمل رسید (58/80mm)
+          </Button>
+        </Link>
         <div className="flex gap-2 print:hidden">
           <Link to="/app/billing/$id/edit" params={{ id }} className="flex-1">
             <Button variant="outline" className="w-full"><Pencil className="h-3.5 w-3.5 ml-1" /> ترمیم</Button>

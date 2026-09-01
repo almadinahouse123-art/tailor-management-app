@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil } from "lucide-react";
+import { Pencil, Printer } from "lucide-react";
 import { DeleteButton } from "@/components/DeleteButton";
 import { useState } from "react";
 import { supabase } from "@/lib/offline/client";
@@ -157,6 +157,12 @@ function OrderDetail() {
 
         <Link to="/app/billing/new" search={{ customer: order.customer_id, order: oid }}>
           <Button variant="outline" className="w-full">انوائس بنائیں</Button>
+        </Link>
+
+        <Link to="/print/receipt/$id" params={{ id }} search={{ type: "order", w: 58 }}>
+          <Button variant="outline" className="w-full">
+            <Printer className="h-3.5 w-3.5 ml-1" /> رسید پرنٹ کریں (تھرمل)
+          </Button>
         </Link>
 
         <div className="flex gap-2">
