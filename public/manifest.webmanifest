@@ -2,7 +2,7 @@
   "name": "Almadina Cloth House and Stitching",
   "short_name": "Almadina",
   "description": "Tailor shop management — customers, measurements, orders, workers, billing. Works offline.",
-  "start_url": "/app",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
