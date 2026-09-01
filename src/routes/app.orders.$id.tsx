@@ -159,6 +159,12 @@ function OrderDetail() {
           <Button variant="outline" className="w-full">انوائس بنائیں</Button>
         </Link>
 
+        <Link to="/print/receipt/$id" params={{ id }} search={{ type: "order", w: 58 }}>
+          <Button variant="outline" className="w-full">
+            <Printer className="h-3.5 w-3.5 ml-1" /> رسید پرنٹ کریں (تھرمل)
+          </Button>
+        </Link>
+
         <div className="flex gap-2">
           <Link to="/app/orders/$id/edit" params={{ id }} className="flex-1">
             <Button variant="outline" className="w-full"><Pencil className="h-3.5 w-3.5 ml-1" /> ترمیم</Button>
