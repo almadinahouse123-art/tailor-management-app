@@ -23,6 +23,9 @@ export default defineConfig({
         registerType: "autoUpdate",
         injectRegister: null,
         filename: "sw.js",
+        // Nitro serves static files from dist/client, so the worker and its
+        // precache manifest must be generated there (otherwise /sw.js 404s).
+        outDir: "dist/client",
         devOptions: { enabled: false },
         manifest: false,
         workbox: {
