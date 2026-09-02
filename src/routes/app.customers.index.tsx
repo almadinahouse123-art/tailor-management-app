@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Phone, Search, ChevronLeft, Users } from "lucide-react";
+import { ExportButton } from "@/components/ExportButton";
 
 export const Route = createFileRoute("/app/customers/")({
   component: CustomersList,
@@ -68,9 +69,23 @@ function CustomersList() {
           <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground font-display">
             تمام گاہک
           </span>
-          <span className="text-[11px] text-muted-foreground font-display" dir="ltr">
-            {customers.length} total
-          </span>
+          <div className="flex items-center gap-2">
+            <ExportButton
+              fileBase="customers"
+              className="h-8 rounded-xl px-3 text-xs"
+              rows={customers as any}
+              columns={[
+                { key: "id", label: "ID" },
+                { key: "name", label: "Name" },
+                { key: "phone", label: "Phone" },
+                { key: "address", label: "Address" },
+                { key: "created_at", label: "Created" },
+              ]}
+            />
+            <span className="text-[11px] text-muted-foreground font-display" dir="ltr">
+              {customers.length} total
+            </span>
+          </div>
         </div>
 
         {customers.length === 0 ? (

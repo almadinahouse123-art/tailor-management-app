@@ -64,6 +64,10 @@ function BackupPage() {
   };
 
   const onImport = async (file: File) => {
+    if (!window.confirm("بیک اپ فائل سے ریکارڈ بحال کیے جائیں گے۔ جاری رکھیں؟")) {
+      if (fileRef.current) fileRef.current.value = "";
+      return;
+    }
     setBusy("import");
     try {
       const text = await file.text();

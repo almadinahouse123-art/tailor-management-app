@@ -1,4 +1,4 @@
-import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate, useNavigate } from "@tanstack/react-router";
 import { friendlyError } from "@/lib/friendly-error";
 import { useState } from "react";
 import { Scissors, Mail, Lock, Loader2 } from "lucide-react";
@@ -84,13 +84,9 @@ function LoginPage() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password" className="text-sm font-medium">Password</Label>
-                <button
-                  type="button"
-                  className="text-xs text-primary hover:underline font-medium"
-                  onClick={() => toast.info("Please contact your administrator to reset your password.")}
-                >
+                <Link to="/forgot-password" className="text-xs text-primary hover:underline font-medium">
                   Forgot Password?
-                </button>
+                </Link>
               </div>
               <div className="relative">
                 <Lock className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
