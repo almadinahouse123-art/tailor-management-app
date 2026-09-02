@@ -5,6 +5,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ExportButton } from "@/components/ExportButton";
 import { Phone, Plus, Ruler, ScissorsLineDashed, Receipt, Printer, Pencil, AlertTriangle, MapPin } from "lucide-react";
 import { URDU_LABELS, fmtMoney, paymentStatus, statusBadgeClass, statusLabel, ORDER_STATUS_LABEL, type OrderStatus } from "@/lib/tailoring";
 import { DeleteButton } from "@/components/DeleteButton";
@@ -223,6 +224,19 @@ function CustomerDetail() {
                 <div className={`text-lg font-bold ${totalDue > 0 ? "text-destructive" : "text-success"}`}>{fmtMoney(totalDue)}</div>
               </div>
             </Card>
+
+            <ExportButton
+              fileBase="customer-ledger"
+              className="w-full h-11 rounded-2xl"
+              label="Export Ledger (CSV)"
+              rows={data.ledger as any}
+              columns={[
+                { key: "entry_date", label: "Date" },
+                { key: "description", label: "Description" },
+                { key: "total_amount", label: "Total" },
+                { key: "paid_amount", label: "Paid" },
+              ]}
+            />
 
             {data.ledger.length === 0 ? (
               <Card className="p-6 text-center text-sm text-muted-foreground">کوئی ادائیگی نہیں</Card>

@@ -5,6 +5,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { Card } from "@/components/ui/card";
 import { fmtMoney } from "@/lib/tailoring";
 import { TrendingUp, Wallet, AlertCircle, Users } from "lucide-react";
+import { ExportButton } from "@/components/ExportButton";
 
 export const Route = createFileRoute("/app/revenue/")({
   component: Revenue,
@@ -125,6 +126,26 @@ function Revenue() {
             (آمدنی - پیداوار لاگت)
           </div>
         </Card>
+
+        <ExportButton
+          fileBase="revenue-report"
+          className="w-full h-11 rounded-2xl"
+          label="Export Report (CSV)"
+          rows={[
+            { metric: "Total Revenue", amount: data?.totalRevenue ?? 0 },
+            { metric: "Today Revenue", amount: data?.todayRevenue ?? 0 },
+            { metric: "Month Revenue", amount: data?.monthRevenue ?? 0 },
+            { metric: "Customer Outstanding", amount: data?.outstanding ?? 0 },
+            { metric: "Worker Due", amount: data?.workerDue ?? 0 },
+            { metric: "Month Production Cost", amount: data?.monthProduction ?? 0 },
+            { metric: "Net Profit (month)", amount: data?.netProfit ?? 0 },
+            ...(data?.months ?? []).map((m) => ({ metric: `Revenue ${m.month}`, amount: m.amount })),
+          ]}
+          columns={[
+            { key: "metric", label: "Metric" },
+            { key: "amount", label: "Amount" },
+          ]}
+        />
 
         <Card className="p-4">
           <div className="text-sm font-semibold mb-3">پچھلے 6 ماہ</div>
