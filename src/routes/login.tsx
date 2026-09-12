@@ -9,19 +9,40 @@ import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import { lovable } from "@/integrations/lovable/index";
 
+function safeNext(value: unknown): string | undefined {
+  if (typeof value !== "string" || !value.startsWith("/") || value.startsWith("//")) return undefined;
+  return value;
+}
+
 export const Route = createFileRoute("/login")({
+  validateSearch: (s: Record<string, unknown>): { next?: string } =>
+    ({ next: safeNext(s.next) }) as { next?: string },
   component: LoginPage,
 });
 
 function LoginPage() {
   const { user, signIn, signUp, loading } = useAuth();
   const nav = useNavigate();
+  const { next } = Route.useSearch();
+  const goNext = () => {
+    if (next) {
+      window.location.href = next;
+      return;
+    }
+    nav({ to: "/app" });
+  };
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
-  if (!loading && user) return <Navigate to="/app" />;
+  if (!loading && user) {
+    if (next) {
+      window.location.replace(next);
+      return null;
+    }
+    return <Navigate to="/app" />;
+  }
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +58,7 @@ function LoginPage() {
       toast.success("Account created — please sign in");
       setMode("login");
     } else {
-      nav({ to: "/app" });
+      goNext();
     }
   };
 
@@ -129,14 +150,16 @@ function LoginPage() {
             disabled={busy}
             onClick={async () => {
               setBusy(true);
-              const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/app" });
+              const result = await lovable.auth.signInWithOAuth("google", {
+                redirect_uri: window.location.origin + (next ?? "/app"),
+              });
               if (result.error) {
                 toast.error(friendlyError(result.error));
                 setBusy(false);
                 return;
               }
               if (result.redirected) return;
-              nav({ to: "/app" });
+              goNext();
             }}
             className="w-full h-11"
           >

@@ -6,6 +6,7 @@
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { VitePWA } from "vite-plugin-pwa";
+import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/tanstack/vite";
 
 // Revision for the SSR shell precache entry ("/"), bumped every build.
 const BUILD_ID = String(Date.now());
@@ -18,6 +19,7 @@ export default defineConfig({
   },
   vite: {
     plugins: [
+      mcpPlugin(),
       VitePWA({
         strategies: "generateSW",
         registerType: "autoUpdate",

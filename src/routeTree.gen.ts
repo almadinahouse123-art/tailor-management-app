@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AppRouteImport } from './routes/app'
@@ -18,6 +19,7 @@ import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppTrashRouteImport } from './routes/app.trash'
 import { Route as AppSearchRouteImport } from './routes/app.search'
 import { Route as AppBackupRouteImport } from './routes/app.backup'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AppWorkersIndexRouteImport } from './routes/app.workers.index'
 import { Route as AppRevenueIndexRouteImport } from './routes/app.revenue.index'
 import { Route as AppProductionIndexRouteImport } from './routes/app.production.index'
@@ -39,6 +41,7 @@ import { Route as AppCustomersNewRouteImport } from './routes/app.customers.new'
 import { Route as AppCustomersIdRouteImport } from './routes/app.customers.$id'
 import { Route as AppBillingNewRouteImport } from './routes/app.billing.new'
 import { Route as AppBillingIdRouteImport } from './routes/app.billing.$id'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AppWorkersIdEditRouteImport } from './routes/app.workers.$id.edit'
 import { Route as AppProductionIdEditRouteImport } from './routes/app.production.$id.edit'
 import { Route as AppOrdersIdEditRouteImport } from './routes/app.orders.$id.edit'
@@ -50,6 +53,11 @@ import { Route as AppBillingIdEditRouteImport } from './routes/app.billing.$id.e
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -92,6 +100,12 @@ const AppBackupRoute = AppBackupRouteImport.update({
   path: '/backup',
   getParentRoute: () => AppRoute,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AppWorkersIndexRoute = AppWorkersIndexRouteImport.update({
   id: '/workers/',
   path: '/workers/',
@@ -197,6 +211,11 @@ const AppBillingIdRoute = AppBillingIdRouteImport.update({
   path: '/billing/$id',
   getParentRoute: () => AppRoute,
 } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppWorkersIdEditRoute = AppWorkersIdEditRouteImport.update({
   id: '/edit',
   path: '/edit',
@@ -238,11 +257,14 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/mcp': typeof McpRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/backup': typeof AppBackupRoute
   '/app/search': typeof AppSearchRoute
   '/app/trash': typeof AppTrashRoute
   '/app/': typeof AppIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/app/billing/$id': typeof AppBillingIdRouteWithChildren
   '/app/billing/new': typeof AppBillingNewRoute
   '/app/customers/$id': typeof AppCustomersIdRouteWithChildren
@@ -276,11 +298,14 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/mcp': typeof McpRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/backup': typeof AppBackupRoute
   '/app/search': typeof AppSearchRoute
   '/app/trash': typeof AppTrashRoute
   '/app': typeof AppIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/app/billing/$id': typeof AppBillingIdRouteWithChildren
   '/app/billing/new': typeof AppBillingNewRoute
   '/app/customers/$id': typeof AppCustomersIdRouteWithChildren
@@ -316,11 +341,14 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/mcp': typeof McpRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/backup': typeof AppBackupRoute
   '/app/search': typeof AppSearchRoute
   '/app/trash': typeof AppTrashRoute
   '/app/': typeof AppIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/app/billing/$id': typeof AppBillingIdRouteWithChildren
   '/app/billing/new': typeof AppBillingNewRoute
   '/app/customers/$id': typeof AppCustomersIdRouteWithChildren
@@ -357,11 +385,14 @@ export interface FileRouteTypes {
     | '/app'
     | '/forgot-password'
     | '/login'
+    | '/mcp'
     | '/reset-password'
+    | '/.well-known/oauth-protected-resource'
     | '/app/backup'
     | '/app/search'
     | '/app/trash'
     | '/app/'
+    | '/.lovable/oauth/consent'
     | '/app/billing/$id'
     | '/app/billing/new'
     | '/app/customers/$id'
@@ -395,11 +426,14 @@ export interface FileRouteTypes {
     | '/'
     | '/forgot-password'
     | '/login'
+    | '/mcp'
     | '/reset-password'
+    | '/.well-known/oauth-protected-resource'
     | '/app/backup'
     | '/app/search'
     | '/app/trash'
     | '/app'
+    | '/.lovable/oauth/consent'
     | '/app/billing/$id'
     | '/app/billing/new'
     | '/app/customers/$id'
@@ -434,11 +468,14 @@ export interface FileRouteTypes {
     | '/app'
     | '/forgot-password'
     | '/login'
+    | '/mcp'
     | '/reset-password'
+    | '/.well-known/oauth-protected-resource'
     | '/app/backup'
     | '/app/search'
     | '/app/trash'
     | '/app/'
+    | '/.lovable/oauth/consent'
     | '/app/billing/$id'
     | '/app/billing/new'
     | '/app/customers/$id'
@@ -474,7 +511,10 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
+  McpRoute: typeof McpRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   PrintMeasurementIdRoute: typeof PrintMeasurementIdRoute
   PrintReceiptIdRoute: typeof PrintReceiptIdRoute
 }
@@ -486,6 +526,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -543,6 +590,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/backup'
       preLoaderRoute: typeof AppBackupRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/app/workers/': {
       id: '/app/workers/'
@@ -690,6 +744,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/billing/$id'
       preLoaderRoute: typeof AppBillingIdRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/app/workers/$id/edit': {
       id: '/app/workers/$id/edit'
@@ -856,7 +917,11 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
+  McpRoute: McpRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   PrintMeasurementIdRoute: PrintMeasurementIdRoute,
   PrintReceiptIdRoute: PrintReceiptIdRoute,
 }
