@@ -150,14 +150,16 @@ function LoginPage() {
             disabled={busy}
             onClick={async () => {
               setBusy(true);
-              const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/app" });
+              const result = await lovable.auth.signInWithOAuth("google", {
+                redirect_uri: window.location.origin + (next ?? "/app"),
+              });
               if (result.error) {
                 toast.error(friendlyError(result.error));
                 setBusy(false);
                 return;
               }
               if (result.redirected) return;
-              nav({ to: "/app" });
+              goNext();
             }}
             className="w-full h-11"
           >
