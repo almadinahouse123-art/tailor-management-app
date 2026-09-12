@@ -36,7 +36,13 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
-  if (!loading && user) return <Navigate to="/app" />;
+  if (!loading && user) {
+    if (next) {
+      window.location.replace(next);
+      return null;
+    }
+    return <Navigate to="/app" />;
+  }
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +58,7 @@ function LoginPage() {
       toast.success("Account created — please sign in");
       setMode("login");
     } else {
-      nav({ to: "/app" });
+      goNext();
     }
   };
 
