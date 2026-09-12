@@ -9,13 +9,27 @@ import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import { lovable } from "@/integrations/lovable/index";
 
+function safeNext(value: unknown): string | undefined {
+  if (typeof value !== "string" || !value.startsWith("/") || value.startsWith("//")) return undefined;
+  return value;
+}
+
 export const Route = createFileRoute("/login")({
+  validateSearch: (s: Record<string, unknown>) => ({ next: safeNext(s.next) }),
   component: LoginPage,
 });
 
 function LoginPage() {
   const { user, signIn, signUp, loading } = useAuth();
   const nav = useNavigate();
+  const { next } = Route.useSearch();
+  const goNext = () => {
+    if (next) {
+      window.location.href = next;
+      return;
+    }
+    nav({ to: "/app" });
+  };
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
