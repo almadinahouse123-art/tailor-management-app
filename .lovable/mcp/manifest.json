@@ -1,0 +1,232 @@
+{
+  "version": 1,
+  "sdk_version": "2.0.4",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://koxqluiesnspneyjphvr.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "almadina-stitching-suite",
+      "version": "0.1.0",
+      "title": "Almadina Stitching Suite"
+    },
+    "tools": [
+      {
+        "name": "list_customers",
+        "title": "List customers",
+        "description": "List the signed-in shop's customers, optionally filtered by a partial name or phone number.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "search": {
+              "description": "Partial name or phone number to filter by.",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Maximum rows to return (default 25).",
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_customer",
+        "title": "Create customer",
+        "description": "Add a new customer to the signed-in shop's customer list.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Customer full name."
+            },
+            "phone": {
+              "description": "Phone number.",
+              "type": "string"
+            },
+            "address": {
+              "description": "Address.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "name"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_orders",
+        "title": "List orders",
+        "description": "List stitching orders for the signed-in shop, optionally filtered by status or customer id.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "status": {
+              "description": "Order status, e.g. pending, stitching, ready, delivered.",
+              "type": "string"
+            },
+            "customer_id": {
+              "description": "Only orders for this customer id.",
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            "limit": {
+              "description": "Maximum rows to return (default 25).",
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_order",
+        "title": "Create order",
+        "description": "Create a new stitching order for an existing customer of the signed-in shop.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "customer_id": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991,
+              "description": "Existing customer id."
+            },
+            "total_amount": {
+              "description": "Total order amount.",
+              "type": "number"
+            },
+            "paid_amount": {
+              "description": "Amount already paid.",
+              "type": "number"
+            },
+            "delivery_date": {
+              "description": "Promised delivery date as YYYY-MM-DD.",
+              "type": "string"
+            },
+            "design_type": {
+              "description": "Design type, e.g. simple or chakpate.",
+              "type": "string"
+            },
+            "color": {
+              "description": "Fabric colour.",
+              "type": "string"
+            },
+            "instructions": {
+              "description": "Special stitching instructions.",
+              "type": "string"
+            },
+            "status": {
+              "description": "Initial status (defaults to the app's default).",
+              "type": "string"
+            }
+          },
+          "required": [
+            "customer_id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_order_status",
+        "title": "Update order status",
+        "description": "Change the status of an existing order (for example to stitching, ready or delivered), and optionally record a paid amount.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "order_id": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991,
+              "description": "Order id to update."
+            },
+            "status": {
+              "type": "string",
+              "minLength": 1,
+              "description": "New status, e.g. pending, stitching, ready, delivered."
+            },
+            "paid_amount": {
+              "description": "Updated total paid amount for this order.",
+              "type": "number"
+            }
+          },
+          "required": [
+            "order_id",
+            "status"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_inventory",
+        "title": "List stock items",
+        "description": "List the shop's stock items with quantity and price, optionally only those at or below their low-stock threshold.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "https://json-schema.org/draft/2020-12/schema",
+          "type": "object",
+          "properties": {
+            "low_stock_only": {
+              "description": "When true, return only items running low.",
+              "type": "boolean"
+            },
+            "limit": {
+              "description": "Maximum rows to return (default 50).",
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
