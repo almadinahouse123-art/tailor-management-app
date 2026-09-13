@@ -4,7 +4,11 @@ function isRefusedContext() {
   if (typeof window === "undefined") return true;
   if (!import.meta.env.PROD) return true;
   if (window.self !== window.top) return true;
+  // Native (Capacitor) shell / local static bundle: no service worker is shipped
+  // there — the whole app is already on-device, so skip registration.
+  if (window.location.protocol === "file:" || window.location.protocol === "capacitor:") return true;
   const h = window.location.hostname;
+  if (h === "localhost" || h === "127.0.0.1" || h === "[::1]") return true;
   if (h.startsWith("id-preview--") || h.startsWith("preview--")) return true;
   if (h === "lovableproject.com" || h.endsWith(".lovableproject.com")) return true;
   if (h === "lovableproject-dev.com" || h.endsWith(".lovableproject-dev.com")) return true;
