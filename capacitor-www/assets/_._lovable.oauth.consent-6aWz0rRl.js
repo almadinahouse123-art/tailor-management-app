@@ -1,0 +1,1 @@
+import{j as t}from"./index-Pvp2kx5N.js";const n=({error:e})=>t.jsx("main",{className:"min-h-screen flex items-center justify-center px-4 text-center",children:t.jsxs("p",{className:"text-sm text-muted-foreground",children:["Could not load this authorization request: ",String(e?.message??e)]})});export{n as errorComponent};
