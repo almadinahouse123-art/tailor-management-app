@@ -3,7 +3,7 @@
 //   npm run build:static
 //
 // Produces a fully client-rendered app shell at:
-//   .output-static/public/index.html
+//   dist/client/index.html
 // plus every JS/CSS/icon asset it needs, so the app boots with zero network
 // access on a cold first launch.
 //
@@ -22,13 +22,8 @@ export default defineConfig({
       prerender: { outputPath: "/index.html" },
     },
   },
-  nitro: {
-    output: {
-      dir: ".output-static",
-      publicDir: ".output-static/public",
-      serverDir: ".output-static/server",
-    },
-  },
+  // No Nitro / Cloudflare server output — this target is a plain static bundle.
+  nitro: false,
   vite: {
     plugins: [mcpPlugin()],
   },
