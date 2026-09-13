@@ -7,6 +7,7 @@
     "dev": "vite dev",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "build:static": "rm -rf dist && vite build --config vite.config.static.ts && rm -rf capacitor-www && mkdir -p capacitor-www && cp -R dist/client/. capacitor-www/",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write ."
