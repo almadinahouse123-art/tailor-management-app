@@ -32,3 +32,12 @@ dist-ssr
 *.sw?
 
 capacitor-www
+
+# Android / Capacitor
+android/build
+android/.gradle
+android/local.properties
+android/app/build
+android/app/src/main/assets/public
+capacitor-www
+
