@@ -13,6 +13,7 @@ import { AuthProvider } from "@/lib/auth";
 import { Toaster } from "@/components/ui/sonner";
 import { OfflineSyncProvider } from "@/lib/offline/use-sync";
 import { registerAppServiceWorker } from "@/lib/pwa";
+import { initNativeShell } from "@/lib/native";
 
 function NotFoundComponent() {
   return (
@@ -100,6 +101,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   useEffect(() => {
     registerAppServiceWorker();
+    return initNativeShell();
   }, []);
   return (
     <QueryClientProvider client={queryClient}>

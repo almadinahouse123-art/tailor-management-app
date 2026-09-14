@@ -1,0 +1,1 @@
+import{ai as n}from"./index-B4GbK-cg.js";var a;(function(t){t.Dark="DARK",t.Light="LIGHT",t.Default="DEFAULT"})(a||(a={}));var r;(function(t){t.None="NONE",t.Slide="SLIDE",t.Fade="FADE"})(r||(r={}));const s=r,i=a,u=n("StatusBar");export{r as Animation,u as StatusBar,s as StatusBarAnimation,i as StatusBarStyle,a as Style};
