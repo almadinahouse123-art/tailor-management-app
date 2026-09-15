@@ -216,18 +216,22 @@ function LoginPage() {
             </svg>
             Sign in with Google
           </Button>
+          </>
+          )}
         </div>
 
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
-          <button
-            type="button"
-            onClick={() => setMode(mode === "login" ? "signup" : "login")}
-            className="text-primary font-semibold hover:underline"
-          >
-            {mode === "login" ? "Create one" : "Sign in"}
-          </button>
-        </p>
+        {online && (
+          <p className="text-center text-sm text-muted-foreground mt-6">
+            {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
+            <button
+              type="button"
+              onClick={() => setMode(mode === "login" ? "signup" : "login")}
+              className="text-primary font-semibold hover:underline"
+            >
+              {mode === "login" ? "Create one" : "Sign in"}
+            </button>
+          </p>
+        )}
       </div>
     </div>
   );
