@@ -9,7 +9,7 @@ export const Route = createFileRoute("/app")({
 });
 
 function AppLayout() {
-  const { user, loading } = useAuth();
+  const { authed, loading } = useAuth();
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -17,7 +17,7 @@ function AppLayout() {
       </div>
     );
   }
-  if (!user) return <Navigate to="/login" />;
+  if (!authed) return <Navigate to="/login" />;
 
   return (
     <div className="min-h-screen bg-background flex">

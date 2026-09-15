@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Navigate, useNavigate } from "@tanstack/react-router";
 import { friendlyError } from "@/lib/friendly-error";
-import { useState } from "react";
-import { Scissors, Mail, Lock, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Scissors, Mail, Lock, Loader2, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
-  const { user, signIn, signUp, loading } = useAuth();
+  const { authed, signIn, signUp, setupLocal, loading, hasLocalAccount } = useAuth();
   const nav = useNavigate();
   const { next } = Route.useSearch();
   const goNext = () => {
@@ -35,8 +35,24 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [online, setOnline] = useState(true);
 
-  if (!loading && user) {
+  useEffect(() => {
+    const read = () => setOnline(navigator.onLine);
+    read();
+    window.addEventListener("online", read);
+    window.addEventListener("offline", read);
+    return () => {
+      window.removeEventListener("online", read);
+      window.removeEventListener("offline", read);
+    };
+  }, []);
+
+  // Offline + no device passcode yet → first-run local setup.
+  const localSetup = !online && !hasLocalAccount;
+  const localUnlock = !online && hasLocalAccount;
+
+  if (!loading && authed) {
     if (next) {
       window.location.replace(next);
       return null;
@@ -47,17 +63,18 @@ function LoginPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    const fn = mode === "login" ? signIn : signUp;
+    const fn = localSetup ? setupLocal : mode === "login" ? signIn : signUp;
     const { error } = await fn(email.trim(), password);
     setBusy(false);
     if (error) {
       toast.error(error);
       return;
     }
-    if (mode === "signup") {
+    if (!localSetup && mode === "signup" && online) {
       toast.success("Account created — please sign in");
       setMode("login");
     } else {
+      if (localSetup) toast.success("Device setup complete — you can work offline");
       goNext();
     }
   };
@@ -76,11 +93,27 @@ function LoginPage() {
           <div className="h-12 w-12 rounded-2xl bg-primary text-primary-foreground inline-flex items-center justify-center shadow-elevated mb-3">
             <Scissors className="h-6 w-6" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
+          <h1 className="text-2xl font-bold text-foreground">
+            {localSetup ? "Set Up This Device" : localUnlock ? "Unlock" : "Welcome Back"}
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Sign in to your Tailor Management System
+            {localSetup
+              ? "No internet needed — create a passcode to start working now"
+              : localUnlock
+                ? "You are offline — enter your device passcode"
+                : "Sign in to your Tailor Management System"}
           </p>
         </div>
+
+        {!online && (
+          <div className="mb-4 flex items-start gap-2 rounded-xl border border-amber-300/70 bg-amber-50 px-4 py-3 text-xs text-amber-900">
+            <WifiOff className="h-4 w-4 mt-0.5 shrink-0" />
+            <span>
+              Working offline. Everything you save stays on this device and uploads
+              automatically once the internet is back.
+            </span>
+          </div>
+        )}
 
         {/* Card */}
         <div className="bg-card rounded-2xl shadow-elevated border border-border/60 p-7">
@@ -104,10 +137,14 @@ function LoginPage() {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-sm font-medium">Password</Label>
-                <Link to="/forgot-password" className="text-xs text-primary hover:underline font-medium">
-                  Forgot Password?
-                </Link>
+                <Label htmlFor="password" className="text-sm font-medium">
+                  {online ? "Password" : "Device Passcode"}
+                </Label>
+                {online && (
+                  <Link to="/forgot-password" className="text-xs text-primary hover:underline font-medium">
+                    Forgot Password?
+                  </Link>
+                )}
               </div>
               <div className="relative">
                 <Lock className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
@@ -132,12 +169,20 @@ function LoginPage() {
             >
               {busy ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
+              ) : localSetup ? (
+                "Create Passcode & Continue"
+              ) : localUnlock ? (
+                "Unlock Offline"
+              ) : mode === "login" ? (
+                "Sign In"
               ) : (
-                mode === "login" ? "Sign In" : "Create Account"
+                "Create Account"
               )}
             </Button>
           </form>
 
+          {online && (
+          <>
           <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
             <div className="h-px flex-1 bg-border" />
             OR CONTINUE WITH
@@ -171,18 +216,22 @@ function LoginPage() {
             </svg>
             Sign in with Google
           </Button>
+          </>
+          )}
         </div>
 
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
-          <button
-            type="button"
-            onClick={() => setMode(mode === "login" ? "signup" : "login")}
-            className="text-primary font-semibold hover:underline"
-          >
-            {mode === "login" ? "Create one" : "Sign in"}
-          </button>
-        </p>
+        {online && (
+          <p className="text-center text-sm text-muted-foreground mt-6">
+            {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
+            <button
+              type="button"
+              onClick={() => setMode(mode === "login" ? "signup" : "login")}
+              className="text-primary font-semibold hover:underline"
+            >
+              {mode === "login" ? "Create one" : "Sign in"}
+            </button>
+          </p>
+        )}
       </div>
     </div>
   );
