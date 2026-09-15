@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Navigate, useNavigate } from "@tanstack/react-router";
 import { friendlyError } from "@/lib/friendly-error";
-import { useState } from "react";
-import { Scissors, Mail, Lock, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Scissors, Mail, Lock, Loader2, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
