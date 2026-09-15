@@ -181,6 +181,8 @@ function LoginPage() {
             </Button>
           </form>
 
+          {online && (
+          <>
           <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
             <div className="h-px flex-1 bg-border" />
             OR CONTINUE WITH
