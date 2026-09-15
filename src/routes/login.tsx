@@ -93,11 +93,27 @@ function LoginPage() {
           <div className="h-12 w-12 rounded-2xl bg-primary text-primary-foreground inline-flex items-center justify-center shadow-elevated mb-3">
             <Scissors className="h-6 w-6" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
+          <h1 className="text-2xl font-bold text-foreground">
+            {localSetup ? "Set Up This Device" : localUnlock ? "Unlock" : "Welcome Back"}
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Sign in to your Tailor Management System
+            {localSetup
+              ? "No internet needed — create a passcode to start working now"
+              : localUnlock
+                ? "You are offline — enter your device passcode"
+                : "Sign in to your Tailor Management System"}
           </p>
         </div>
+
+        {!online && (
+          <div className="mb-4 flex items-start gap-2 rounded-xl border border-amber-300/70 bg-amber-50 px-4 py-3 text-xs text-amber-900">
+            <WifiOff className="h-4 w-4 mt-0.5 shrink-0" />
+            <span>
+              Working offline. Everything you save stays on this device and uploads
+              automatically once the internet is back.
+            </span>
+          </div>
+        )}
 
         {/* Card */}
         <div className="bg-card rounded-2xl shadow-elevated border border-border/60 p-7">
@@ -121,10 +137,14 @@ function LoginPage() {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-sm font-medium">Password</Label>
-                <Link to="/forgot-password" className="text-xs text-primary hover:underline font-medium">
-                  Forgot Password?
-                </Link>
+                <Label htmlFor="password" className="text-sm font-medium">
+                  {online ? "Password" : "Device Passcode"}
+                </Label>
+                {online && (
+                  <Link to="/forgot-password" className="text-xs text-primary hover:underline font-medium">
+                    Forgot Password?
+                  </Link>
+                )}
               </div>
               <div className="relative">
                 <Lock className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
@@ -149,8 +169,14 @@ function LoginPage() {
             >
               {busy ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
+              ) : localSetup ? (
+                "Create Passcode & Continue"
+              ) : localUnlock ? (
+                "Unlock Offline"
+              ) : mode === "login" ? (
+                "Sign In"
               ) : (
-                mode === "login" ? "Sign In" : "Create Account"
+                "Create Account"
               )}
             </Button>
           </form>
