@@ -21,7 +21,7 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
-  const { user, signIn, signUp, loading } = useAuth();
+  const { authed, signIn, signUp, setupLocal, loading, hasLocalAccount } = useAuth();
   const nav = useNavigate();
   const { next } = Route.useSearch();
   const goNext = () => {
@@ -35,8 +35,24 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [online, setOnline] = useState(true);
 
-  if (!loading && user) {
+  useEffect(() => {
+    const read = () => setOnline(navigator.onLine);
+    read();
+    window.addEventListener("online", read);
+    window.addEventListener("offline", read);
+    return () => {
+      window.removeEventListener("online", read);
+      window.removeEventListener("offline", read);
+    };
+  }, []);
+
+  // Offline + no device passcode yet → first-run local setup.
+  const localSetup = !online && !hasLocalAccount;
+  const localUnlock = !online && hasLocalAccount;
+
+  if (!loading && authed) {
     if (next) {
       window.location.replace(next);
       return null;
@@ -47,17 +63,18 @@ function LoginPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    const fn = mode === "login" ? signIn : signUp;
+    const fn = localSetup ? setupLocal : mode === "login" ? signIn : signUp;
     const { error } = await fn(email.trim(), password);
     setBusy(false);
     if (error) {
       toast.error(error);
       return;
     }
-    if (mode === "signup") {
+    if (!localSetup && mode === "signup" && online) {
       toast.success("Account created — please sign in");
       setMode("login");
     } else {
+      if (localSetup) toast.success("Device setup complete — you can work offline");
       goNext();
     }
   };
