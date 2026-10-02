@@ -9,7 +9,7 @@ import {
   type MirroredTable,
   type Row,
 } from "./db";
-import { notifyLocalChange, markSyncedNow, requestSync } from "./bus";
+import { notifyLocalChange, markSyncedNow, requestSync, isCloudAuthed } from "./bus";
 
 type Op = { m: string; args: any[] };
 
@@ -23,7 +23,8 @@ const isNetworkError = (e: any) => {
   );
 };
 
-const online = () => (typeof navigator === "undefined" ? true : navigator.onLine);
+const online = () =>
+  (typeof navigator === "undefined" ? true : navigator.onLine) && isCloudAuthed();
 
 /* ------------------------------------------------------------------ *
  * Local (IndexedDB) evaluation

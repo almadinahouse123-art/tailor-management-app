@@ -1,3 +1,4 @@
+import { bizId } from "@/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/offline/client";
@@ -43,7 +44,7 @@ function MeasurementsList() {
             <Card key={m.id} className="p-3 shadow-card">
               <div className="flex justify-between items-center mb-1">
                 <Link to="/app/customers/$id" params={{ id: String(m.customer_id) }} className="font-semibold flex items-center gap-1">
-                  <Ruler className="h-3.5 w-3.5 text-primary" /> {m.customers?.name ?? `گاہک #${m.customer_id}`}
+                  <Ruler className="h-3.5 w-3.5 text-primary" /> {m.customers?.name ?? `گاہک #${bizId(m.customer_id)}`}
                 </Link>
                 <span className="text-[10px] text-muted-foreground">{new Date(m.created_at).toLocaleDateString()}</span>
               </div>

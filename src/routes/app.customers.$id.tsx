@@ -1,3 +1,4 @@
+import { bizId } from "@/lib/utils";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/offline/client";
@@ -57,7 +58,7 @@ function CustomerDetail() {
 
   return (
     <>
-      <AppHeader title={`گاہک #${c.id}`} back="/app/customers" />
+      <AppHeader title={`گاہک #${bizId(c.id)}`} back="/app/customers" />
       <div className="px-4 py-5 space-y-5 animate-rise">
         {/* Premium profile header */}
         <Card className="relative overflow-hidden p-5 bg-gradient-noir text-primary-foreground border-0 rounded-3xl shadow-elevated">
@@ -68,7 +69,7 @@ function CustomerDetail() {
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-[10px] tracking-[0.2em] uppercase opacity-60 font-display">
-                Customer · #{c.id}
+                Customer · #{bizId(c.id)}
               </div>
               <div className="text-lg font-bold truncate mt-0.5">{c.name}</div>
               {c.phone && (
@@ -200,7 +201,7 @@ function CustomerDetail() {
                   <Link key={o.id} to="/app/orders/$id" params={{ id: String(o.id) }}>
                     <Card className="p-3 shadow-card">
                       <div className="flex items-center justify-between">
-                        <div className="font-bold">آرڈر #{o.id}</div>
+                        <div className="font-bold">آرڈر #{bizId(o.id)}</div>
                         <span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusBadgeClass(ps)}`}>{statusLabel(ps)}</span>
                       </div>
                       <div className="text-xs text-muted-foreground mt-0.5">{ORDER_STATUS_LABEL[o.status as OrderStatus] ?? o.status} • {o.order_date}</div>

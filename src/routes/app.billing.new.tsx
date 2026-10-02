@@ -1,3 +1,4 @@
+import { bizId } from "@/lib/utils";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { friendlyError } from "@/lib/friendly-error";
 import { useQuery } from "@tanstack/react-query";
@@ -70,7 +71,7 @@ function NewInvoice() {
             <Select value={customerId} onValueChange={setCustomerId}>
               <SelectTrigger className="mt-1"><SelectValue placeholder="منتخب کریں" /></SelectTrigger>
               <SelectContent>
-                {customers.map((c) => <SelectItem key={c.id} value={String(c.id)}>#{c.id} — {c.name}</SelectItem>)}
+                {customers.map((c) => <SelectItem key={c.id} value={String(c.id)}>#{bizId(c.id)} — {c.name}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>

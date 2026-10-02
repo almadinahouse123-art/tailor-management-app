@@ -1,3 +1,4 @@
+import { bizId } from "@/lib/utils";
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -21,7 +22,7 @@ const FIELDS = [
 function PrintMeasurement() {
   const { id } = Route.useParams();
   const mid = Number(id);
-  const { user, loading } = useAuth();
+  const { authed, loading } = useAuth();
 
   const { data, isLoading } = useQuery({
     queryKey: ["print-measurement", mid],
@@ -33,7 +34,7 @@ function PrintMeasurement() {
         .single();
       return data;
     },
-    enabled: !!user,
+    enabled: authed,
   });
 
   useEffect(() => {
@@ -44,7 +45,7 @@ function PrintMeasurement() {
   }, [data]);
 
   if (loading) return null;
-  if (!user) return <Navigate to="/login" />;
+  if (!authed) return <Navigate to="/login" />;
   if (isLoading || !data) {
     return <div className="p-8 text-center" dir="rtl">لوڈ ہو رہا ہے...</div>;
   }
@@ -82,8 +83,8 @@ function PrintMeasurement() {
 
         {/* Customer info */}
         <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm border border-black p-3 mb-4">
-          <div className="flex justify-between"><span className="font-bold">گاہک نمبر:</span><span>#{c?.id}</span></div>
-          <div className="flex justify-between"><span className="font-bold">پیمائش نمبر:</span><span>#{m.id}</span></div>
+          <div className="flex justify-between"><span className="font-bold">گاہک نمبر:</span><span>#{bizId(c?.id)}</span></div>
+          <div className="flex justify-between"><span className="font-bold">پیمائش نمبر:</span><span>#{bizId(m.id)}</span></div>
           <div className="flex justify-between"><span className="font-bold">نام:</span><span>{c?.name}</span></div>
           <div className="flex justify-between"><span className="font-bold">فون:</span><span dir="ltr">{c?.phone || "—"}</span></div>
           <div className="flex justify-between col-span-2"><span className="font-bold">تاریخ:</span><span>{date}</span></div>

@@ -1,3 +1,4 @@
+import { bizId } from "@/lib/utils";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -85,18 +86,18 @@ function OrderDetail() {
 
   return (
     <>
-      <AppHeader title={`آرڈر #${oid}`} back="/app/orders" />
+      <AppHeader title={`آرڈر #${bizId(oid)}`} back="/app/orders" />
       <div className="px-4 py-4 space-y-3">
         <Card className="p-4 bg-gradient-primary text-primary-foreground border-0">
           <div className="flex justify-between items-start">
             <div>
               <div className="text-xs opacity-80">آرڈر نمبر</div>
-              <div className="text-2xl font-bold">#{order.id}</div>
+              <div className="text-2xl font-bold">#{bizId(order.id)}</div>
             </div>
             <span className={`text-xs px-2 py-1 rounded-full bg-white/15`}>{statusLabel(ps)}</span>
           </div>
           <Link to="/app/customers/$id" params={{ id: String(order.customer_id) }} className="block mt-2 underline text-sm">
-            {order.customers?.name} (#{order.customer_id})
+            {order.customers?.name} (#{bizId(order.customer_id)})
           </Link>
           <div className="grid grid-cols-3 gap-2 mt-3 text-xs">
             <div className="bg-white/10 rounded p-2"><div className="opacity-80">کل</div><div className="font-bold text-sm">{fmtMoney(order.total_amount)}</div></div>

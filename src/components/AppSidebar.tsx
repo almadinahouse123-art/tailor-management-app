@@ -23,7 +23,7 @@ const secondary = [
 
 export function AppSidebar() {
   const path = useRouterState({ select: (s) => s.location.pathname });
-  const { signOut, user } = useAuth();
+  const { signOut, user, localUser } = useAuth();
 
   const isActive = (to: string, exact?: boolean) =>
     exact ? path === to : path === to || path.startsWith(to + "/") || path === to;
@@ -93,11 +93,11 @@ export function AppSidebar() {
       <div className="border-t border-sidebar-border p-3">
         <div className="flex items-center gap-3 px-2 py-2 rounded-lg">
           <div className="h-9 w-9 rounded-full bg-primary/10 text-primary inline-flex items-center justify-center font-semibold text-sm shrink-0">
-            {(user?.email ?? "U").slice(0, 1).toUpperCase()}
+            {(user?.email ?? localUser?.email ?? "U").slice(0, 1).toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
             <div className="text-xs font-semibold text-sidebar-foreground truncate">
-              {user?.email ?? "User"}
+              {user?.email ?? localUser?.email ?? "User"}
             </div>
             <div className="text-[10px] text-muted-foreground">Signed in</div>
           </div>

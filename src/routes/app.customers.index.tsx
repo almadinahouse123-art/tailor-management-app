@@ -1,3 +1,4 @@
+import { bizId } from "@/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -105,7 +106,7 @@ function CustomersList() {
                       {initials(c.name)}
                     </div>
                     <span className="absolute -bottom-1 -left-1 text-[9px] font-display font-semibold bg-gold text-gold-foreground rounded-full px-1.5 py-0.5 shadow-card" dir="ltr">
-                      #{c.id}
+                      #{bizId(c.id)}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
