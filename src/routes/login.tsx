@@ -15,15 +15,18 @@ function safeNext(value: unknown): string | undefined {
 }
 
 export const Route = createFileRoute("/login")({
-  validateSearch: (s: Record<string, unknown>): { next?: string } =>
-    ({ next: safeNext(s.next) }) as { next?: string },
+  validateSearch: (s: Record<string, unknown>): { next?: string; cloud?: boolean } =>
+    ({ next: safeNext(s.next), cloud: s.cloud === true || s.cloud === "1" || undefined }) as {
+      next?: string;
+      cloud?: boolean;
+    },
   component: LoginPage,
 });
 
 function LoginPage() {
-  const { authed, signIn, signUp, setupLocal, loading, hasLocalAccount } = useAuth();
+  const { authed, user, signIn, signUp, setupLocal, loading, hasLocalAccount } = useAuth();
   const nav = useNavigate();
-  const { next } = Route.useSearch();
+  const { next, cloud } = Route.useSearch();
   const goNext = () => {
     if (next) {
       window.location.href = next;
@@ -52,7 +55,7 @@ function LoginPage() {
   const localSetup = !online && !hasLocalAccount;
   const localUnlock = !online && hasLocalAccount;
 
-  if (!loading && authed) {
+  if (!loading && authed && !(cloud && !user)) {
     if (next) {
       window.location.replace(next);
       return null;
