@@ -47,3 +47,18 @@ export function registerSyncRequester(fn: () => void) {
 export function requestSync() {
   syncRequester?.();
 }
+
+/**
+ * Whether a cloud (Supabase) session exists. When the user is only signed in
+ * locally (offline first-run), reads/writes stay on the device and are queued
+ * until a cloud sign-in happens.
+ */
+let cloudAuthed = false;
+export function setCloudAuthed(v: boolean) {
+  const was = cloudAuthed;
+  cloudAuthed = v;
+  if (v && !was) requestSync();
+}
+export function isCloudAuthed() {
+  return cloudAuthed;
+}
