@@ -10,6 +10,7 @@ import {
   verifyLocalCredentials,
   type LocalSession,
 } from "@/lib/local-auth";
+import { setCloudAuthed } from "@/lib/offline/bus";
 
 interface AuthCtx {
   user: User | null;
@@ -53,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false;
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
+      setCloudAuthed(!!s);
       setSession(s);
       setUser(s?.user ?? null);
     });
@@ -67,6 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       try {
         const { data } = await supabase.auth.getSession();
+        setCloudAuthed(!!data.session);
         if (!cancelled) {
           setSession(data.session);
           setUser(data.session?.user ?? null);
