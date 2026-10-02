@@ -56,7 +56,7 @@ function PrintReceipt() {
   });
 
   if (loading) return null;
-  if (!user) return <Navigate to="/login" />;
+  if (!authed) return <Navigate to="/login" />;
   if (isLoading || !data) return <div className="p-8 text-center" dir="rtl">لوڈ ہو رہا ہے...</div>;
 
   const r: any = data;
