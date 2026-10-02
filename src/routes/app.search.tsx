@@ -1,3 +1,4 @@
+import { bizId } from "@/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -118,7 +119,7 @@ function SmartSearch() {
                       <Card className="p-3 shadow-card">
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="font-bold">آرڈر #{o.id}</div>
+                            <div className="font-bold">آرڈر #{bizId(o.id)}</div>
                             <div className="text-xs text-muted-foreground">{o.customers?.name}</div>
                           </div>
                           <span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusBadgeClass(ps)}`}>

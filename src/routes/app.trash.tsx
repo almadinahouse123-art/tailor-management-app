@@ -1,3 +1,4 @@
+import { bizId } from "@/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -41,12 +42,12 @@ const TABS: { key: TrashTable; label: string }[] = [
 
 function describe(table: TrashTable, r: any): string {
   switch (table) {
-    case "customers": return `#${r.id} — ${r.name}${r.phone ? ` · ${r.phone}` : ""}`;
-    case "orders": return `آرڈر #${r.id} · ${fmtMoney(r.total_amount)}`;
-    case "measurements": return `پیمائش #${r.id} (گاہک #${r.customer_id})`;
-    case "workers": return `${r.name} (#${r.id})`;
+    case "customers": return `#${bizId(r.id)} — ${r.name}${r.phone ? ` · ${r.phone}` : ""}`;
+    case "orders": return `آرڈر #${bizId(r.id)} · ${fmtMoney(r.total_amount)}`;
+    case "measurements": return `پیمائش #${bizId(r.id)} (گاہک #${r.customer_id})`;
+    case "workers": return `${r.name} (#${bizId(r.id)})`;
     case "inventory": return `${r.item_name} · ${r.quantity ?? 0} ${r.unit ?? ""}`;
-    case "invoices": return `انوائس #${r.id} · ${fmtMoney(r.total_amount)}`;
+    case "invoices": return `انوائس #${bizId(r.id)} · ${fmtMoney(r.total_amount)}`;
     case "customer_ledger": return `${r.entry_date} · ${r.description ?? ""} · ${fmtMoney(r.paid_amount)}`;
     case "worker_ledger": return `${r.entry_date} · ${r.description ?? ""}`;
     case "daily_production": return `${r.production_date} · ${r.suits_count} سوٹ · ${fmtMoney(r.total_amount)}`;

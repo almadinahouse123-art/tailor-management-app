@@ -1,3 +1,4 @@
+import { bizId } from "@/lib/utils";
 import { createFileRoute, Navigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -101,11 +102,11 @@ function PrintReceipt() {
           <div style={{ fontSize: "8px" }}>Almadina Cloth House &amp; Stitching</div>
         </div>
         <div className="flex justify-between pt-1">
-          <span>{isInvoice ? "انوائس" : "آرڈر"} #{r.id}</span>
+          <span>{isInvoice ? "انوائس" : "آرڈر"} #{bizId(r.id)}</span>
           <span dir="ltr">{date}</span>
         </div>
         <div className="border-t border-dashed border-black mt-1 pt-1">
-          <div>گاہک: {c?.name} (#{r.customer_id})</div>
+          <div>گاہک: {c?.name} (#{bizId(r.customer_id)})</div>
           {c?.phone && <div dir="ltr" className="text-right">{c.phone}</div>}
           {!isInvoice && r.delivery_date && <div>ڈیلیوری: <span dir="ltr">{r.delivery_date}</span></div>}
         </div>

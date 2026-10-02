@@ -1,3 +1,4 @@
+import { bizId } from "@/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/offline/client";
@@ -65,7 +66,7 @@ function ProductionList() {
                       {r.production_date}
                       {Number(r.simple_suits) > 0 && <> · سادہ {r.simple_suits}×{fmtMoney(r.simple_rate)}</>}
                       {Number(r.chakpate_suits) > 0 && <> · چک پٹے {r.chakpate_suits}×{fmtMoney(r.chakpate_rate)}</>}
-                      {r.order_id && <> · آرڈر #{r.order_id}</>}
+                      {r.order_id && <> · آرڈر #{bizId(r.order_id)}</>}
                     </div>
                     {r.notes && <div className="text-xs mt-1">{r.notes}</div>}
                   </div>

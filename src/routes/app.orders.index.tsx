@@ -1,3 +1,4 @@
+import { bizId } from "@/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -119,7 +120,7 @@ function OrdersList() {
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-[11px] font-display font-semibold text-gold" dir="ltr">#{o.id}</span>
+                          <span className="text-[11px] font-display font-semibold text-gold" dir="ltr">#{bizId(o.id)}</span>
                           <span className="text-xs bg-muted text-foreground/80 px-2 py-0.5 rounded-md">
                             {ORDER_STATUS_LABEL[o.status as OrderStatus] ?? o.status}
                           </span>

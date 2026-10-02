@@ -1,3 +1,4 @@
+import { bizId } from "@/lib/utils";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/offline/client";
@@ -39,11 +40,11 @@ function InvoiceDetail() {
             <p className="text-[10px] text-muted-foreground mt-0.5">Almadina Cloth House & Stitching</p>
           </div>
           <div className="flex justify-between text-xs mb-2">
-            <span>انوائس #{inv.id}</span>
+            <span>انوائس #{bizId(inv.id)}</span>
             <span dir="ltr">{inv.invoice_date}</span>
           </div>
           <div className="text-sm mb-3">
-            <div><span className="text-muted-foreground text-xs">گاہک:</span> {inv.customers?.name} (#{inv.customer_id})</div>
+            <div><span className="text-muted-foreground text-xs">گاہک:</span> {inv.customers?.name} (#{bizId(inv.customer_id)})</div>
             {inv.customers?.phone && <div className="text-xs" dir="ltr">{inv.customers.phone}</div>}
           </div>
           <table className="w-full text-xs border-t border-b">

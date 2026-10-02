@@ -1,3 +1,4 @@
+import { bizId } from "@/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/offline/client";
@@ -69,7 +70,7 @@ function BillingList() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-display font-semibold text-gold" dir="ltr">#{i.id}</span>
+                        <span className="text-[11px] font-display font-semibold text-gold" dir="ltr">#{bizId(i.id)}</span>
                         <span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusBadgeClass(ps)}`}>{statusLabel(ps)}</span>
                       </div>
                       <div className="font-semibold truncate mt-0.5">{i.customers?.name ?? "—"}</div>

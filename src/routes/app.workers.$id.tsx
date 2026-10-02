@@ -1,3 +1,4 @@
+import { bizId } from "@/lib/utils";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -263,7 +264,7 @@ function WorkerDetail() {
                 <Card className="p-3 text-sm">
                   <div className="flex justify-between items-start">
                     <div>
-                      <div className="font-semibold">آرڈر #{o.id}</div>
+                      <div className="font-semibold">آرڈر #{bizId(o.id)}</div>
                       <div className="text-xs text-muted-foreground">
                         {o.customers?.name} · {o.order_date}
                         {o.delivery_date && <> · ڈیلیوری {o.delivery_date}</>}
