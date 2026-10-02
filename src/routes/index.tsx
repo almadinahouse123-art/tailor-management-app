@@ -7,7 +7,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { user, loading } = useAuth();
+  const { authed, loading } = useAuth();
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-gradient-primary text-primary-foreground" dir="rtl">
@@ -17,5 +17,5 @@ function Index() {
       </div>
     );
   }
-  return <Navigate to={user ? "/app" : "/login"} />;
+  return <Navigate to={authed ? "/app" : "/login"} />;
 }
