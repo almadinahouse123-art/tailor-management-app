@@ -44,7 +44,7 @@ function describe(table: TrashTable, r: any): string {
   switch (table) {
     case "customers": return `#${bizId(r.id)} — ${r.name}${r.phone ? ` · ${r.phone}` : ""}`;
     case "orders": return `آرڈر #${bizId(r.id)} · ${fmtMoney(r.total_amount)}`;
-    case "measurements": return `پیمائش #${bizId(r.id)} (گاہک #${r.customer_id})`;
+    case "measurements": return `پیمائش #${bizId(r.id)} (گاہک #${bizId(r.customer_id)})`;
     case "workers": return `${r.name} (#${bizId(r.id)})`;
     case "inventory": return `${r.item_name} · ${r.quantity ?? 0} ${r.unit ?? ""}`;
     case "invoices": return `انوائس #${bizId(r.id)} · ${fmtMoney(r.total_amount)}`;

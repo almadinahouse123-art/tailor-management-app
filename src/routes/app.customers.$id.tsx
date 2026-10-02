@@ -58,7 +58,7 @@ function CustomerDetail() {
 
   return (
     <>
-      <AppHeader title={`گاہک #${c.id}`} back="/app/customers" />
+      <AppHeader title={`گاہک #${bizId(c.id)}`} back="/app/customers" />
       <div className="px-4 py-5 space-y-5 animate-rise">
         {/* Premium profile header */}
         <Card className="relative overflow-hidden p-5 bg-gradient-noir text-primary-foreground border-0 rounded-3xl shadow-elevated">

@@ -125,7 +125,7 @@ function WorkerDetail() {
 
   return (
     <>
-      <AppHeader title={`کاریگر #${worker.id}`} back="/app/workers" />
+      <AppHeader title={`کاریگر #${bizId(worker.id)}`} back="/app/workers" />
       <div className="px-4 py-4 space-y-3">
         <Card className="p-4 space-y-2">
           <div className="text-lg font-bold">{worker.name}</div>

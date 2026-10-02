@@ -29,7 +29,7 @@ function InvoiceDetail() {
 
   return (
     <>
-      <AppHeader title={`انوائس #${inv.id}`} back="/app/billing" />
+      <AppHeader title={`انوائس #${bizId(inv.id)}`} back="/app/billing" />
       <div className="px-4 py-4 space-y-3 print:p-2">
         <Card className="p-4 print:shadow-none print:border-0" id="invoice-print">
           <div className="text-center border-b pb-3 mb-3">

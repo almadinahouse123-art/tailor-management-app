@@ -86,7 +86,7 @@ function OrderDetail() {
 
   return (
     <>
-      <AppHeader title={`آرڈر #${oid}`} back="/app/orders" />
+      <AppHeader title={`آرڈر #${bizId(oid)}`} back="/app/orders" />
       <div className="px-4 py-4 space-y-3">
         <Card className="p-4 bg-gradient-primary text-primary-foreground border-0">
           <div className="flex justify-between items-start">

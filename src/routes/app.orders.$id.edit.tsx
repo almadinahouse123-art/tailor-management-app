@@ -1,3 +1,4 @@
+import { bizId } from "@/lib/utils";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { friendlyError } from "@/lib/friendly-error";
 import { useQuery } from "@tanstack/react-query";
@@ -75,7 +76,7 @@ function EditOrder() {
 
   return (
     <>
-      <AppHeader title={`آرڈر #${oid} ترمیم`} back="/app/orders/$id" />
+      <AppHeader title={`آرڈر #${bizId(oid)} ترمیم`} back="/app/orders/$id" />
       <form onSubmit={save} className="px-4 py-4 space-y-3">
         <Card className="p-3 space-y-3">
           <div className="grid grid-cols-2 gap-3">
