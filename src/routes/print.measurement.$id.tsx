@@ -21,7 +21,7 @@ const FIELDS = [
 function PrintMeasurement() {
   const { id } = Route.useParams();
   const mid = Number(id);
-  const { user, loading } = useAuth();
+  const { authed, loading } = useAuth();
 
   const { data, isLoading } = useQuery({
     queryKey: ["print-measurement", mid],
@@ -33,7 +33,7 @@ function PrintMeasurement() {
         .single();
       return data;
     },
-    enabled: !!user,
+    enabled: authed,
   });
 
   useEffect(() => {

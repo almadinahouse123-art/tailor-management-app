@@ -30,7 +30,7 @@ export const Route = createFileRoute("/print/receipt/$id")({
 function PrintReceipt() {
   const { id } = Route.useParams();
   const search = Route.useSearch();
-  const { user, loading } = useAuth();
+  const { authed, loading } = useAuth();
   const [width, setWidth] = useState<58 | 80>(search.w ?? 58);
   const isInvoice = search.type === "invoice";
 
@@ -52,7 +52,7 @@ function PrintReceipt() {
         .single();
       return data;
     },
-    enabled: !!user,
+    enabled: authed,
   });
 
   if (loading) return null;
