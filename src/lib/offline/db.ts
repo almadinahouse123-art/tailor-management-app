@@ -1,4 +1,7 @@
 import Dexie, { type Table } from "dexie";
+import { Capacitor } from "@capacitor/core";
+import type { LocalStore } from "./store";
+import { sqliteStore } from "./sqlite-store";
 
 /** Tables mirrored locally in IndexedDB. */
 export const MIRRORED_TABLES = [
@@ -53,7 +56,9 @@ export type OutboxOp = {
   error?: string | null;
 };
 
-class OfflineDatabase extends Dexie {
+/** IndexedDB adapter (web / PWA). Satisfies the LocalStore contract. */
+export class DexieStore extends Dexie {
+  readonly kind = "indexeddb" as const;
   outbox!: Table<OutboxOp, number>;
   meta!: Table<{ key: string; value: any }, string>;
 
@@ -72,16 +77,22 @@ class OfflineDatabase extends Dexie {
   }
 }
 
-let _db: OfflineDatabase | null = null;
+let _db: LocalStore | null = null;
 
 export function hasIndexedDB() {
   return typeof indexedDB !== "undefined";
 }
 
-/** Lazily open the local database. Returns null during SSR. */
-export function getDb(): OfflineDatabase | null {
-  if (!hasIndexedDB()) return null;
-  if (!_db) _db = new OfflineDatabase();
+/**
+ * The single entry point to on-device storage. Native Android uses SQLite;
+ * the browser/PWA uses IndexedDB. Returns null during SSR.
+ */
+export function getDb(): LocalStore | null {
+  if (typeof window === "undefined") return null;
+  if (!_db) {
+    if (Capacitor.isNativePlatform()) _db = sqliteStore;
+    else if (hasIndexedDB()) _db = new DexieStore() as unknown as LocalStore;
+  }
   return _db;
 }
 
