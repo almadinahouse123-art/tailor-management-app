@@ -25,6 +25,7 @@ export type Database = {
           order_id: number | null
           paid_amount: number
           total_amount: number
+          uid: string
           updated_at: string
           user_id: string
         }
@@ -34,10 +35,11 @@ export type Database = {
           deleted_at?: string | null
           description?: string | null
           entry_date?: string
-          id?: never
+          id?: number
           order_id?: number | null
           paid_amount?: number
           total_amount?: number
+          uid?: string
           updated_at?: string
           user_id?: string
         }
@@ -47,10 +49,11 @@ export type Database = {
           deleted_at?: string | null
           description?: string | null
           entry_date?: string
-          id?: never
+          id?: number
           order_id?: number | null
           paid_amount?: number
           total_amount?: number
+          uid?: string
           updated_at?: string
           user_id?: string
         }
@@ -80,6 +83,7 @@ export type Database = {
           name: string
           phone: string | null
           photo_url: string | null
+          uid: string
           updated_at: string
           user_id: string
         }
@@ -87,10 +91,11 @@ export type Database = {
           address?: string | null
           created_at?: string
           deleted_at?: string | null
-          id?: never
+          id?: number
           name: string
           phone?: string | null
           photo_url?: string | null
+          uid?: string
           updated_at?: string
           user_id?: string
         }
@@ -98,10 +103,11 @@ export type Database = {
           address?: string | null
           created_at?: string
           deleted_at?: string | null
-          id?: never
+          id?: number
           name?: string
           phone?: string | null
           photo_url?: string | null
+          uid?: string
           updated_at?: string
           user_id?: string
         }
@@ -122,6 +128,7 @@ export type Database = {
           simple_suits: number
           suits_count: number
           total_amount: number
+          uid: string
           updated_at: string
           user_id: string
           worker_id: number | null
@@ -131,7 +138,7 @@ export type Database = {
           chakpate_suits?: number
           created_at?: string
           deleted_at?: string | null
-          id?: never
+          id?: number
           notes?: string | null
           order_id?: number | null
           production_date?: string
@@ -140,6 +147,7 @@ export type Database = {
           simple_suits?: number
           suits_count?: number
           total_amount?: number
+          uid?: string
           updated_at?: string
           user_id?: string
           worker_id?: number | null
@@ -149,7 +157,7 @@ export type Database = {
           chakpate_suits?: number
           created_at?: string
           deleted_at?: string | null
-          id?: never
+          id?: number
           notes?: string | null
           order_id?: number | null
           production_date?: string
@@ -158,6 +166,7 @@ export type Database = {
           simple_suits?: number
           suits_count?: number
           total_amount?: number
+          uid?: string
           updated_at?: string
           user_id?: string
           worker_id?: number | null
@@ -182,6 +191,7 @@ export type Database = {
           low_stock_threshold: number
           notes: string | null
           quantity: number
+          uid: string
           unit: string | null
           unit_price: number
           updated_at: string
@@ -191,11 +201,12 @@ export type Database = {
           category?: string | null
           created_at?: string
           deleted_at?: string | null
-          id?: never
+          id?: number
           item_name: string
           low_stock_threshold?: number
           notes?: string | null
           quantity?: number
+          uid?: string
           unit?: string | null
           unit_price?: number
           updated_at?: string
@@ -205,11 +216,12 @@ export type Database = {
           category?: string | null
           created_at?: string
           deleted_at?: string | null
-          id?: never
+          id?: number
           item_name?: string
           low_stock_threshold?: number
           notes?: string | null
           quantity?: number
+          uid?: string
           unit?: string | null
           unit_price?: number
           updated_at?: string
@@ -230,6 +242,7 @@ export type Database = {
           price_per_suit: number
           total_amount: number
           total_suits: number
+          uid: string
           updated_at: string
           user_id: string
         }
@@ -237,7 +250,7 @@ export type Database = {
           created_at?: string
           customer_id: number
           deleted_at?: string | null
-          id?: never
+          id?: number
           invoice_date?: string
           notes?: string | null
           order_id?: number | null
@@ -245,6 +258,7 @@ export type Database = {
           price_per_suit?: number
           total_amount?: number
           total_suits?: number
+          uid?: string
           updated_at?: string
           user_id?: string
         }
@@ -252,7 +266,7 @@ export type Database = {
           created_at?: string
           customer_id?: number
           deleted_at?: string | null
-          id?: never
+          id?: number
           invoice_date?: string
           notes?: string | null
           order_id?: number | null
@@ -260,6 +274,7 @@ export type Database = {
           price_per_suit?: number
           total_amount?: number
           total_suits?: number
+          uid?: string
           updated_at?: string
           user_id?: string
         }
@@ -302,6 +317,7 @@ export type Database = {
           panja: string | null
           shalwar_size: string | null
           tera: string | null
+          uid: string
           updated_at: string
           user_id: string
         }
@@ -319,13 +335,14 @@ export type Database = {
           daman_style?: string | null
           deleted_at?: string | null
           fabric_image_url?: string | null
-          id?: never
+          id?: number
           jeb?: string | null
           lambai?: string | null
           notes?: string | null
           panja?: string | null
           shalwar_size?: string | null
           tera?: string | null
+          uid?: string
           updated_at?: string
           user_id?: string
         }
@@ -343,13 +360,14 @@ export type Database = {
           daman_style?: string | null
           deleted_at?: string | null
           fabric_image_url?: string | null
-          id?: never
+          id?: number
           jeb?: string | null
           lambai?: string | null
           notes?: string | null
           panja?: string | null
           shalwar_size?: string | null
           tera?: string | null
+          uid?: string
           updated_at?: string
           user_id?: string
         }
@@ -381,6 +399,7 @@ export type Database = {
           paid_amount: number
           status: string
           total_amount: number
+          uid: string
           updated_at: string
           user_id: string
         }
@@ -394,13 +413,14 @@ export type Database = {
           delivery_date?: string | null
           design_type?: string | null
           fabric_image_url?: string | null
-          id?: never
+          id?: number
           instructions?: string | null
           notes?: string | null
           order_date?: string
           paid_amount?: number
           status?: string
           total_amount?: number
+          uid?: string
           updated_at?: string
           user_id?: string
         }
@@ -414,13 +434,14 @@ export type Database = {
           delivery_date?: string | null
           design_type?: string | null
           fabric_image_url?: string | null
-          id?: never
+          id?: number
           instructions?: string | null
           notes?: string | null
           order_date?: string
           paid_amount?: number
           status?: string
           total_amount?: number
+          uid?: string
           updated_at?: string
           user_id?: string
         }
@@ -450,6 +471,7 @@ export type Database = {
           entry_date: string
           id: number
           paid_amount: number
+          uid: string
           updated_at: string
           user_id: string
           worker_id: number
@@ -460,8 +482,9 @@ export type Database = {
           description?: string | null
           earned_amount?: number
           entry_date?: string
-          id?: never
+          id?: number
           paid_amount?: number
+          uid?: string
           updated_at?: string
           user_id?: string
           worker_id: number
@@ -472,8 +495,9 @@ export type Database = {
           description?: string | null
           earned_amount?: number
           entry_date?: string
-          id?: never
+          id?: number
           paid_amount?: number
+          uid?: string
           updated_at?: string
           user_id?: string
           worker_id?: number
@@ -499,6 +523,7 @@ export type Database = {
           notes: string | null
           phone: string | null
           rate_per_suit: number
+          uid: string
           updated_at: string
           user_id: string
         }
@@ -507,11 +532,12 @@ export type Database = {
           address?: string | null
           created_at?: string
           deleted_at?: string | null
-          id?: never
+          id?: number
           name: string
           notes?: string | null
           phone?: string | null
           rate_per_suit?: number
+          uid?: string
           updated_at?: string
           user_id?: string
         }
@@ -520,11 +546,12 @@ export type Database = {
           address?: string | null
           created_at?: string
           deleted_at?: string | null
-          id?: never
+          id?: number
           name?: string
           notes?: string | null
           phone?: string | null
           rate_per_suit?: number
+          uid?: string
           updated_at?: string
           user_id?: string
         }
@@ -535,7 +562,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      business_number_floor: { Args: never; Returns: Json }
     }
     Enums: {
       [_ in never]: never
