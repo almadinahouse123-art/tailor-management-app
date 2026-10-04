@@ -6,11 +6,13 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Display form of a sequential business number. Records created offline carry a
- * temporary negative id until they sync and receive their real number.
+ * Display form of a sequential business number. Numbers are assigned on the
+ * device at creation time and never change. Very old offline records (from
+ * before permanent numbering) may still carry a negative placeholder until
+ * they upload; those show a dash.
  */
 export function bizId(id: number | string | null | undefined): string {
   const n = Number(id);
-  if (id == null || Number.isNaN(n)) return "—";
-  return n < 0 ? "نیا (sync pending)" : String(n);
+  if (id == null || Number.isNaN(n) || n < 0) return "—";
+  return String(n);
 }
