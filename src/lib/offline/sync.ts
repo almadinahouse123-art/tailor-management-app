@@ -43,7 +43,20 @@ async function pushOp(op: OutboxOp): Promise<{ ok: boolean; error?: any }> {
   const db = getDb()!;
   const payload = await resolvePayload(op.table, op.payload);
 
+  if (op.op === "insert" && !isLocalId(op.id)) {
+    // Permanent identity: the record already has its uid + business number.
+    // Upsert on uid so a retried upload can never create a second copy.
+    const { error } = await (cloud as any)
+      .from(op.table)
+      .upsert({ ...payload, id: op.id }, { onConflict: "uid", ignoreDuplicates: true });
+    if (error) return { ok: false, error };
+    const row = await db.rows(op.table).get(op.id);
+    if (row) await db.rows(op.table).put({ ...row, _pending: 0, _local: 0 });
+    return { ok: true };
+  }
+
   if (op.op === "insert") {
+    // Legacy path: rows queued by older app versions with a temporary id.
     const { data, error } = await (cloud as any)
       .from(op.table)
       .insert(payload)

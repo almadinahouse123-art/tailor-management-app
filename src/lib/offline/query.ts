@@ -10,6 +10,7 @@ import {
   type Row,
 } from "./db";
 import { notifyLocalChange, markSyncedNow, requestSync, isCloudAuthed } from "./bus";
+import { assignIdentity, refreshNumberFloor } from "./ids";
 
 type Op = { m: string; args: any[] };
 
@@ -356,7 +357,15 @@ class OfflineQuery<T = any> implements PromiseLike<Result<T>> {
   /* -------------------- writes -------------------- */
 
   private async runWrite(): Promise<Result<any>> {
-    if (online()) {
+    const isOnline = online();
+    if (this.action.kind === "insert") {
+      // Permanent identity is assigned on the device, before any cloud call,
+      // so the record keeps the same uid and business number forever.
+      if (isOnline) await refreshNumberFloor();
+      const p = this.action.payload;
+      await assignIdentity(this.table, Array.isArray(p) ? p : [p]);
+    }
+    if (isOnline) {
       try {
         const res = await this.replayOnCloud();
         if (!res.error) {
@@ -396,7 +405,7 @@ class OfflineQuery<T = any> implements PromiseLike<Result<T>> {
       const written: Row[] = [];
       for (let i = 0; i < payloads.length; i++) {
         const server = serverRows[i];
-        const id = server?.id ?? nextLocalId();
+        const id = server?.id ?? payloads[i]?.id ?? nextLocalId();
         const row: Row = {
           deleted_at: null,
           created_at: now,
@@ -450,9 +459,10 @@ class OfflineQuery<T = any> implements PromiseLike<Result<T>> {
 
     for (const r of rows) {
       await db.rows(table).delete(r.id);
-      if (!opts.synced && !isLocalId(r.id)) {
+      const neverSynced = isLocalId(r.id) || r._local === 1;
+      if (!opts.synced && !neverSynced) {
         await db.outbox.add({ table, op: "delete", id: r.id, createdAt: now });
-      } else if (!opts.synced && isLocalId(r.id)) {
+      } else if (!opts.synced && neverSynced) {
         // never synced: drop any queued ops for this row
         const queued = await db.outbox.where("table").equals(table).toArray();
         for (const q of queued) if (q.id === r.id) await db.outbox.delete(q.seq!);
