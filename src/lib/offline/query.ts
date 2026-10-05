@@ -11,6 +11,7 @@ import {
 } from "./db";
 import { notifyLocalChange, markSyncedNow, requestSync, isCloudAuthed } from "./bus";
 import { assignIdentity, refreshNumberFloor } from "./ids";
+import { queueInsert, queueUpdate, queueDelete, tombstonedIds } from "./outbox";
 
 type Op = { m: string; args: any[] };
 
@@ -170,9 +171,10 @@ export async function mirrorRows(table: MirroredTable, rows: any[]) {
   const db = getDb();
   if (!db || !rows?.length) return;
   try {
+    const tombs = await tombstonedIds(table);
+    rows = rows.filter((r) => r && r.id != null && !tombs.has(Number(r.id)));
     const existing = await db.rows(table).bulkGet(rows.map((r) => r.id));
     const merged = rows
-      .filter((r) => r && r.id != null)
       .map((r, i) => {
         const prev = existing[i];
         if (prev?._pending) return prev; // don't clobber unsynced local edits
@@ -417,15 +419,7 @@ class OfflineQuery<T = any> implements PromiseLike<Result<T>> {
           _local: opts.synced ? 0 : 1,
         };
         await db.rows(table).put(row);
-        if (!opts.synced) {
-          await db.outbox.add({
-            table,
-            op: "insert",
-            id,
-            payload: stripLocalFields(payloads[i]),
-            createdAt: now,
-          });
-        }
+        if (!opts.synced) await queueInsert(table, row, stripLocalFields(payloads[i]));
         written.push(row);
       }
       if (opts.synced) return { data: null, error: null };
@@ -448,9 +442,7 @@ class OfflineQuery<T = any> implements PromiseLike<Result<T>> {
           _pending: opts.synced ? (r._pending ?? 0) : 1,
         };
         await db.rows(table).put(next);
-        if (!opts.synced) {
-          await db.outbox.add({ table, op: "update", id: r.id, payload: patch, createdAt: now });
-        }
+        if (!opts.synced) await queueUpdate(table, r, patch);
         written.push(next);
       }
       if (opts.synced) return { data: null, error: null };
@@ -460,13 +452,7 @@ class OfflineQuery<T = any> implements PromiseLike<Result<T>> {
     for (const r of rows) {
       await db.rows(table).delete(r.id);
       const neverSynced = isLocalId(r.id) || r._local === 1;
-      if (!opts.synced && !neverSynced) {
-        await db.outbox.add({ table, op: "delete", id: r.id, createdAt: now });
-      } else if (!opts.synced && neverSynced) {
-        // never synced: drop any queued ops for this row
-        const queued = await db.outbox.where("table").equals(table).toArray();
-        for (const q of queued) if (q.id === r.id) await db.outbox.delete(q.seq!);
-      }
+      if (!opts.synced) await queueDelete(table, r, neverSynced);
     }
     return { data: null, error: null };
   }

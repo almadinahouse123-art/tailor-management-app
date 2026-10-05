@@ -44,6 +44,8 @@ export type Row = Record<string, any> & {
   _local?: 0 | 1;
 };
 
+export type OpStatus = "pending" | "syncing" | "failed" | "conflict";
+
 export type OutboxOp = {
   seq?: number;
   table: MirroredTable;
@@ -54,6 +56,22 @@ export type OutboxOp = {
   createdAt: string;
   attempts?: number;
   error?: string | null;
+  /* ---- Step 3 queue fields (all optional so older queued ops stay valid) ---- */
+  /** permanent, unique id of this operation (idempotency key) */
+  opId?: string;
+  /** permanent record identity (Step 2 uid) */
+  uid?: string;
+  /** cloud user id, or "local:<email>" for a device-only account */
+  owner?: string;
+  deviceId?: string;
+  status?: OpStatus;
+  /** parent records that must reach the cloud before this op */
+  dependsOn?: { table: MirroredTable; id: number; uid?: string }[];
+  /** updated_at of the record when this local edit started (conflict check) */
+  baseUpdatedAt?: string | null;
+  lastAttemptAt?: string | null;
+  /** remote version captured when a conflict was detected */
+  conflict?: { reason: string; remote?: Record<string, any> | null; detectedAt: string } | null;
 };
 
 /** IndexedDB adapter (web / PWA). Satisfies the LocalStore contract. */
