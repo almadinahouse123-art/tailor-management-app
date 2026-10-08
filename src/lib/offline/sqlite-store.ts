@@ -40,6 +40,11 @@ async function open(): Promise<SQLiteDBConnection> {
   ];
   // Additive only — CREATE IF NOT EXISTS never drops or rewrites data.
   await db.execute(stmts.join("\n"), true);
+  // Step 3: additive column holding queue fields (opId, uid, status, dependsOn ...)
+  const cols = await db.query(`PRAGMA table_info(outbox);`);
+  if (!(cols.values ?? []).some((c: any) => c.name === "extra")) {
+    await db.execute(`ALTER TABLE outbox ADD COLUMN extra TEXT;`, true);
+  }
   await migrateFromIndexedDb(db);
   return db;
 }
@@ -102,8 +107,16 @@ function rowTable(table: MirroredTable): RowTable {
   };
 }
 
+const CORE = new Set(["seq", "table", "op", "id", "payload", "createdAt", "attempts", "error"]);
+function extraOf(op: Partial<OutboxOp>) {
+  const x: Record<string, any> = {};
+  for (const [k, v] of Object.entries(op)) if (!CORE.has(k)) x[k] = v;
+  return JSON.stringify(x);
+}
+
 function toOp(v: any): OutboxOp {
   return {
+    ...(parse(v.extra) ?? {}),
     seq: Number(v.seq),
     table: v.tbl,
     op: v.op,
@@ -141,21 +154,22 @@ export const sqliteStore: LocalStore = {
     async add(op) {
       const db = await getConn();
       const r = await db.run(
-        `INSERT INTO outbox (tbl, op, id, payload, created_at, attempts, error) VALUES (?, ?, ?, ?, ?, ?, ?);`,
-        [op.table, op.op, op.id, op.payload ? JSON.stringify(op.payload) : null, op.createdAt, op.attempts ?? 0, op.error ?? null],
+        `INSERT INTO outbox (tbl, op, id, payload, created_at, attempts, error, extra) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
+        [op.table, op.op, op.id, op.payload ? JSON.stringify(op.payload) : null, op.createdAt, op.attempts ?? 0, op.error ?? null, extraOf(op)],
         true,
       );
       return Number(r.changes?.lastId ?? 0);
     },
     async update(seq, patch) {
       const db = await getConn();
-      const sets: string[] = [];
-      const vals: any[] = [];
-      if ("payload" in patch) (sets.push("payload = ?"), vals.push(patch.payload ? JSON.stringify(patch.payload) : null));
-      if ("attempts" in patch) (sets.push("attempts = ?"), vals.push(patch.attempts ?? 0));
-      if ("error" in patch) (sets.push("error = ?"), vals.push(patch.error ?? null));
-      if (!sets.length) return;
-      await db.run(`UPDATE outbox SET ${sets.join(", ")} WHERE seq = ?;`, [...vals, seq], true);
+      const cur = (await allOps("WHERE seq = ?", [seq]))[0];
+      if (!cur) return;
+      const n = { ...cur, ...patch };
+      await db.run(
+        `UPDATE outbox SET payload = ?, attempts = ?, error = ?, extra = ? WHERE seq = ?;`,
+        [n.payload ? JSON.stringify(n.payload) : null, n.attempts ?? 0, n.error ?? null, extraOf(n), seq],
+        true,
+      );
     },
     async delete(seq) {
       const db = await getConn();
