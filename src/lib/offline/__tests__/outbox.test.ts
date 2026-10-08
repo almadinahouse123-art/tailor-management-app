@@ -43,6 +43,7 @@ vi.mock("@/integrations/supabase/client", () => ({
 vi.mock("@/lib/online-status", () => ({ markSync: () => {} }));
 
 (globalThis as any).window = globalThis;
+Object.defineProperty(globalThis.navigator, "onLine", { value: true, configurable: true });
 (globalThis as any).addEventListener = () => {};
 
 const { getDb } = await import("../db");
