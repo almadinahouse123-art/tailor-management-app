@@ -10,6 +10,7 @@
     "build:static": "rm -rf dist && vite build --config vite.config.static.ts && rm -rf capacitor-www && mkdir -p capacitor-www && cp -R dist/client/. capacitor-www/",
     "preview": "vite preview",
     "lint": "eslint .",
+    "test": "vitest run",
     "format": "prettier --write ."
   },
   "dependencies": {
@@ -82,7 +83,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
-    "@lovable.dev/vite-tanstack-config": "2.23.1",
+    "@lovable.dev/vite-tanstack-config": "2.25.3",
     "@types/node": "^22.16.5",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
