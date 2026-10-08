@@ -4,3 +4,4 @@
 - Android (Capacitor native) uses the SQLite adapter, web/PWA uses the IndexedDB adapter — native storage must not depend on the WebView.
 - Local schema changes are additive only (CREATE IF NOT EXISTS / new columns) — existing on-device business data must never be dropped.
 - UI talks to data via the offline proxy client (`@/lib/offline/client`), which reads/writes locally and queues an outbox for sync — Supabase is never required for local CRUD.
+- Local changes enter the outbox only via src/lib/offline/outbox.ts (queueInsert/Update/Delete): it folds edits, records dependencies and tombstones; sync never overwrites — business-number clashes and newer cloud edits become `conflict` ops.
