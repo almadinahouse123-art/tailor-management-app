@@ -14,6 +14,7 @@ export const MIRRORED_TABLES = [
   "inventory",
   "invoices",
   "daily_production",
+  "stock_movements",
 ] as const;
 
 export type MirroredTable = (typeof MIRRORED_TABLES)[number];
@@ -26,6 +27,7 @@ export const REF_COLUMNS: Record<string, string[]> = {
   worker_ledger: ["worker_id"],
   invoices: ["customer_id", "order_id"],
   daily_production: ["worker_id", "order_id"],
+  stock_movements: ["item_id"],
 };
 
 /** Which table a FK column points at (used for offline relation hydration). */
@@ -34,6 +36,7 @@ export const REF_TABLE: Record<string, MirroredTable> = {
   order_id: "orders",
   worker_id: "workers",
   assigned_worker_id: "workers",
+  item_id: "inventory",
 };
 
 export type Row = Record<string, any> & {
@@ -87,7 +90,11 @@ export class DexieStore extends Dexie {
       meta: "key",
     };
     for (const t of MIRRORED_TABLES) stores[t] = "id, _pending, deleted_at";
-    this.version(1).stores(stores);
+    const v1: Record<string, string> = { ...stores };
+    delete v1.stock_movements;
+    this.version(1).stores(v1);
+    // v2 only adds the stock_movements store; existing data is untouched.
+    this.version(2).stores(stores);
   }
 
   rows(table: MirroredTable): Table<Row, number> {
