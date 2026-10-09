@@ -9,8 +9,29 @@ import {
   type OutboxOp,
 } from "./db";
 import { notifyLocalChange, setSyncState, registerSyncRequester, markSyncedNow } from "./bus";
-import { clearTombstone, orderForUpload, setOwnerResolver } from "./outbox";
+import { clearTombstone, orderForUpload, setOwnerResolver, queueSummary } from "./outbox";
 import { getLocalSession } from "@/lib/local-auth";
+import { pullChanges } from "./pull";
+
+/* Backoff for temporary failures: 5s, 10s, 20s ... capped at 5 minutes. */
+let backoffUntil = 0;
+let backoffStep = 0;
+function scheduleBackoff() {
+  backoffStep = Math.min(backoffStep + 1, 7);
+  backoffUntil = Date.now() + Math.min(5000 * 2 ** (backoffStep - 1), 300_000);
+}
+function clearBackoff() {
+  backoffStep = 0;
+  backoffUntil = 0;
+}
+
+/** Errors worth retrying automatically (network, timeouts, server overload). */
+function isTemporary(e: any) {
+  if (isNetworkError(e)) return true;
+  const status = Number(e?.status ?? 0);
+  if (status >= 500 || status === 429 || status === 408) return true;
+  return /timeout|temporar|unavailable|connection/i.test(String(e?.message ?? ""));
+}
 
 let running = false;
 let queuedAgain = false;
@@ -34,8 +55,10 @@ export async function pendingCount() {
 }
 
 async function refreshPending() {
-  setSyncState({ pending: await pendingCount() });
+  const q = await queueSummary();
+  setSyncState({ pending: q.total, failed: q.failed, conflict: q.conflict });
 }
+export { refreshPending };
 
 const isNetworkError = (e: any) =>
   /Failed to fetch|NetworkError|network|fetch failed|Load failed|timeout|ERR_INTERNET/i.test(
@@ -65,7 +88,7 @@ async function resolvePayload(table: MirroredTable, payload: Record<string, any>
 }
 
 const wrap = (error: any): PushResult =>
-  isNetworkError(error) ? { kind: "network", error } : { kind: "failed", error };
+  isTemporary(error) ? { kind: "network", error } : { kind: "failed", error };
 
 async function pushOp(op: OutboxOp): Promise<PushResult> {
   const db = getDb()!;
@@ -181,7 +204,7 @@ async function remapReferences(table: MirroredTable, localId: number, serverId: 
  * the queue; anything that depends on them waits. A network drop stops the run
  * and leaves every remaining op pending for the next attempt.
  */
-export async function syncNow(): Promise<void> {
+export async function syncNow(opts: { force?: boolean } = {}): Promise<void> {
   const db = getDb();
   if (!db) return;
   if (typeof navigator !== "undefined" && !navigator.onLine) return;
@@ -189,12 +212,15 @@ export async function syncNow(): Promise<void> {
     queuedAgain = true;
     return;
   }
+  if (!opts.force && Date.now() < backoffUntil) return;
+  if (opts.force) clearBackoff();
   const { data: session } = await cloud.auth.getSession();
   const userId = session?.session?.user?.id;
   if (!userId) return;
 
   running = true;
   setSyncState({ syncing: true, lastError: null });
+  let networkDown = false;
   try {
     const ops = orderForUpload(await db.outbox.toArray());
     const blocked = new Set<string>(); // "table:id" of records that could not upload
@@ -225,6 +251,7 @@ export async function syncNow(): Promise<void> {
       if (res.kind === "network") {
         await db.outbox.update(op.seq!, { status: "pending", attempts, error: "Network unavailable" });
         setSyncState({ lastError: "Network unavailable" });
+        networkDown = true;
         break;
       }
       if (res.kind === "conflict") {
@@ -245,6 +272,19 @@ export async function syncNow(): Promise<void> {
       await db.outbox.update(op.seq!, { status: "failed", attempts, error: msg });
       setSyncState({ lastError: msg });
     }
+    // Download cloud changes after uploading ours.
+    if (!networkDown) {
+      try {
+        await pullChanges();
+        markSyncedNow();
+      } catch (e) {
+        if (isTemporary(e)) networkDown = true;
+        console.error("[sync] download failed", e);
+        setSyncState({ lastError: "Download failed" });
+      }
+    }
+    if (networkDown) scheduleBackoff();
+    else clearBackoff();
   } finally {
     // An interrupted run must never leave ops stuck in "syncing".
     for (const o of await db.outbox.toArray()) {

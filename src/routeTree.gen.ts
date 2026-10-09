@@ -19,6 +19,7 @@ import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } fr
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppBackupRouteImport } from './routes/app.backup'
 import { Route as AppSearchRouteImport } from './routes/app.search'
+import { Route as AppSyncRouteImport } from './routes/app.sync'
 import { Route as AppTrashRouteImport } from './routes/app.trash'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AppBillingIndexRouteImport } from './routes/app.billing.index'
@@ -99,6 +100,11 @@ const AppBackupRoute = AppBackupRouteImport.update({
 const AppSearchRoute = AppSearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSyncRoute = AppSyncRouteImport.update({
+  id: '/sync',
+  path: '/sync',
   getParentRoute: () => AppRoute,
 } as any)
 const AppTrashRoute = AppTrashRouteImport.update({
@@ -262,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/backup': typeof AppBackupRoute
   '/app/search': typeof AppSearchRoute
+  '/app/sync': typeof AppSyncRoute
   '/app/trash': typeof AppTrashRoute
   '/app/': typeof AppIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -303,6 +310,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/backup': typeof AppBackupRoute
   '/app/search': typeof AppSearchRoute
+  '/app/sync': typeof AppSyncRoute
   '/app/trash': typeof AppTrashRoute
   '/app': typeof AppIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -346,6 +354,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/app/backup': typeof AppBackupRoute
   '/app/search': typeof AppSearchRoute
+  '/app/sync': typeof AppSyncRoute
   '/app/trash': typeof AppTrashRoute
   '/app/': typeof AppIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -390,6 +399,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/app/backup'
     | '/app/search'
+    | '/app/sync'
     | '/app/trash'
     | '/app/'
     | '/.lovable/oauth/consent'
@@ -431,6 +441,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/app/backup'
     | '/app/search'
+    | '/app/sync'
     | '/app/trash'
     | '/app'
     | '/.lovable/oauth/consent'
@@ -473,6 +484,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/app/backup'
     | '/app/search'
+    | '/app/sync'
     | '/app/trash'
     | '/app/'
     | '/.lovable/oauth/consent'
@@ -589,6 +601,13 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/app/search'
       preLoaderRoute: typeof AppSearchRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/sync': {
+      id: '/app/sync'
+      path: '/sync'
+      fullPath: '/app/sync'
+      preLoaderRoute: typeof AppSyncRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/trash': {
@@ -855,6 +874,7 @@ const AppWorkersIdRouteWithChildren = AppWorkersIdRoute._addFileChildren(
 interface AppRouteChildren {
   AppBackupRoute: typeof AppBackupRoute
   AppSearchRoute: typeof AppSearchRoute
+  AppSyncRoute: typeof AppSyncRoute
   AppTrashRoute: typeof AppTrashRoute
   AppIndexRoute: typeof AppIndexRoute
   AppBillingIdRoute: typeof AppBillingIdRouteWithChildren
@@ -884,6 +904,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppBackupRoute: AppBackupRoute,
   AppSearchRoute: AppSearchRoute,
+  AppSyncRoute: AppSyncRoute,
   AppTrashRoute: AppTrashRoute,
   AppIndexRoute: AppIndexRoute,
   AppBillingIdRoute: AppBillingIdRouteWithChildren,

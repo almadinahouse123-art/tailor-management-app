@@ -1,8 +1,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getSyncState, subscribeSyncState, subscribeLocalChange } from "./bus";
-import { startSyncEngine, pendingCount, syncNow } from "./sync";
-import { setSyncState } from "./bus";
+import { startSyncEngine, refreshPending, syncNow } from "./sync";
 
 export function useSyncStatus() {
   return useSyncExternalStore(
@@ -28,10 +27,10 @@ export function OfflineSyncProvider({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     const stop = startSyncEngine();
-    void pendingCount().then((n) => setSyncState({ pending: n }));
+    void refreshPending();
     const off = subscribeLocalChange(() => {
       setTick((t) => t + 1);
-      void pendingCount().then((n) => setSyncState({ pending: n }));
+      void refreshPending();
       queryClient.invalidateQueries();
     });
     return () => {

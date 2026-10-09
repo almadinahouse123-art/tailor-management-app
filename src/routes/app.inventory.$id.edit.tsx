@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { addStockMovement } from "@/lib/offline/stock";
+import { StockMovements } from "@/components/StockMovements";
 
 export const Route = createFileRoute("/app/inventory/$id/edit")({
   component: EditItem,
@@ -42,10 +44,16 @@ function EditItem() {
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!f.item_name.trim()) return toast.error("شے کا نام درکار ہے");
+    // A changed quantity is saved as an adjustment movement (history + safe
+    // multi-device sync) instead of overwriting the stored quantity.
+    const diff = (Number(f.quantity) || 0) - Number(data?.quantity ?? 0);
+    if (diff) {
+      const r = await addStockMovement({ itemId: iid, kind: "adjust", amount: diff, note: "مقدار کی درستگی" });
+      if (r.error) return toast.error(friendlyError(r.error));
+    }
     const { error } = await supabase.from("inventory").update({
       item_name: f.item_name.trim(),
       category: f.category.trim() || null,
-      quantity: Number(f.quantity) || 0,
       unit: f.unit.trim() || null,
       unit_price: Number(f.unit_price) || 0,
       low_stock_threshold: Number(f.low_stock_threshold) || 0,
@@ -75,6 +83,9 @@ function EditItem() {
         </Card>
         <Button type="submit" className="w-full bg-gradient-primary">تبدیلیاں محفوظ کریں</Button>
       </form>
+      <div className="px-4 pb-6">
+        <StockMovements itemId={iid} unit={data?.unit ?? ""} />
+      </div>
     </>
   );
 }

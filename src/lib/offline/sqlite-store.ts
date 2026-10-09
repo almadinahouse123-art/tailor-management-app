@@ -166,8 +166,8 @@ export const sqliteStore: LocalStore = {
       if (!cur) return;
       const n = { ...cur, ...patch };
       await db.run(
-        `UPDATE outbox SET payload = ?, attempts = ?, error = ?, extra = ? WHERE seq = ?;`,
-        [n.payload ? JSON.stringify(n.payload) : null, n.attempts ?? 0, n.error ?? null, extraOf(n), seq],
+        `UPDATE outbox SET id = ?, payload = ?, attempts = ?, error = ?, extra = ? WHERE seq = ?;`,
+        [n.id, n.payload ? JSON.stringify(n.payload) : null, n.attempts ?? 0, n.error ?? null, extraOf(n), seq],
         true,
       );
     },
