@@ -22,9 +22,9 @@ export function StatusStrip() {
         {online ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
         {online ? "آن لائن" : "آف لائن"}
       </span>
-      <span className="inline-flex items-center gap-1 text-muted-foreground">
+      <Link to="/app/sync" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground">
         <RefreshCw className="h-3 w-3" /> {formatRelative(lastSync)}
-      </span>
+      </Link>
       <Link
         to="/app/backup"
         className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground mr-auto"
