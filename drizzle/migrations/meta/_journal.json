@@ -8,6 +8,13 @@
       "when": 1791134636325,
       "tag": "0000_permanent_local_identity",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791567540580,
+      "tag": "0001_two_way_sync_and_stock_movements",
+      "breakpoints": true
     }
   ]
 }

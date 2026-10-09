@@ -462,6 +462,83 @@ export type Database = {
           },
         ]
       }
+      stock_movements: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          id: number
+          item_id: number
+          kind: string
+          movement_date: string
+          note: string | null
+          qty_change: number
+          uid: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: number
+          item_id: number
+          kind?: string
+          movement_date?: string
+          note?: string | null
+          qty_change?: number
+          uid?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: number
+          item_id?: number
+          kind?: string
+          movement_date?: string
+          note?: string | null
+          qty_change?: number
+          uid?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movements_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "inventory"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sync_tombstones: {
+        Row: {
+          deleted_at: string
+          id: number
+          row_id: number
+          row_uid: string | null
+          table_name: string
+          user_id: string
+        }
+        Insert: {
+          deleted_at?: string
+          id?: number
+          row_id: number
+          row_uid?: string | null
+          table_name: string
+          user_id: string
+        }
+        Update: {
+          deleted_at?: string
+          id?: number
+          row_id?: number
+          row_uid?: string | null
+          table_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       worker_ledger: {
         Row: {
           created_at: string
