@@ -43,7 +43,15 @@ export async function mergeRemoteRow(table: MirroredTable, remote: any, tombs?: 
     // Same business number, different record (made on another device). Keep ours.
     return "skipped" as const;
   }
-  await db.rows(table).put({ ...stripLocalFields(remote), _pending: 0, _local: 0 } as Row);
+  const next: Row = { ...stripLocalFields(remote), _pending: 0, _local: 0 } as Row;
+  if (table === "inventory") {
+    // Stock movements still waiting to upload are not in the cloud quantity yet.
+    const waiting = (await db.rows("stock_movements").toArray()).filter(
+      (m) => m._pending && Number(m.item_id) === Number(remote.id) && !m.deleted_at,
+    );
+    next.quantity = Number(next.quantity ?? 0) + waiting.reduce((a, m) => a + Number(m.qty_change ?? 0), 0);
+  }
+  await db.rows(table).put(next);
   return "applied" as const;
 }
 

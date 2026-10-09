@@ -199,3 +199,87 @@ export function orderForUpload(ops: OutboxOp[]): OutboxOp[] {
   sorted.forEach((o) => place(o));
   return out;
 }
+
+/* ---------------- explicit conflict resolution ---------------- */
+
+async function opBySeq(seq: number) {
+  return (await getDb()!.outbox.toArray()).find((o) => o.seq === seq);
+}
+
+/** Keep this device's version: upload it over the cloud copy on the next sync. */
+export async function resolveKeepMine(seq: number) {
+  const op = await opBySeq(seq);
+  if (!op || op.op === "insert") return;
+  await getDb()!.outbox.update(seq, {
+    status: "pending",
+    error: null,
+    conflict: null,
+    baseUpdatedAt: op.conflict?.remote?.updated_at ?? new Date().toISOString(),
+  });
+}
+
+/** Keep the cloud version: drop this device's edit/delete and restore the cloud copy locally. */
+export async function resolveKeepCloud(seq: number) {
+  const db = getDb()!;
+  const op = await opBySeq(seq);
+  if (!op || op.op === "insert") return;
+  const remote = op.conflict?.remote;
+  await db.outbox.delete(seq);
+  await clearTombstone(op.table, op.id);
+  if (remote) await db.rows(op.table).put({ ...remote, _pending: 0, _local: 0 });
+}
+
+/**
+ * Number clash on a new record: give *this device's* record the next free
+ * number. Only ever done when the user explicitly asks. Children on this
+ * device and queued changes are moved to the new number too.
+ */
+export async function resolveRenumber(seq: number): Promise<number | null> {
+  const db = getDb()!;
+  const op = await opBySeq(seq);
+  if (!op || op.op !== "insert") return null;
+  const { refreshNumberFloor, allocateNumber } = await import("./ids");
+  await refreshNumberFloor();
+  const oldId = op.id;
+  const newId = await allocateNumber(op.table);
+  const row = await db.rows(op.table).get(oldId);
+  if (row && (!op.uid || row.uid === op.uid)) {
+    await db.rows(op.table).delete(oldId);
+    await db.rows(op.table).put({ ...row, id: newId });
+  }
+  // children that point at the old number
+  for (const [t, cols] of Object.entries(REF_COLUMNS)) {
+    for (const col of cols) {
+      if (REF_TABLE[col] !== op.table) continue;
+      for (const r of await db.rows(t as MirroredTable).toArray()) {
+        if (Number(r[col]) === oldId && r._pending) {
+          await db.rows(t as MirroredTable).put({ ...r, [col]: newId });
+        }
+      }
+    }
+  }
+  for (const o of await db.outbox.toArray()) {
+    const patch: Partial<OutboxOp> = {};
+    if (o.table === op.table && o.id === oldId && (!op.uid || o.uid === op.uid)) {
+      patch.id = newId as any;
+      if (o.payload) patch.payload = { ...o.payload, id: newId };
+    }
+    const cols = REF_COLUMNS[o.table] ?? [];
+    for (const col of cols) {
+      if (REF_TABLE[col] === op.table && o.payload && Number(o.payload[col]) === oldId && o.seq !== seq) {
+        patch.payload = { ...(patch.payload ?? o.payload), [col]: newId };
+      }
+    }
+    if (o.dependsOn?.some((d) => d.table === op.table && d.id === oldId)) {
+      patch.dependsOn = o.dependsOn.map((d) => (d.table === op.table && d.id === oldId ? { ...d, id: newId } : d));
+    }
+    if (Object.keys(patch).length) await db.outbox.update(o.seq!, patch);
+  }
+  await db.outbox.update(seq, { status: "pending", error: null, conflict: null });
+  return newId;
+}
+
+/** Retry everything that is failed (not conflicts, which need a choice). */
+export async function retryAll() {
+  await retryFailed();
+}
