@@ -4,9 +4,11 @@ export type SyncState = {
   syncing: boolean;
   pending: number;
   lastError: string | null;
+  failed: number;
+  conflict: number;
 };
 
-let state: SyncState = { syncing: false, pending: 0, lastError: null };
+let state: SyncState = { syncing: false, pending: 0, lastError: null, failed: 0, conflict: 0 };
 const listeners = new Set<() => void>();
 const changeListeners = new Set<() => void>();
 let syncRequester: (() => void) | null = null;
@@ -17,7 +19,14 @@ export function getSyncState() {
 
 export function setSyncState(patch: Partial<SyncState>) {
   const next = { ...state, ...patch };
-  if (next.syncing === state.syncing && next.pending === state.pending && next.lastError === state.lastError) return;
+  if (
+    next.syncing === state.syncing &&
+    next.pending === state.pending &&
+    next.lastError === state.lastError &&
+    next.failed === state.failed &&
+    next.conflict === state.conflict
+  )
+    return;
   state = next;
   listeners.forEach((l) => l());
 }

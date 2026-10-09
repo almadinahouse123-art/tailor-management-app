@@ -226,7 +226,7 @@ export async function resolveKeepCloud(seq: number) {
   const remote = op.conflict?.remote;
   await db.outbox.delete(seq);
   await clearTombstone(op.table, op.id);
-  if (remote) await db.rows(op.table).put({ ...remote, _pending: 0, _local: 0 });
+  if (remote) await db.rows(op.table).put({ ...remote, _pending: 0, _local: 0 } as Row);
 }
 
 /**

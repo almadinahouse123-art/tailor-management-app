@@ -9,7 +9,7 @@ import {
   type OutboxOp,
 } from "./db";
 import { notifyLocalChange, setSyncState, registerSyncRequester, markSyncedNow } from "./bus";
-import { clearTombstone, orderForUpload, setOwnerResolver } from "./outbox";
+import { clearTombstone, orderForUpload, setOwnerResolver, queueSummary } from "./outbox";
 import { getLocalSession } from "@/lib/local-auth";
 import { pullChanges } from "./pull";
 
@@ -55,8 +55,10 @@ export async function pendingCount() {
 }
 
 async function refreshPending() {
-  setSyncState({ pending: await pendingCount() });
+  const q = await queueSummary();
+  setSyncState({ pending: q.total, failed: q.failed, conflict: q.conflict });
 }
+export { refreshPending };
 
 const isNetworkError = (e: any) =>
   /Failed to fetch|NetworkError|network|fetch failed|Load failed|timeout|ERR_INTERNET/i.test(
