@@ -1,35 +1,50 @@
-import { Cloud, CloudOff, RefreshCw, CloudUpload } from "lucide-react";
+import { Cloud, CloudOff, RefreshCw, CloudUpload, AlertTriangle } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { useOnlineStatus } from "@/lib/online-status";
 import { useSyncStatus, syncNow } from "@/lib/offline/use-sync";
 
 /** Persistent Online / Offline / Syncing badge. */
 export function SyncBadge({ className = "" }: { className?: string }) {
   const online = useOnlineStatus();
-  const { syncing, pending } = useSyncStatus();
+  const { syncing, pending, failed, conflict } = useSyncStatus();
+  const nav = useNavigate();
 
-  const state = !online ? "offline" : syncing ? "syncing" : pending > 0 ? "queued" : "online";
+  const state = !online
+    ? "offline"
+    : failed + conflict > 0
+      ? "attention"
+      : syncing
+        ? "syncing"
+        : pending > 0
+          ? "queued"
+          : "online";
 
   const styles: Record<string, string> = {
     offline: "bg-destructive/10 text-destructive",
+    attention: "bg-amber-500/15 text-amber-700",
     syncing: "bg-primary/10 text-primary",
     queued: "bg-amber-500/10 text-amber-600",
     online: "bg-emerald-500/10 text-emerald-600",
   };
 
   const label: Record<string, string> = {
-    offline: "Offline",
+    offline: pending ? `Offline · ${pending}` : "Offline",
+    attention: conflict ? `${conflict} conflict` : `${failed} failed`,
     syncing: "Syncing…",
     queued: `${pending} pending`,
     online: "Online",
   };
 
   const Icon =
-    state === "offline" ? CloudOff : state === "syncing" ? RefreshCw : state === "queued" ? CloudUpload : Cloud;
+    state === "offline" ? CloudOff : state === "attention" ? AlertTriangle : state === "syncing" ? RefreshCw : state === "queued" ? CloudUpload : Cloud;
 
   return (
     <button
       type="button"
-      onClick={() => void syncNow()}
+      onClick={() => {
+        if (state === "attention" || state === "offline") nav({ to: "/app/sync" });
+        else void syncNow({ force: true });
+      }}
       title={state === "offline" ? "No internet — changes are saved on this device" : "Tap to sync now"}
       className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition ${styles[state]} ${className}`}
     >
