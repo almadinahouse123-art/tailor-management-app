@@ -1,0 +1,4 @@
+- [ ] Audit and validate the pending pull/conflict/stock-movement sync implementation.
+- [ ] Fix any confirmed bugs and ensure online writes still enter the local outbox.
+- [ ] Run tests, web/static builds, Capacitor sync, and Android APK build where available.
+- [ ] Re-read this roadmap and report verified results and remaining device/cloud limitations.
